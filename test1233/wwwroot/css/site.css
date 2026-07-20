@@ -1,0 +1,114 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 100px;
+}
+
+.reports-dropdown-menu {
+  min-width: 36rem;
+  padding: 0.5rem;
+}
+
+.reports-dropdown-menu.show {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.reports-dropdown-menu li {
+  list-style: none;
+  margin: 0;
+}
+
+.reports-dropdown-item {
+  display: block;
+  border: 1px solid #d8dfe3;
+  border-radius: 0.5rem;
+  padding: 0.75rem 0.9rem;
+  white-space: normal;
+}
+
+.reports-dropdown-title {
+  display: block;
+  font-weight: 600;
+  color: inherit;
+}
+
+.reports-dropdown-description {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  line-height: 1.35;
+  color: #5f6b73;
+}
+
+.reports-dropdown-item:hover,
+.reports-dropdown-item:focus {
+  background-color: #eff5f5;
+  color: #004d66;
+}
+
+.left-nav-gallery-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.left-nav-gallery-card {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  background: #f7fbfb;
+  border: 1px solid #d8e6e8;
+}
+
+.left-nav-gallery-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  border-radius: 0.35rem;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.left-nav-gallery-label {
+  color: #21373c;
+  font-weight: 700;
+}
+
+.left-nav-gallery-card-users .left-nav-gallery-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='9' cy='8' r='3.2' fill='%234d8d96'/%3E%3Cpath d='M3.5 18c0-2.8 2.5-5 5.5-5s5.5 2.2 5.5 5' fill='none' stroke='%234d8d96' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='17.5' cy='9' r='2.3' fill='%2386b8bf'/%3E%3Cpath d='M14.8 17.5c.5-1.8 2-3.2 3.9-3.6' fill='none' stroke='%2386b8bf' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+.left-nav-gallery-card-roles .left-nav-gallery-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3l2.2 4.4 4.8.7-3.5 3.4.8 4.8-4.3-2.3-4.3 2.3.8-4.8L5 8.1l4.8-.7z' fill='%237764c5'/%3E%3Crect x='7' y='17.5' width='10' height='2.5' rx='1.2' fill='%23b29ae2'/%3E%3C/svg%3E");
+}
+
+.left-nav-gallery-card-products .left-nav-gallery-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='4' y='5' width='16' height='14' rx='2.2' fill='%2355b784'/%3E%3Crect x='7' y='8' width='4' height='4' rx='1' fill='%23ecfff4'/%3E%3Cpath d='M13.5 9h3.5M13.5 12h3.5M7 15h10' stroke='%23ecfff4' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+.left-nav-gallery-card-categories .left-nav-gallery-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='4' y='4' width='6' height='6' rx='1.2' fill='%23d39a44'/%3E%3Crect x='14' y='4' width='6' height='6' rx='1.2' fill='%23efc37c'/%3E%3Crect x='4' y='14' width='6' height='6' rx='1.2' fill='%23efc37c'/%3E%3Crect x='14' y='14' width='6' height='6' rx='1.2' fill='%23d39a44'/%3E%3C/svg%3E");
+}

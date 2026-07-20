@@ -1,0 +1,41 @@
+@model test1233.Models.RoleFormViewModel
+
+@{
+    ViewData["Title"] = "Edit Role";
+}
+
+<div class="container py-4" style="max-width: 620px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <h1 class="h3 mb-1">Edit Role</h1>
+            <p class="text-muted mb-3">Role ID: @Model.Id</p>
+
+            <form asp-action="Edit" method="post">
+                @Html.AntiForgeryToken()
+                <input asp-for="Id" type="hidden" />
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-4">
+                    <label asp-for="Name" class="form-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+            
+             <div class="mb-4">
+                    <label asp-for="IdentityCode" class="form-label"></label>
+                    <input asp-for="IdentityCode" class="form-control" />
+                    <span asp-validation-for="IdentityCode" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-dark">Save changes</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

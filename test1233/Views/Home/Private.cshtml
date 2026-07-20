@@ -1,0 +1,48 @@
+@model IReadOnlyCollection<test1233.Models.AppUser>
+
+@{
+    ViewData["Title"] = "Private";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">Private Area</h1>
+            <p class="text-muted mb-0">Only logged-in users can see this page.</p>
+        </div>
+        <span class="badge text-bg-dark px-3 py-2">@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</span>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <h2 class="h5 mb-3">Registered Users</h2>
+            <div class="table-responsive">
+                <table class="table table-striped align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Surname</th>
+                            <th>Email address</th>
+                            <th>Cell no</th>
+                            <th>User name</th>
+                            <th>Code - Role</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td>@user.Name</td>
+                            <td>@user.Surname</td>
+                            <td>@user.EmailAddress</td>
+                            <td>@user.CellNo</td>
+                            <td>@user.Username</td>
+                            <td>@($"{user.RoleId} - {user.Role}")</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

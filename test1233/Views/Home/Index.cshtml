@@ -1,0 +1,28 @@
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container py-4">
+    @if (TempData["MagicLinkEmail"] is string magicLinkEmail && TempData["MagicLinkUrl"] is string magicLinkUrl)
+    {
+        <div class="alert alert-info shadow-sm" role="alert">
+            <strong>Magic link prepared for @magicLinkEmail</strong><br />
+            <a href="@magicLinkUrl">@magicLinkUrl</a>
+        </div>
+    }
+
+    <div class="p-5 bg-light rounded-3 shadow-sm">
+        <h1 class="display-5 fw-bold">Welcome</h1>
+        <p class="lead">, The Easy eats kitchen is located in Lower Hutt, 
+        catch up over a beverage or enjoy a family meal. 
+        Our Kitchen has been revamped with a modern twist and offers a variety of food, 
+        weekly specials, events and functions can be booked.</p>
+       
+        <hr class="my-4" />
+        <p class="mb-1">
+            <strong>
+                Our contact info is - 123456
+            </strong>
+        </p>
+    </div>
+</div>

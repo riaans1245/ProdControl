@@ -1,0 +1,50 @@
+@model IReadOnlyCollection<test1233.Models.AppUser>
+
+@{
+    ViewData["Title"] = "User Report";
+    Layout = "~/Views/Shared/_ReportLayout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">User Report</h1>
+            <p class="text-muted mb-0">Registered users and their assigned roles.</p>
+        </div>
+        <a asp-action="ExportUsers" class="btn btn-success">Export to Excel</a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Surname</th>
+                            <th>Email address</th>
+                            <th>Cell no</th>
+                            <th>User name</th>
+                            <th>Role</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td>@user.Id</td>
+                            <td>@user.Name</td>
+                            <td>@user.Surname</td>
+                            <td>@user.EmailAddress</td>
+                            <td>@user.CellNo</td>
+                            <td>@user.Username</td>
+                            <td>@($"{user.RoleId} - {user.Role}")</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

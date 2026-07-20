@@ -1,0 +1,57 @@
+@model test1233.Models.LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="container py-4" style="max-width: 520px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <h1 class="h3 mb-3">Login</h1>
+            <p class="text-muted">Sign in with your existing account.</p>
+
+            @if (TempData["MagicLinkError"] is string magicLinkError)
+            {
+                <div class="alert alert-danger" role="alert">
+                    @magicLinkError
+                </div>
+            }
+
+            <form asp-action="Login" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Username" class="form-label"></label>
+                    <input asp-for="Username" class="form-control" />
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input asp-for="Password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input asp-for="RememberMe" class="form-check-input" />
+                    <label asp-for="RememberMe" class="form-check-label"></label>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input asp-for="RequestMagicLink" class="form-check-input" />
+                    <label asp-for="RequestMagicLink" class="form-check-label"></label>
+                    <div class="form-text">Tick this if you would like the system to generate a magic link for your registered email address after login.</div>
+                </div>
+
+                <button type="submit" class="btn btn-dark w-100">Login</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

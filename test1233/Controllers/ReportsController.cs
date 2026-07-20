@@ -102,7 +102,8 @@ public class ReportsController(IUserStore userStore) : Controller
 
         worksheet.Cell(1, 1).Value = "Id";
         worksheet.Cell(1, 2).Value = "Product";
-        worksheet.Cell(1, 3).Value = "Category";
+        worksheet.Cell(1, 3).Value = "Price";
+        worksheet.Cell(1, 4).Value = "Category";
 
         var products = _userStore.GetAllProducts();
         var row = 2;
@@ -110,7 +111,8 @@ public class ReportsController(IUserStore userStore) : Controller
         {
             worksheet.Cell(row, 1).Value = product.Id;
             worksheet.Cell(row, 2).Value = product.Name;
-            worksheet.Cell(row, 3).Value = product.CategoryName;
+            worksheet.Cell(row, 3).Value = product.Price;
+            worksheet.Cell(row, 4).Value = product.CategoryName;
             row++;
         }
 

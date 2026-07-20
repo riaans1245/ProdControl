@@ -20,6 +20,12 @@
                     <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
 
+                <div class="mb-3">
+                    <label asp-for="Price" class="form-label"></label>
+                    <input asp-for="Price" class="form-control" type="number" min="0.01" step="0.01" />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+
                 <div class="mb-4">
                     <label asp-for="CategoryId" class="form-label"></label>
                     <select asp-for="CategoryId" asp-items="Model.AvailableCategories" class="form-select"></select>

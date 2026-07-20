@@ -54,6 +54,7 @@ public class ProductController(IUserStore userStore) : Controller
         _userStore.CreateProduct(new AppProduct
         {
             Name = model.Name.Trim(),
+            Price = model.Price,
             CategoryId = category!.Id,
             CategoryName = category.Name
         });
@@ -73,6 +74,7 @@ public class ProductController(IUserStore userStore) : Controller
         {
             Id = product.Id,
             Name = product.Name,
+            Price = product.Price,
             CategoryId = product.CategoryId,
             AvailableCategories = GetCategorySelectList()
         });
@@ -115,6 +117,7 @@ public class ProductController(IUserStore userStore) : Controller
         {
             Id = model.Id,
             Name = model.Name.Trim(),
+            Price = model.Price,
             CategoryId = category!.Id,
             CategoryName = category.Name
         });

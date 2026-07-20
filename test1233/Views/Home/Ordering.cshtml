@@ -1,0 +1,196 @@
+@model IReadOnlyCollection<test1233.Models.AppProduct>
+
+@{
+    ViewData["Title"] = "Ordering";
+}
+
+<div class="container py-4">
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 mb-4">
+        <div>
+            <h1 class="h3 mb-1">Ordering</h1>
+            <p class="text-muted mb-0">Choose products, set quantities, and build a live cart before checkout.</p>
+        </div>
+        <div class="text-muted small">Signed in as <strong>@User.Identity?.Name</strong></div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="row g-3">
+                @foreach (var product in Model)
+                {
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm border-0">
+                            <div class="card-body d-flex flex-column">
+                                <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+                                    <div>
+                                        <div class="text-muted small text-uppercase">@product.CategoryName</div>
+                                        <h2 class="h5 mb-1">@product.Name</h2>
+                                    </div>
+                                    <div class="fw-bold text-success">@product.Price.ToString("C")</div>
+                                </div>
+
+                                <div class="mt-auto d-flex flex-wrap align-items-end gap-2">
+                                    <div class="flex-grow-1">
+                                        <label class="form-label small mb-1" for="qty-@product.Id">Quantity</label>
+                                        <input id="qty-@product.Id"
+                                               class="form-control"
+                                               type="number"
+                                               min="1"
+                                               value="1" />
+                                    </div>
+                                    <button type="button"
+                                            class="btn btn-dark add-to-cart-btn"
+                                            data-product-id="@product.Id"
+                                            data-product-name="@product.Name"
+                                            data-category-name="@product.CategoryName"
+                                            data-product-price="@product.Price">
+                                        Add to cart
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 sticky-top" style="top: 1.5rem;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="h5 mb-0">Cart</h2>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="clear-cart-btn">Clear</button>
+                    </div>
+
+                    <div id="empty-cart-state" class="text-muted">Your cart is empty. Add products to begin an order.</div>
+                    <div id="cart-items" class="d-grid gap-3"></div>
+
+                    <hr />
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Total items</span>
+                        <strong id="cart-item-count">0</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Total value</span>
+                        <strong id="cart-total-value">$0.00</strong>
+                    </div>
+
+                    <button type="button" class="btn btn-success w-100 mt-4" id="checkout-btn">Place order</button>
+                    <p id="checkout-message" class="small text-muted mt-3 mb-0"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (() => {
+            const cart = new Map();
+            const cartItems = document.getElementById("cart-items");
+            const emptyCartState = document.getElementById("empty-cart-state");
+            const cartItemCount = document.getElementById("cart-item-count");
+            const cartTotalValue = document.getElementById("cart-total-value");
+            const checkoutMessage = document.getElementById("checkout-message");
+            const clearCartButton = document.getElementById("clear-cart-btn");
+            const checkoutButton = document.getElementById("checkout-btn");
+
+            const formatCurrency = (value) =>
+                new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value);
+
+            const renderCart = () => {
+                cartItems.innerHTML = "";
+
+                if (cart.size === 0) {
+                    emptyCartState.classList.remove("d-none");
+                    cartItemCount.textContent = "0";
+                    cartTotalValue.textContent = formatCurrency(0);
+                    return;
+                }
+
+                emptyCartState.classList.add("d-none");
+
+                let totalItems = 0;
+                let totalValue = 0;
+
+                for (const item of cart.values()) {
+                    totalItems += item.quantity;
+                    totalValue += item.quantity * item.price;
+
+                    const line = document.createElement("div");
+                    line.className = "border rounded-3 p-3 bg-light";
+                    line.innerHTML = `
+                        <div class="d-flex justify-content-between gap-3">
+                            <div>
+                                <div class="fw-semibold">${item.name}</div>
+                                <div class="small text-muted">${item.categoryName}</div>
+                                <div class="small text-muted">${item.quantity} x ${formatCurrency(item.price)}</div>
+                            </div>
+                            <div class="text-end">
+                                <div class="fw-semibold">${formatCurrency(item.quantity * item.price)}</div>
+                                <button type="button" class="btn btn-sm btn-link text-danger remove-cart-item-btn p-0 mt-2" data-product-id="${item.id}">
+                                    Remove
+                                </button>
+                            </div>
+                        </div>`;
+
+                    cartItems.appendChild(line);
+                }
+
+                cartItemCount.textContent = totalItems.toString();
+                cartTotalValue.textContent = formatCurrency(totalValue);
+
+                document.querySelectorAll(".remove-cart-item-btn").forEach((button) => {
+                    button.addEventListener("click", () => {
+                        cart.delete(button.dataset.productId);
+                        checkoutMessage.textContent = "";
+                        renderCart();
+                    });
+                });
+            };
+
+            document.querySelectorAll(".add-to-cart-btn").forEach((button) => {
+                button.addEventListener("click", () => {
+                    const productId = button.dataset.productId;
+                    const quantityInput = document.getElementById(`qty-${productId}`);
+                    const quantity = Number.parseInt(quantityInput.value, 10);
+
+                    if (!Number.isInteger(quantity) || quantity < 1) {
+                        quantityInput.focus();
+                        checkoutMessage.textContent = "Please enter a valid quantity of 1 or more.";
+                        return;
+                    }
+
+                    cart.set(productId, {
+                        id: productId,
+                        name: button.dataset.productName,
+                        categoryName: button.dataset.categoryName,
+                        price: Number.parseFloat(button.dataset.productPrice),
+                        quantity
+                    });
+
+                    checkoutMessage.textContent = `${button.dataset.productName} was added to your cart.`;
+                    renderCart();
+                });
+            });
+
+            clearCartButton.addEventListener("click", () => {
+                cart.clear();
+                checkoutMessage.textContent = "Cart cleared.";
+                renderCart();
+            });
+
+            checkoutButton.addEventListener("click", () => {
+                if (cart.size === 0) {
+                    checkoutMessage.textContent = "Add at least one product before placing an order.";
+                    return;
+                }
+
+                checkoutMessage.textContent = "Order captured in the cart view. You can now connect this to payment or order storage.";
+            });
+
+            renderCart();
+        })();
+    </script>
+}

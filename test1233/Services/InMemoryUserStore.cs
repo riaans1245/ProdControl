@@ -1,4 +1,3 @@
-using DocumentFormat.OpenXml.Spreadsheet;
 using test1233.Models;
 
 namespace test1233.Services;
@@ -9,15 +8,15 @@ public class InMemoryUserStore : IUserStore
 
     private readonly List<AppProduct> _products =
     [
-        new AppProduct { Id = 1, Name = "PC", CategoryId = 3, CategoryName = "InformationTechnology" },
-        new AppProduct { Id = 2, Name = "Keayboars", CategoryId = 3, CategoryName = "InformationTechnology" },
-        new AppProduct { Id = 3, Name = "Mouse", CategoryId = 3, CategoryName = "InformationTechnology" },
-        new AppProduct { Id = 4, Name = "Files", CategoryId = 4, CategoryName = "Finance" },
-        new AppProduct { Id = 5, Name = "Legers", CategoryId = 4, CategoryName = "Finance" },
-        new AppProduct { Id = 6, Name = "Itineraries", CategoryId = 4, CategoryName = "Finance" },
-        new AppProduct { Id = 7, Name = "CNC Machines", CategoryId = 2, CategoryName = "Engineering" },
-        new AppProduct { Id = 8, Name = "Tools", CategoryId = 2, CategoryName = "Engineering" },
-        new AppProduct { Id = 9, Name = "protective Clothing", CategoryId = 2, CategoryName = "Engineering" }
+        new AppProduct { Id = 1, Name = "PC", Price = 1499.00m, CategoryId = 3, CategoryName = "InformationTechnology" },
+        new AppProduct { Id = 2, Name = "Keayboars", Price = 89.00m, CategoryId = 3, CategoryName = "InformationTechnology" },
+        new AppProduct { Id = 3, Name = "Mouse", Price = 39.00m, CategoryId = 3, CategoryName = "InformationTechnology" },
+        new AppProduct { Id = 4, Name = "Files", Price = 19.50m, CategoryId = 4, CategoryName = "Finance" },
+        new AppProduct { Id = 5, Name = "Legers", Price = 33.00m, CategoryId = 4, CategoryName = "Finance" },
+        new AppProduct { Id = 6, Name = "Itineraries", Price = 27.25m, CategoryId = 4, CategoryName = "Finance" },
+        new AppProduct { Id = 7, Name = "CNC Machines", Price = 8500.00m, CategoryId = 2, CategoryName = "Engineering" },
+        new AppProduct { Id = 8, Name = "Tools", Price = 120.00m, CategoryId = 2, CategoryName = "Engineering" },
+        new AppProduct { Id = 9, Name = "protective Clothing", Price = 74.99m, CategoryId = 2, CategoryName = "Engineering" }
     ];
 
     private readonly List<AppCategory> _categories =
@@ -334,6 +333,7 @@ public class InMemoryUserStore : IUserStore
                 {
                     Id = product.Id,
                     Name = product.Name,
+                    Price = product.Price,
                     CategoryId = product.CategoryId,
                     CategoryName = product.CategoryName
                 })
@@ -353,6 +353,7 @@ public class InMemoryUserStore : IUserStore
                 {
                     Id = product.Id,
                     Name = product.Name,
+                    Price = product.Price,
                     CategoryId = product.CategoryId,
                     CategoryName = product.CategoryName
                 };
@@ -368,6 +369,7 @@ public class InMemoryUserStore : IUserStore
             {
                 Id = nextId,
                 Name = product.Name,
+                Price = product.Price,
                 CategoryId = product.CategoryId,
                 CategoryName = product.CategoryName
             });
@@ -385,6 +387,7 @@ public class InMemoryUserStore : IUserStore
             }
 
             existingProduct.Name = product.Name;
+            existingProduct.Price = product.Price;
             existingProduct.CategoryId = product.CategoryId;
             existingProduct.CategoryName = product.CategoryName;
             return true;

@@ -63,6 +63,12 @@
                     </li> <li class="nav-item"> 
                     <a class="nav-link text-white px-3" asp-controller="Home" asp-action="Private">Registered Users</a> 
                     </li>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link text-white px-3" asp-controller="Home" asp-action="Ordering">Ordering</a>
+                    </li>
+                }
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle text-white px-3"
                        href="#"
@@ -175,8 +181,8 @@
         </main> 
     </div> 
     <!-- Footer Area --> 
-    <footer class="footer border-top py-3 mt-auto shadow-sm" style="background-color: #4d8d96"> 
-        <div class="container-fluid d-flex justify-content-between align-items-center px-4"> 
+    <footer class="footer border-top mt-auto shadow-sm" style="background-color: #4d8d96; height: 55px;"> 
+        <div class="container-fluid d-flex justify-content-between align-items-center h-100 px-4"> 
             <a class="nav-link text-white px-3" asp-controller="Home" asp-action="ContactUs">Contact Us</a> 
             <ul class="nav"> 
                 <li class="nav-item"> 

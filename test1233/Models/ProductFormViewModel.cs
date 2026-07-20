@@ -16,5 +16,9 @@ public class ProductFormViewModel
     [Display(Name = "Category")]
     public int CategoryId { get; set; }
 
+    [Range(typeof(decimal), "0.01", "1000000")]
+    [Display(Name = "Price ($)")]
+    public decimal Price { get; set; }
+
     public IReadOnlyCollection<SelectListItem> AvailableCategories { get; set; } = Array.Empty<SelectListItem>();
 }

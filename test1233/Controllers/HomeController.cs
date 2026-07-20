@@ -16,6 +16,18 @@ public class HomeController(ILogger<HomeController> logger, IUserStore userStore
         return View();
     }
 
+    [Authorize]
+    public IActionResult Ordering()
+    {
+        var products = _userStore.GetAllProducts()
+            .OrderBy(product => product.CategoryName)
+            .ThenBy(product => product.Name)
+            .ToList()
+            .AsReadOnly();
+
+        return View(products);
+    }
+
     public IActionResult Privacy()
     {
         return View();

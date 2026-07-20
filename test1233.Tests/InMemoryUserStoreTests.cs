@@ -24,7 +24,7 @@ public class InMemoryUserStoreTests
 
         store.CreateUser(new AppUser
         {
-            Username = "r",
+            Username = "debug-user",
             Name = "Debug",
             Surname = "Tester",
             EmailAddress = "debug@example.com",

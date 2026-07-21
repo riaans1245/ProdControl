@@ -118,11 +118,11 @@
                 @if (User.Identity?.IsAuthenticated == true) 
                 { 
                     <li class="nav-item">
-                        <a class="nav-link text-white px-3" asp-controller="Home" asp-action="Ordering">
-                            Cart:
-                            <span id="nav-cart-count">0</span>
-                            items -
-                            <span id="nav-cart-total">$0.00</span>
+                        <a class="nav-link text-white px-3 nav-cart-link" asp-controller="Home" asp-action="Ordering" aria-label="View cart">
+                            <span class="nav-cart-icon-wrapper">
+                                <span class="nav-cart-image" aria-hidden="true"></span>
+                                <span id="nav-cart-count" class="nav-cart-count-badge">0</span>
+                            </span>
                         </a>
                     </li>
                     <li class="nav-item"> 
@@ -236,14 +236,10 @@
         (() => {
             const cartStorageKey = "easy-eats-cart";
             const cartCount = document.getElementById("nav-cart-count");
-            const cartTotal = document.getElementById("nav-cart-total");
 
-            if (!cartCount || !cartTotal) {
+            if (!cartCount) {
                 return;
             }
-
-            const formatCurrency = (value) =>
-                new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value);
 
             const readCart = () => {
                 try {
@@ -258,10 +254,8 @@
             const syncCartSummary = () => {
                 const cart = readCart();
                 const totalItems = cart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
-                const totalValue = cart.reduce((sum, item) => sum + ((Number(item.quantity) || 0) * (Number(item.price) || 0)), 0);
 
                 cartCount.textContent = totalItems.toString();
-                cartTotal.textContent = formatCurrency(totalValue);
             };
 
             window.addEventListener("storage", syncCartSummary);

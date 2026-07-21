@@ -113,6 +113,14 @@ body {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='4' y='4' width='6' height='6' rx='1.2' fill='%23d39a44'/%3E%3Crect x='14' y='4' width='6' height='6' rx='1.2' fill='%23efc37c'/%3E%3Crect x='4' y='14' width='6' height='6' rx='1.2' fill='%23efc37c'/%3E%3Crect x='14' y='14' width='6' height='6' rx='1.2' fill='%23d39a44'/%3E%3C/svg%3E");
 }
 
+.left-nav-gallery-card-menu .left-nav-gallery-icon {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  border-radius: 0.45rem;
+  background-image: url("/images/our-menu-icon.png");
+}
+
 .nav-cart-image {
   display: inline-block;
   width: 1.4rem;

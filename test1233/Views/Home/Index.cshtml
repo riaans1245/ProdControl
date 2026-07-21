@@ -18,19 +18,15 @@
         Our Kitchen has been revamped with a modern twist and offers a variety of food, 
         weekly specials, events and functions can be booked.</p>
        
-        <hr class="my-4" />
+    <hr class="my-4" />
         <p class="mb-1">
             <strong>
-                Our contact info is - 123456
+                <ul class="nav"> 
+                    <li class="nav-item"> 
+                        <a class="nav-link text-black px-3" asp-controller="Home" asp-action="ContactUs">Our contact us - Click Here</a>
+                    </li> 
+                </ul> 
             </strong>
         </p>
-        @* @if (User.Identity?.IsAuthenticated == true)
-        {
-            <a asp-controller="Home" asp-action="Ordering" class="btn btn-dark mt-4">Start ordering</a>
-        }
-        else
-        {
-            <p class="mt-4 mb-0 text-muted">Log in to place an order and build a cart.</p>
-        } *@
     </div>
 </div>

@@ -40,15 +40,22 @@
     </style>
 </head>
 <body class="d-flex flex-column h-100 m-0">
+    @{
+        var isAdmin = User.IsInRole("Admin");
+        var isUser = User.IsInRole("Users");
+    }
     <!-- Top Navigation Bar --> 
     <nav class="navbar navbar-expand-md navbar-dark border-bottom shadow-sm py-2" style="background-color: #4d8d96"> 
         <div class="container-fluid"> 
-            <button id="left-nav-toggle"
-                    type="button"
-                    class="navbar-toggler me-3 d-inline-flex left-nav-toggle-btn"
-                    aria-label="Toggle left navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            @if (isAdmin)
+            {
+                <button id="left-nav-toggle"
+                        type="button"
+                        class="navbar-toggler me-3 d-inline-flex left-nav-toggle-btn"
+                        aria-label="Toggle left navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            }
             <a class="navbar-brand text-dark fw-bold" asp-controller="Home" asp-action="Index">Easy Eats</a> 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"> 
                 <span class="navbar-toggler-icon">
@@ -126,14 +133,15 @@
                         </a>
                     </li>
                     <li class="nav-item"> 
-                        <span class="text-white fw-semibold me-2">Welcome, @User.Identity.Name!</span> 
-                        </li> 
-                        <li class="nav-item"> 
+                        <span></span>
+                        <label name=lblUserInfo class="text-white fw-semibold me-2">Welcome, @User.Identity.Name!</label>
+                    </li> 
+                    <li class="nav-item"> 
                         <form class="m-0" asp-controller="Account" asp-action="Logout" method="post"> 
                             @Html.AntiForgeryToken() 
                             <button type="submit" class="btn px-3" style="background-color: lightblue">Logout</button> 
-                            </form> 
-                        </li> 
+                        </form> 
+                    </li> 
                     } 
                     else 
                     { 
@@ -151,8 +159,15 @@
     <!-- Main Workspace Container --> 
     <div class="d-flex flex-grow-1 align-items-stretch"> 
         <!-- Side Navigation Bar (Stretches from navbar to footer via min-vh-100) --> 
+
+        @if (isAdmin) 
+        {
         <div class="flex-shrink-0" id="left-navigation">
             <nav class="p-4 shadow-sm min-vh-100 h-100" style="background-color: #ffffff; width: 240px;"> 
+                <div class="border rounded-3 p-3 mb-4" style="background-color: #eef7f8;">
+                    <p class="mb-1 fw-semibold text-dark">Admin navigation</p>
+                    <!--Admin Image-->
+                </div>
                 <ul class="nav nav-pills flex-column gap-2"> 
                     <div class="left-nav-gallery-panel">
                         <a class="left-nav-gallery-card left-nav-gallery-card-users"
@@ -179,10 +194,52 @@
                                 <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                                 <span class="left-nav-gallery-label">Categories</span>
                         </a>
+                        <a class="left-nav-gallery-card left-nav-gallery-card-menu"
+                            asp-controller="Home"
+                            asp-action="Ordering">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="left-nav-gallery-label">Our Menu</span>
+                        </a>
+                        <a class="left-nav-gallery-card left-nav-gallery-card-menu"
+                            asp-controller="Home"
+                            asp-action="Specials">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="left-nav-gallery-label">Our Specials</span>
+                        </a>
                     </div>
                 </ul> 
             </nav>
         </div> 
+        }
+        @if (User.Identity?.Name == null || isUser)
+        {
+        <div class="flex-shrink-0" id="left-navigation">
+            <nav class="p-4 shadow-sm min-vh-100 h-100" style="background-color: #ffffff; width: 240px;"> 
+                <div class="border rounded-3 p-3 mb-4" style="background-color: #eef7f8;">
+                    <p class="mb-1 fw-semibold text-dark">User navigation</p>
+                    <!--User Imager-->
+                </div>
+                <ul class="nav nav-pills flex-column gap-2"> 
+                    <div class="left-nav-gallery-panel">
+                        <a class="left-nav-gallery-card left-nav-gallery-card-menu"
+                            asp-controller="Home"
+                            asp-action="Ordering">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="left-nav-gallery-label">Our Menu</span>
+                        </a>
+                        <a class="left-nav-gallery-card left-nav-gallery-card-menu"
+                            asp-controller="Home"
+                            asp-action="Specials">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="left-nav-gallery-label">Our Specials</span>
+                        </a>
+                    </div>
+                </ul> 
+            </nav>
+        </div> 
+        }
+
+
         <!-- Dynamic Main View Content Area --> 
         <main role="main" class="flex-grow-1 p-4 bg-white overflow-auto"> 
             @RenderBody() 

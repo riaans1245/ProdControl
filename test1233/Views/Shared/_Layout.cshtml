@@ -117,6 +117,14 @@
             <ul class="navbar-nav align-items-center gap-2"> 
                 @if (User.Identity?.IsAuthenticated == true) 
                 { 
+                    <li class="nav-item">
+                        <a class="nav-link text-white px-3" asp-controller="Home" asp-action="Ordering">
+                            Cart:
+                            <span id="nav-cart-count">0</span>
+                            items -
+                            <span id="nav-cart-total">$0.00</span>
+                        </a>
+                    </li>
                     <li class="nav-item"> 
                         <span class="text-white fw-semibold me-2">Welcome, @User.Identity.Name!</span> 
                         </li> 
@@ -223,6 +231,43 @@
             syncButtonState();
         })();
 
+    </script>
+    <script>
+        (() => {
+            const cartStorageKey = "easy-eats-cart";
+            const cartCount = document.getElementById("nav-cart-count");
+            const cartTotal = document.getElementById("nav-cart-total");
+
+            if (!cartCount || !cartTotal) {
+                return;
+            }
+
+            const formatCurrency = (value) =>
+                new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value);
+
+            const readCart = () => {
+                try {
+                    const rawCart = localStorage.getItem(cartStorageKey);
+                    const parsedCart = rawCart ? JSON.parse(rawCart) : [];
+                    return Array.isArray(parsedCart) ? parsedCart : [];
+                } catch {
+                    return [];
+                }
+            };
+
+            const syncCartSummary = () => {
+                const cart = readCart();
+                const totalItems = cart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
+                const totalValue = cart.reduce((sum, item) => sum + ((Number(item.quantity) || 0) * (Number(item.price) || 0)), 0);
+
+                cartCount.textContent = totalItems.toString();
+                cartTotal.textContent = formatCurrency(totalValue);
+            };
+
+            window.addEventListener("storage", syncCartSummary);
+            window.addEventListener("cart-updated", syncCartSummary);
+            syncCartSummary();
+        })();
     </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

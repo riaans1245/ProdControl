@@ -10,7 +10,7 @@ namespace test1233.Controllers;
 public class ProductController(IUserStore userStore) : Controller
 {
     private readonly IUserStore _userStore = userStore;
-    private const int PageSize = 5;
+    private const int PageSize = 10;
 
     public IActionResult Index(int page = 1)
     {

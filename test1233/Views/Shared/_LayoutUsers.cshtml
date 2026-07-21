@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -37,17 +37,9 @@
             box-shadow: none;
             outline: none;
         }
-
-        .app-shell {
-            min-height: 0;
-        }
-
-        .app-sidebar nav {
-            height: 100%;
-        }
     </style>
 </head>
-<body class="d-flex flex-column min-vh-100 m-0">
+<body class="d-flex flex-column h-100 m-0">
     @{
         var isAdmin = User.IsInRole("Admin");
         var isUser = User.IsInRole("Users");
@@ -55,15 +47,14 @@
     <!-- Top Navigation Bar --> 
     <nav class="navbar navbar-expand-md navbar-dark border-bottom shadow-sm py-2" style="background-color: #4d8d96"> 
         <div class="container-fluid"> 
-            @if (isAdmin)
-            {
+           
                 <button id="left-nav-toggle"
                         type="button"
                         class="navbar-toggler me-3 d-inline-flex left-nav-toggle-btn"
                         aria-label="Toggle left navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-            }
+            
             <a class="navbar-brand text-dark fw-bold" asp-controller="Home" asp-action="Index">Easy Eats</a> 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"> 
                 <span class="navbar-toggler-icon">
@@ -91,32 +82,8 @@
                     <ul class="dropdown-menu reports-dropdown-menu" aria-labelledby="reportsDropdown">
                         <li>
                             <a class="dropdown-item reports-dropdown-item" style="background-color: lightgreen;" asp-controller="Reports" asp-action="Roles" target="_blank" rel="noopener noreferrer">
-                                <span class="reports-dropdown-title">Role Report</span>
-                                <span class="reports-dropdown-description">Review system roles and ...</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item reports-dropdown-item" style="background-color: rgb(137, 195, 206);" asp-controller="Reports" asp-action="Users" target="_blank" rel="noopener noreferrer">
-                                <span class="reports-dropdown-title">User Report</span>
-                                <span class="reports-dropdown-description">See registered users and ...</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item reports-dropdown-item" style="background-color: lightblue;" asp-controller="Reports" asp-action="Products" target="_blank" rel="noopener noreferrer">
-                                <span class="reports-dropdown-title">Product Report</span>
-                                <span class="reports-dropdown-description">Browse product records and ...</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item reports-dropdown-item" style="background-color: rgb(158, 137, 206);" asp-controller="Reports" asp-action="Categories" target="_blank" rel="noopener noreferrer">
-                                <span class="reports-dropdown-title">Category Report</span>
-                                <span class="reports-dropdown-description">View category groupings used ...</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item reports-dropdown-item" style="background-color: rgb(177, 192, 137);" asp-controller="Reports" asp-action="Contactus" target="_blank" rel="noopener noreferrer">
-                                <span class="reports-dropdown-title">Contact Us Report</span>
-                                <span class="reports-dropdown-description">Check submitted contact ...</span>
+                                <span class="reports-dropdown-title">My Purchase Report</span>
+                                <span class="reports-dropdown-description">Review all of my ...</span>
                             </a>
                         </li>
                     </ul>
@@ -165,43 +132,18 @@
             </div> 
         </nav> 
     <!-- Main Workspace Container --> 
-    <div class="d-flex flex-grow-1 align-items-stretch app-shell"> 
+    <div class="d-flex flex-grow-1 align-items-stretch"> 
         <!-- Side Navigation Bar (Stretches from navbar to footer via min-vh-100) --> 
-
-        @if (isAdmin) 
+        @if (User.Identity?.Name == null || isUser)
         {
-        <div class="flex-shrink-0 app-sidebar" id="left-navigation">
-            <nav class="p-4 shadow-sm h-100" style="background-color: #ffffff; width: 240px;"> 
+        <div class="flex-shrink-0" id="left-navigation">
+            <nav class="p-4 shadow-sm min-vh-100 h-100" style="background-color: #ffffff; width: 240px;"> 
                 <div class="border rounded-3 p-3 mb-4" style="background-color: #eef7f8;">
-                    <p class="mb-1 fw-semibold text-dark">Admin navigation</p>
-                    <!--Admin Image-->
+                    <p class="mb-1 fw-semibold text-dark">User navigation</p>
+                    <!--User Imager-->
                 </div>
                 <ul class="nav nav-pills flex-column gap-2"> 
                     <div class="left-nav-gallery-panel">
-                        <a class="left-nav-gallery-card left-nav-gallery-card-users"
-                            asp-controller="User"
-                            asp-action="Index">
-                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                                <span class="left-nav-gallery-label">Users</span>
-                        </a>
-                        <a class="left-nav-gallery-card left-nav-gallery-card-roles"
-                            asp-controller="Role"
-                            asp-action="Index">
-                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                                <span class="left-nav-gallery-label">Roles</span>
-                        </a>
-                        <a class="left-nav-gallery-card left-nav-gallery-card-products"
-                            asp-controller="Product"
-                            asp-action="Index">
-                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                                <span class="left-nav-gallery-label">Products</span>
-                        </a>
-                        <a class="left-nav-gallery-card left-nav-gallery-card-categories"
-                            asp-controller="Category"
-                            asp-action="Index">
-                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                                <span class="left-nav-gallery-label">Categories</span>
-                        </a>
                         <a class="left-nav-gallery-card left-nav-gallery-card-menu"
                             asp-controller="Home"
                             asp-action="Ordering">
@@ -219,6 +161,7 @@
             </nav>
         </div> 
         }
+
         <!-- Dynamic Main View Content Area --> 
         <main role="main" class="flex-grow-1 p-4 bg-white overflow-auto"> 
             @RenderBody() 

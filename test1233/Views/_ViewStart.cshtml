@@ -1,3 +1,13 @@
 ﻿@{
-    Layout = "_Layout";
+    var isAdmin = User.IsInRole("Admin");
+    var isUser = User.IsInRole("Users");
+    
+    if (isAdmin)
+        {
+            Layout = "_Layout";
+        }
+    if (User.Identity?.Name == null || isUser)
+        {
+            Layout = "_LayoutUsers";
+        }
 }

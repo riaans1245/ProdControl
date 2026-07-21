@@ -8,23 +8,40 @@ public class InMemoryUserStore : IUserStore
 
     private readonly List<AppProduct> _products =
     [
-        new AppProduct { Id = 1, Name = "PC", Price = 1499.00m, CategoryId = 3, CategoryName = "InformationTechnology" },
-        new AppProduct { Id = 2, Name = "Keayboars", Price = 89.00m, CategoryId = 3, CategoryName = "InformationTechnology" },
-        new AppProduct { Id = 3, Name = "Mouse", Price = 39.00m, CategoryId = 3, CategoryName = "InformationTechnology" },
-        new AppProduct { Id = 4, Name = "Files", Price = 19.50m, CategoryId = 4, CategoryName = "Finance" },
-        new AppProduct { Id = 5, Name = "Legers", Price = 33.00m, CategoryId = 4, CategoryName = "Finance" },
-        new AppProduct { Id = 6, Name = "Itineraries", Price = 27.25m, CategoryId = 4, CategoryName = "Finance" },
-        new AppProduct { Id = 7, Name = "CNC Machines", Price = 8500.00m, CategoryId = 2, CategoryName = "Engineering" },
-        new AppProduct { Id = 8, Name = "Tools", Price = 120.00m, CategoryId = 2, CategoryName = "Engineering" },
-        new AppProduct { Id = 9, Name = "protective Clothing", Price = 74.99m, CategoryId = 2, CategoryName = "Engineering" }
+        new AppProduct { Id = 1, Name = "Toast", Price = 1.00m, CategoryId = 4, CategoryName = "Sides" },
+        new AppProduct { Id = 2, Name = "Chips", Price = 3.00m, CategoryId = 4, CategoryName = "Sides" },
+        new AppProduct { Id = 3, Name = "Tomato", Price = 0.50m, CategoryId = 4, CategoryName = "Sides" },
+        new AppProduct { Id = 4, Name = "Bacon", Price = 2.50m, CategoryId = 4, CategoryName = "Sides" },
+        new AppProduct { Id = 5, Name = "Egg", Price = 1.00m, CategoryId = 4, CategoryName = "Sides" },
+        new AppProduct { Id = 6, Name = "ScrambledEggonToast", Price = 13.25m, CategoryId = 1, CategoryName = "Breakfast" },
+        new AppProduct { Id = 7, Name = "EnglisgBreakFast", Price = 29.00m, CategoryId = 1, CategoryName = "Breakfast" },
+        new AppProduct { Id = 8, Name = "EggBenedict", Price = 19.50m, CategoryId = 1, CategoryName = "Breakfast" },
+        new AppProduct { Id = 9, Name = "AvoOnToast", Price = 16.50m, CategoryId = 1, CategoryName = "Breakfast" },
+        new AppProduct { Id = 10, Name = "SteakEggChips", Price = 35.00m, CategoryId = 2, CategoryName = "Mains" },
+        new AppProduct { Id = 11, Name = "T-BoneandChips", Price = 32.00m, CategoryId = 2, CategoryName = "Mains" },
+        new AppProduct { Id = 12, Name = "PorkBelly", Price = 29.99m, CategoryId = 2, CategoryName = "Mains" },
+        new AppProduct { Id = 13, Name = "ChickenBurger", Price = 23.00m, CategoryId = 2, CategoryName = "Mains" },
+        new AppProduct { Id = 14, Name = "BeefBurger", Price = 25.00m, CategoryId = 2, CategoryName = "Mains" },
+        new AppProduct { Id = 15, Name = "Lisagne", Price = 22.50m, CategoryId = 2, CategoryName = "Mains" },
+        new AppProduct { Id = 16, Name = "LambChops", Price = 27.50m, CategoryId = 2, CategoryName = "Mains" },
+        new AppProduct { Id = 17, Name = "FlatWhite", Price = 3.50m, CategoryId = 5, CategoryName = "Drinks" },
+        new AppProduct { Id = 18, Name = "Cuppochine", Price = 4.50m, CategoryId = 5, CategoryName = "Drinks" },
+        new AppProduct { Id = 19, Name = "Americano", Price = 4.50m, CategoryId = 5, CategoryName = "Drinks" },
+        new AppProduct { Id = 20, Name = "ChiaLatte", Price = 5.00m, CategoryId = 5, CategoryName = "Drinks" },
+        new AppProduct { Id = 21, Name = "Coke", Price = 3.50m, CategoryId = 5, CategoryName = "Drinks" },
+        new AppProduct { Id = 22, Name = "Sprite", Price = 3.50m, CategoryId = 5, CategoryName = "Drinks" },
+        new AppProduct { Id = 23, Name = "OrangeJuice", Price = 3.00m, CategoryId = 5, CategoryName = "Drinks" },
+        new AppProduct { Id = 24, Name = "FishandChips", Price = 22.00m, CategoryId = 3, CategoryName = "Specials" },
+        new AppProduct { Id = 25, Name = "BuffaloWings", Price = 18.00m, CategoryId = 3, CategoryName = "Specials" },
     ];
 
     private readonly List<AppCategory> _categories =
     [
-        new AppCategory { Id = 1, Name = "Sales" },
-        new AppCategory { Id = 2, Name = "Engineering" },
-        new AppCategory { Id = 3, Name = "InformationTechnology" },
-        new AppCategory { Id = 4, Name = "Finance" }
+        new AppCategory { Id = 1, Name = "Breakfast" },
+        new AppCategory { Id = 2, Name = "Mains" },
+        new AppCategory { Id = 3, Name = "Specials" },
+        new AppCategory { Id = 4, Name = "Sides" },
+        new AppCategory { Id = 5, Name = "Drinks" }
     ];
 
     private readonly List<AppRole> _roles =
@@ -327,18 +344,19 @@ public class InMemoryUserStore : IUserStore
     {
         lock (_lock)
         {
-            return _products
-                .OrderBy(product => product.Id)
-                .Select(product => new AppProduct
-                {
-                    Id = product.Id,
-                    Name = product.Name,
-                    Price = product.Price,
-                    CategoryId = product.CategoryId,
-                    CategoryName = product.CategoryName
-                })
-                .ToList()
-                .AsReadOnly();
+           return _products
+            //.Where(product => product.CategoryId != 4)
+            .OrderBy(product => product.Id)
+            .Select(product => new AppProduct 
+            { 
+                Id = product.Id, 
+                Name = product.Name, 
+                Price = product.Price, 
+                CategoryId = product.CategoryId, 
+                CategoryName = product.CategoryName 
+            })
+            .ToList()
+            .AsReadOnly();
         }
     }
 

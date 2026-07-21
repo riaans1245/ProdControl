@@ -24,13 +24,13 @@
                 Our contact info is - 123456
             </strong>
         </p>
-        @if (User.Identity?.IsAuthenticated == true)
+        @* @if (User.Identity?.IsAuthenticated == true)
         {
             <a asp-controller="Home" asp-action="Ordering" class="btn btn-dark mt-4">Start ordering</a>
         }
         else
         {
             <p class="mt-4 mb-0 text-muted">Log in to place an order and build a cart.</p>
-        }
+        } *@
     </div>
 </div>

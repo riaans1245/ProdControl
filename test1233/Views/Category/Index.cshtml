@@ -1,4 +1,4 @@
-@model IReadOnlyCollection<test1233.Models.AppCategory>
+@model test1233.Models.PagedListViewModel<test1233.Models.AppCategory>
 
 @{
     ViewData["Title"] = "Categories";
@@ -25,7 +25,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                    @foreach (var category in Model)
+                    @foreach (var category in Model.Items)
                     {
                         <tr>
                             <td>@category.Id</td>
@@ -38,6 +38,26 @@
                     }
                     </tbody>
                 </table>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <span class="text-muted small">Page @Model.PageNumber of @Model.TotalPages</span>
+                <nav aria-label="Category pagination">
+                    <ul class="pagination mb-0">
+                        <li class="page-item @(Model.HasPreviousPage ? string.Empty : "disabled")">
+                            <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageNumber - 1)">Previous</a>
+                        </li>
+                        @for (var pageNumber = 1; pageNumber <= Model.TotalPages; pageNumber++)
+                        {
+                            <li class="page-item @(pageNumber == Model.PageNumber ? "active" : string.Empty)">
+                                <a class="page-link" asp-action="Index" asp-route-page="@pageNumber">@pageNumber</a>
+                            </li>
+                        }
+                        <li class="page-item @(Model.HasNextPage ? string.Empty : "disabled")">
+                            <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageNumber + 1)">Next</a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </div>
     </div>

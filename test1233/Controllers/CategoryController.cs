@@ -9,10 +9,26 @@ namespace test1233.Controllers;
 public class CategoryController(IUserStore userStore) : Controller
 {
     private readonly IUserStore _userStore = userStore;
+    private const int PageSize = 5;
 
-    public IActionResult Index()
+    public IActionResult Index(int page = 1)
     {
-        return View(_userStore.GetAllCategories());
+        var categories = _userStore.GetAllCategories();
+        var totalItems = categories.Count;
+        var pageNumber = Math.Max(1, page);
+        var items = categories
+            .Skip((pageNumber - 1) * PageSize)
+            .Take(PageSize)
+            .ToList()
+            .AsReadOnly();
+
+        return View(new PagedListViewModel<AppCategory>
+        {
+            Items = items,
+            PageNumber = pageNumber,
+            PageSize = PageSize,
+            TotalItems = totalItems
+        });
     }
 
     public IActionResult Create()

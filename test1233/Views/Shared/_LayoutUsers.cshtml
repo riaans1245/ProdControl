@@ -11,24 +11,12 @@
     <link rel="stylesheet" href="~/test1233.styles.css" asp-append-version="true" />
     <script>
         (() => {
-            if (sessionStorage.getItem("left-nav-hidden") === "true") {
-                document.documentElement.classList.add("left-nav-hidden-state");
+            if (sessionStorage.getItem("left-nav-collapsed") === "true" || sessionStorage.getItem("left-nav-hidden") === "true") {
+                document.documentElement.classList.add("left-nav-collapsed-state");
             }
         })();
     </script>
     <style>
-        #left-navigation {
-            display: block;
-        }
-
-        #left-navigation.left-nav-hidden {
-            display: none;
-        }
-
-        html.left-nav-hidden-state #left-navigation {
-            display: none;
-        }
-
         .left-nav-toggle-btn {
             border: 1px solid #737575;
             background-color: transparent;
@@ -41,7 +29,7 @@
         }
     </style>
 </head>
-<body class="d-flex flex-column h-100 m-0">
+<body class="user-shell d-flex flex-column min-vh-100 m-0">
     @{
         var isUser = User.IsInRole("Users");
         var currentUsername = User.Identity?.Name;
@@ -51,7 +39,7 @@
             ?.Id;
     }
     <!-- Top Navigation Bar --> 
-    <nav class="navbar navbar-expand-md navbar-dark border-bottom shadow-sm py-2" style="background-color: #4d8d96"> 
+    <nav class="navbar navbar-expand-md navbar-dark border-bottom shadow-sm py-3 user-topbar"> 
         <div class="container-fluid"> 
            
                 <button id="left-nav-toggle"
@@ -61,7 +49,7 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
             
-            <a class="navbar-brand text-dark fw-bold" asp-controller="Home" asp-action="Index">Easy Eats</a> 
+            <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">Easy Eats</a> 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"> 
                 <span class="navbar-toggler-icon">
 
@@ -69,7 +57,7 @@
             </button> 
         <div class="navbar-collapse collapse d-md-inline-flex justify-content-between"> 
             <!-- Topbar Left Menu Links --> 
-            <ul class="navbar-nav flex-grow-1"> 
+            <ul class="navbar-nav flex-grow-1 align-items-md-center"> 
                 <li class="nav-item"> 
                     <a class="nav-link text-white px-3" asp-controller="Home" asp-action="Index">Home</a> 
                 </li> 
@@ -85,19 +73,19 @@
                     </a>
                     <ul class="dropdown-menu reports-dropdown-menu" aria-labelledby="reportsDropdown" style="width: 5px;">
                         <li>
-                            <a class="dropdown-item reports-dropdown-item" style="background-color: lightgreen;" asp-controller="Reports" asp-action="Roles" target="_blank" rel="noopener noreferrer">
+                            <a class="dropdown-item reports-dropdown-item" style="background-color: #fff4db; color: #214049;" asp-controller="Reports" asp-action="Roles" target="_blank" rel="noopener noreferrer">
                                 <span class="reports-dropdown-title">My Purchase Report</span>
                                 <span class="reports-dropdown-description">Purchases in a timeframe ...</span>
                             </a>
                         </li>
                     <li>
-                            <a class="dropdown-item reports-dropdown-item" style="background-color: rgb(120, 144, 151);" asp-controller="Reports" asp-action="Roles" target="_blank" rel="noopener noreferrer">
+                            <a class="dropdown-item reports-dropdown-item" style="background-color: #fff4db; color: #214049;" asp-controller="Reports" asp-action="Roles" target="_blank" rel="noopener noreferrer">
                                 <span class="reports-dropdown-title">My Token Report</span>
                                 <span class="reports-dropdown-description">When I userd my Tokens ...</span>
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item reports-dropdown-item" style="background-color: rgb(175, 142, 142);" asp-controller="Reports" asp-action="Roles" target="_blank" rel="noopener noreferrer">
+                            <a class="dropdown-item reports-dropdown-item" style="background-color: #fff4db; color: #214049;" asp-controller="Reports" asp-action="Roles" target="_blank" rel="noopener noreferrer">
                                 <span class="reports-dropdown-title">My Login Report</span>
                                 <span class="reports-dropdown-description">Time and date when I Logged in ...</span>
                             </a>
@@ -125,12 +113,12 @@
                     </li>
                     <li class="nav-item"> 
                         <span></span>
-                        <label name=lblUserInfo class="text-white fw-semibold me-2">Welcome, @User.Identity.Name!</label>
+                        <label name=lblUserInfo class="fw-semibold me-2">Welcome, @User.Identity.Name!</label>
                     </li> 
                     <li class="nav-item"> 
                         <form class="m-0" asp-controller="Account" asp-action="Logout" method="post"> 
                             @Html.AntiForgeryToken() 
-                            <button type="submit" class="btn px-3" style="background-color: lightblue">Logout</button> 
+                            <button type="submit" class="btn px-3 fw-semibold" style="background-color: #fff4db; color: #214049;">Logout</button> 
                         </form> 
                     </li> 
                     } 
@@ -148,20 +136,28 @@
             </div> 
         </nav> 
     <!-- Main Workspace Container --> 
-    <div class="d-flex flex-grow-1 align-items-stretch"> 
+    <div class="d-flex flex-grow-1 align-items-stretch app-shell"> 
         <!-- Side Navigation Bar (Stretches from navbar to footer via min-vh-100) --> 
         @if (User.Identity?.Name == null || isUser)
         {
-        <div class="flex-shrink-0" id="left-navigation">
-            <nav class="p-4 shadow-sm min-vh-100 h-100" style="background-color: #ffffff; width: 240px;"> 
-                <div class="border rounded-3 p-3 mb-4" style="background-color: #eef7f8;">
-                    <p class="mb-1 fw-semibold text-dark">User navigation</p>
-                    <!--User Imager-->
+        <div class="flex-shrink-0 app-sidebar" id="left-navigation">
+            <nav class="p-4 shadow-sm h-100 user-sidebar-nav"> 
+                <div class="border rounded-4 p-3 mb-4 sidebar-heading-card user-sidebar-card">
+                    <p class="mb-2 user-sidebar-kicker">My Space</p>
+                    <p class="mb-1 fw-semibold user-sidebar-title">Welcome</p>
+                    <p class="mb-0 user-sidebar-copy">Jump between ordering, profile details, tokens, and updates.</p>
+                </div>
+                <div class="user-floating-stack">
+                    <div class="user-floating-box">
+                        <span class="user-floating-label">Current User</span>
+                        <span class="user-floating-value">@(currentUsername ?? "Guest")</span>
+                    </div>
                 </div>
                 <ul class="nav nav-pills flex-column gap-2"> 
                     <div class="left-nav-gallery-panel">
                         <a class="left-nav-gallery-card left-nav-gallery-card-menu"
                             asp-controller="Home"
+                            title="Menu"
                             asp-action="Ordering">
                                 <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                                 <span class="left-nav-gallery-label">Our Menu</span>
@@ -170,19 +166,24 @@
                         <a class="left-nav-gallery-card left-nav-gallery-card-users"
                             asp-controller="User"
                             asp-route-id="@currentUserId"
-                            asp-action="Edit">
+                            asp-action="Edit"
+                            title="My Profile"
+                            aria-label="My Profile">
                                 <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                                 <span class="left-nav-gallery-label">My Profile</span>
                         </a>
                         <a class="left-nav-gallery-card left-nav-gallery-card-tokens"
                             asp-controller="User"
                             asp-route-id="@currentUserId"
-                            asp-action="Edit">
+                            asp-action="Edit"
+                            title="My Tokens"
+                            aria-label="My Tokens">
                                 <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                                 <span class="left-nav-gallery-label">My Tokens</span>
                         </a>
                         <a class="left-nav-gallery-card left-nav-gallery-card-notifications"
                             asp-controller="Home"
+                            title="My Notifications"
                             asp-action="Specials">
                                 <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                                 <span class="left-nav-gallery-label">My Notifications</span>
@@ -194,12 +195,25 @@
         }
 
         <!-- Dynamic Main View Content Area --> 
-        <main role="main" class="flex-grow-1 p-4 bg-white overflow-auto"> 
-            @RenderBody() 
+        <main role="main" class="flex-grow-1 p-0 overflow-auto"> 
+            <div class="user-content-surface">
+                <section class="user-content-hero">
+                    <div>
+                        <p class="user-content-kicker">Customer Area</p>
+                        <h1 class="h4 user-content-title">Easy Eats user dashboard</h1>
+                        <p class="user-content-copy">Track your activity, open the menu, and move around your account with quick links.</p>
+                    </div>
+                   @*  <div class="user-floating-box">
+                        <span class="user-floating-label">Signed In</span>
+                        <span class="user-floating-value">@(User.Identity?.IsAuthenticated == true ? User.Identity.Name : "Not logged in")</span>
+                    </div> *@
+                </section>
+                @RenderBody()
+            </div>
         </main> 
     </div> 
     <!-- Footer Area --> 
-    <footer class="footer border-top mt-auto shadow-sm" style="background-color: #4d8d96; height: 55px;"> 
+    <footer class="footer border-top mt-auto shadow-sm user-footer" style="height: 55px;"> 
         <div class="container-fluid d-flex justify-content-between align-items-center h-100 px-4"> 
             <a class="nav-link text-white px-3" asp-controller="Home" asp-action="ContactUs">Contact Us</a> 
             <ul class="nav"> 
@@ -221,21 +235,22 @@
             }
 
             const syncButtonState = () => {
-                const isOpen = !leftNavigation.classList.contains("left-nav-hidden");
-                leftNavToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
-                leftNavToggle.setAttribute("title", isOpen ? "Hide Menu" : "Show Menu");
+                const isExpanded = !leftNavigation.classList.contains("app-sidebar-collapsed");
+                leftNavToggle.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+                leftNavToggle.setAttribute("title", isExpanded ? "Hide Menu" : "Show Menu");
             };
 
             leftNavToggle.addEventListener("click", () => {
-                leftNavigation.classList.toggle("left-nav-hidden");
-                const isHidden = leftNavigation.classList.contains("left-nav-hidden");
-                sessionStorage.setItem("left-nav-hidden", isHidden ? "true" : "false");
-                document.documentElement.classList.toggle("left-nav-hidden-state", isHidden);
+                leftNavigation.classList.toggle("app-sidebar-collapsed");
+                const isCollapsed = leftNavigation.classList.contains("app-sidebar-collapsed");
+                sessionStorage.setItem("left-nav-collapsed", isCollapsed ? "true" : "false");
+                sessionStorage.removeItem("left-nav-hidden");
+                document.documentElement.classList.toggle("left-nav-collapsed-state", isCollapsed);
                 syncButtonState();
             });
 
-            if (sessionStorage.getItem("left-nav-hidden") === "true") {
-                leftNavigation.classList.add("left-nav-hidden");
+            if (sessionStorage.getItem("left-nav-collapsed") === "true" || sessionStorage.getItem("left-nav-hidden") === "true") {
+                leftNavigation.classList.add("app-sidebar-collapsed");
             }
 
             syncButtonState();

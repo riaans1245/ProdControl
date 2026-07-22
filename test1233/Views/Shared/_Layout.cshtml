@@ -7,64 +7,21 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/test1233.styles.css" asp-append-version="true" />
-    <script>
-        (() => {
-            if (sessionStorage.getItem("left-nav-hidden") === "true") {
-                document.documentElement.classList.add("left-nav-hidden-state");
-            }
-        })();
-    </script>
     <style>
-        #left-navigation {
-            display: block;
-        }
-
-        #left-navigation.left-nav-hidden {
-            display: none;
-        }
-
-        html.left-nav-hidden-state #left-navigation {
-            display: none;
-        }
-
-        .left-nav-toggle-btn {
-            border: 1px solid #737575;
-            background-color: transparent;
-        }
-
-        .left-nav-toggle-btn:focus,
-        .left-nav-toggle-btn:active {
-            box-shadow: none;
-            outline: none;
-        }
-
         .app-shell {
             min-height: 0;
         }
-
-        .app-sidebar nav {
-            height: 100%;
-        }
     </style>
 </head>
-<body class="d-flex flex-column min-vh-100 m-0">
+<body class="admin-shell d-flex flex-column min-vh-100 m-0">
     @{
         var isAdmin = User.IsInRole("Admin");
         var isUser = User.IsInRole("Users");
     }
     <!-- Top Navigation Bar --> 
-    <nav class="navbar navbar-expand-md navbar-dark border-bottom shadow-sm py-2" style="background-color: #4d8d96"> 
+    <nav class="navbar navbar-expand-md navbar-dark border-bottom shadow-sm py-3 admin-topbar"> 
         <div class="container-fluid"> 
-            @if (isAdmin)
-            {
-                <button id="left-nav-toggle"
-                        type="button"
-                        class="navbar-toggler me-3 d-inline-flex left-nav-toggle-btn"
-                        aria-label="Toggle left navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-            }
-            <a class="navbar-brand text-dark fw-bold" asp-controller="Home" asp-action="Index">Easy Eats</a> 
+            <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">Easy Eats Admin</a> 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"> 
                 <span class="navbar-toggler-icon">
 
@@ -72,11 +29,11 @@
             </button> 
         <div class="navbar-collapse collapse d-md-inline-flex justify-content-between"> 
             <!-- Topbar Left Menu Links --> 
-            <ul class="navbar-nav flex-grow-1"> 
+            <ul class="navbar-nav flex-grow-1 align-items-md-center"> 
                 <li class="nav-item"> 
-                    <a class="nav-link text-white px-3" asp-controller="Home" asp-action="Index">Home</a> 
+                        <a class="nav-link text-white px-3" asp-controller="Home" asp-action="Index">Home</a> 
                     </li> <li class="nav-item"> 
-                    <a class="nav-link text-white px-3" asp-controller="Home" asp-action="Private">Registered Users</a> 
+                        <a class="nav-link text-white px-3" asp-controller="Home" asp-action="Private">Registered Users</a> 
                     </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle text-white px-3"
@@ -127,13 +84,12 @@
                 @if (User.Identity?.IsAuthenticated == true) 
                 { 
                     <li class="nav-item"> 
-                        <span></span>
-                        <label name=lblUserInfo class="text-white fw-semibold me-2">Welcome, @User.Identity.Name!</label>
+                        <label name=lblUserInfo class="fw-semibold me-2">Welcome, @User.Identity.Name!</label>
                     </li> 
                     <li class="nav-item"> 
                         <form class="m-0" asp-controller="Account" asp-action="Logout" method="post"> 
                             @Html.AntiForgeryToken() 
-                            <button type="submit" class="btn px-3" style="background-color: lightblue">Logout</button> 
+                            <button type="submit" class="btn px-3 fw-semibold" style="background-color: #d0eef7; color: #123246;">Logout</button> 
                         </form> 
                     </li> 
                     } 
@@ -152,73 +108,60 @@
         </nav> 
     <!-- Main Workspace Container --> 
     <div class="d-flex flex-grow-1 align-items-stretch app-shell"> 
-        <!-- Side Navigation Bar (Stretches from navbar to footer via min-vh-100) --> 
-
-        @if (isAdmin) 
-        {
-        <div class="flex-shrink-0 app-sidebar" id="left-navigation">
-            <nav class="p-4 shadow-sm h-100" style="background-color: #ffffff; width: 240px;"> 
-                <div class="border rounded-3 p-3 mb-4" style="background-color: #eef7f8;">
-                    <p class="mb-1 fw-semibold text-dark">Admin navigation</p>
-                    <!--Admin Image-->
-                </div>
-                <ul class="nav nav-pills flex-column gap-2"> 
-                    <div class="left-nav-gallery-panel">
-                        <a class="left-nav-gallery-card left-nav-gallery-card-users"
-                            asp-controller="User"
-                            asp-action="Index">
-                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                                <span class="left-nav-gallery-label">Users</span>
-                        </a>
-                        <a class="left-nav-gallery-card left-nav-gallery-card-roles"
-                            asp-controller="Role"
-                            asp-action="Index">
-                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                                <span class="left-nav-gallery-label">Roles</span>
-                        </a>
-                        <a class="left-nav-gallery-card left-nav-gallery-card-products"
-                            asp-controller="Product"
-                            asp-action="Index">
-                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                                <span class="left-nav-gallery-label">Products</span>
-                        </a>
-                        <a class="left-nav-gallery-card left-nav-gallery-card-categories"
-                            asp-controller="Category"
-                            asp-action="Index">
-                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                                <span class="left-nav-gallery-label">Categories</span>
-                        </a>
-                    <a class="left-nav-gallery-card left-nav-gallery-card-tokens"
-                            asp-controller="Home"
-                            asp-route-id="Ordering"
-                            asp-action="Edit">
-                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                                <span class="left-nav-gallery-label">Tokens</span>
-                        </a>
-                        <a class="left-nav-gallery-card left-nav-gallery-card-menu"
-                            asp-controller="Home"
-                            asp-action="Ordering">
-                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                                <span class="left-nav-gallery-label">Our Menu-Image</span>
-                        </a>       
-                        <a class="left-nav-gallery-card left-nav-gallery-card-notifications"
-                            asp-controller="Home"
-                            asp-action="Specials">
-                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                                <span class="left-nav-gallery-label">Notifications</span>
-                        </a>
-                    </div>
-                </ul> 
-            </nav>
-        </div> 
-        }
         <!-- Dynamic Main View Content Area --> 
-        <main role="main" class="flex-grow-1 p-4 bg-white overflow-auto"> 
-            @RenderBody() 
+        <main role="main" class="flex-grow-1 p-0 overflow-auto admin-content"> 
+            <div class="admin-content-surface">
+                @if (isAdmin)
+                {
+                    <section class="admin-blocks-panel mb-4">
+                        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 mb-4">
+                            <div>
+                                <p class="admin-sidebar-kicker mb-2">Control Panel</p>
+                                <h1 class="h3 mb-1 text-dark">Admin Workspace</h1>
+                                <p class="text-muted mb-0">Use these blocks to jump into management pages, reports, and ordering tools.</p>
+                            </div>
+                            <div class="text-muted small">Signed in as <strong>@User.Identity?.Name</strong></div>
+                        </div>
+                        <div class="admin-block-grid">
+                            <a class="admin-block-card left-nav-gallery-card-users" asp-controller="User" asp-action="Index">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="admin-block-title">Users</span>
+                                <span class="admin-block-copy">Manage registered accounts and profiles.</span>
+                            </a>
+                            <a class="admin-block-card left-nav-gallery-card-roles" asp-controller="Role" asp-action="Index">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="admin-block-title">Roles</span>
+                                <span class="admin-block-copy">Maintain role setup and system info.</span>
+                            </a>
+                            <a class="admin-block-card left-nav-gallery-card-products" asp-controller="Product" asp-action="Index">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="admin-block-title">Products</span>
+                                <span class="admin-block-copy">Update menu items, pricing, and product records.</span>
+                            </a>
+                            <a class="admin-block-card left-nav-gallery-card-categories" asp-controller="Category" asp-action="Index">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="admin-block-title">Categories</span>
+                                <span class="admin-block-copy">Organize menu groupings across the system.</span>
+                            </a>
+                            <a class="admin-block-card left-nav-gallery-card-menu" asp-controller="Home" asp-action="Ordering">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="admin-block-title">Our Menu</span>
+                                <span class="admin-block-copy">Open ordering experience, view items.</span>
+                            </a>
+                            <a class="admin-block-card left-nav-gallery-card-notifications" asp-controller="Home" asp-action="Specials">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="admin-block-title">Notifications</span>
+                                <span class="admin-block-copy">Open notification and specials area.</span>
+                            </a>
+                        </div>
+                    </section>
+                }
+                @RenderBody()
+            </div>
         </main> 
     </div> 
     <!-- Footer Area --> 
-    <footer class="footer border-top mt-auto shadow-sm" style="background-color: #4d8d96; height: 55px;"> 
+    <footer class="footer border-top mt-auto shadow-sm admin-footer" style="height: 55px;"> 
         <div class="container-fluid d-flex justify-content-between align-items-center h-100 px-4"> 
             <a class="nav-link text-white px-3" asp-controller="Home" asp-action="ContactUs">Contact Us</a> 
             <ul class="nav"> 
@@ -230,37 +173,6 @@
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        (() => {
-            const leftNavigation = document.getElementById("left-navigation");
-            const leftNavToggle = document.getElementById("left-nav-toggle");
-
-            if (!leftNavigation || !leftNavToggle) {
-                return;
-            }
-
-            const syncButtonState = () => {
-                const isOpen = !leftNavigation.classList.contains("left-nav-hidden");
-                leftNavToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
-                leftNavToggle.setAttribute("title", isOpen ? "Hide Menu" : "Show Menu");
-            };
-
-            leftNavToggle.addEventListener("click", () => {
-                leftNavigation.classList.toggle("left-nav-hidden");
-                const isHidden = leftNavigation.classList.contains("left-nav-hidden");
-                sessionStorage.setItem("left-nav-hidden", isHidden ? "true" : "false");
-                document.documentElement.classList.toggle("left-nav-hidden-state", isHidden);
-                syncButtonState();
-            });
-
-            if (sessionStorage.getItem("left-nav-hidden") === "true") {
-                leftNavigation.classList.add("left-nav-hidden");
-            }
-
-            syncButtonState();
-        })();
-
-    </script>
     <script>
         (() => {
             const cartStorageKey = "easy-eats-cart";

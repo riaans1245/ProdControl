@@ -121,6 +121,22 @@ body {
   background-image: url("/images/our-menu-icon.png");
 }
 
+.left-nav-gallery-card-tokens .left-nav-gallery-icon {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  border-radius: 0.45rem;
+  background-image: url("/images/tokens-icon.png");
+}
+
+.left-nav-gallery-card-notifications .left-nav-gallery-icon {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  border-radius: 0.45rem;
+  background-image: url("/images/notifications-icon.png");
+}
+
 .nav-cart-image {
   display: inline-block;
   width: 1.4rem;

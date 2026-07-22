@@ -166,16 +166,7 @@
                                 <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                                 <span class="left-nav-gallery-label">Our Menu</span>
                         </a>
-                        <a class="left-nav-gallery-card left-nav-gallery-card-menu"
-                            asp-controller="Home"
-                            asp-action="Specials">
-                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                                <span class="left-nav-gallery-label">Our Specials</span>
-                        </a>
-                    </div>
-                
-                <hr />
-
+                    <hr />
                         <a class="left-nav-gallery-card left-nav-gallery-card-users"
                             asp-controller="User"
                             asp-route-id="@currentUserId"
@@ -183,9 +174,21 @@
                                 <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                                 <span class="left-nav-gallery-label">My Profile</span>
                         </a>
-
+                        <a class="left-nav-gallery-card left-nav-gallery-card-tokens"
+                            asp-controller="User"
+                            asp-route-id="@currentUserId"
+                            asp-action="Edit">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="left-nav-gallery-label">My Tokens</span>
+                        </a>
+                        <a class="left-nav-gallery-card left-nav-gallery-card-notifications"
+                            asp-controller="Home"
+                            asp-action="Specials">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="left-nav-gallery-label">My Notifications</span>
+                        </a>
+                    </div>
                 </ul> 
-            
             </nav>
         </div> 
         }

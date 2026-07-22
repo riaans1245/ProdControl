@@ -37,7 +37,7 @@ public interface IUserStore
     bool CategoryNameExists(string categoryName, int? excludeCategoryId = null);
 
     IReadOnlyCollection<AppCategory> GetAllCategories();
-    
+
     IReadOnlyCollection<ContactUs> GetAllContactUs();
 
     AppCategory? GetCategoryById(int id);

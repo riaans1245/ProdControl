@@ -1,3 +1,5 @@
+@inject test1233.Services.IUserStore UserStore
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -41,8 +43,12 @@
 </head>
 <body class="d-flex flex-column h-100 m-0">
     @{
-        var isAdmin = User.IsInRole("Admin");
         var isUser = User.IsInRole("Users");
+        var currentUsername = User.Identity?.Name;
+        var currentUserId = UserStore
+            .GetAllUsers()
+            .FirstOrDefault(user => string.Equals(user.Username, currentUsername, StringComparison.OrdinalIgnoreCase))
+            ?.Id;
     }
     <!-- Top Navigation Bar --> 
     <nav class="navbar navbar-expand-md navbar-dark border-bottom shadow-sm py-2" style="background-color: #4d8d96"> 
@@ -66,9 +72,7 @@
             <ul class="navbar-nav flex-grow-1"> 
                 <li class="nav-item"> 
                     <a class="nav-link text-white px-3" asp-controller="Home" asp-action="Index">Home</a> 
-                    </li> <li class="nav-item"> 
-                    <a class="nav-link text-white px-3" asp-controller="Home" asp-action="Private">Registered Users</a> 
-                    </li>
+                </li> 
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle text-white px-3"
                        href="#"
@@ -79,11 +83,23 @@
                        aria-expanded="false">
                         Reports
                     </a>
-                    <ul class="dropdown-menu reports-dropdown-menu" aria-labelledby="reportsDropdown">
+                    <ul class="dropdown-menu reports-dropdown-menu" aria-labelledby="reportsDropdown" style="width: 5px;">
                         <li>
                             <a class="dropdown-item reports-dropdown-item" style="background-color: lightgreen;" asp-controller="Reports" asp-action="Roles" target="_blank" rel="noopener noreferrer">
                                 <span class="reports-dropdown-title">My Purchase Report</span>
-                                <span class="reports-dropdown-description">Review all of my ...</span>
+                                <span class="reports-dropdown-description">Purchases in a timeframe ...</span>
+                            </a>
+                        </li>
+                    <li>
+                            <a class="dropdown-item reports-dropdown-item" style="background-color: rgb(120, 144, 151);" asp-controller="Reports" asp-action="Roles" target="_blank" rel="noopener noreferrer">
+                                <span class="reports-dropdown-title">My Token Report</span>
+                                <span class="reports-dropdown-description">When I userd my Tokens ...</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item reports-dropdown-item" style="background-color: rgb(175, 142, 142);" asp-controller="Reports" asp-action="Roles" target="_blank" rel="noopener noreferrer">
+                                <span class="reports-dropdown-title">My Login Report</span>
+                                <span class="reports-dropdown-description">Time and date when I Logged in ...</span>
                             </a>
                         </li>
                     </ul>
@@ -157,7 +173,19 @@
                                 <span class="left-nav-gallery-label">Our Specials</span>
                         </a>
                     </div>
+                
+                <hr />
+
+                        <a class="left-nav-gallery-card left-nav-gallery-card-users"
+                            asp-controller="User"
+                            asp-route-id="@currentUserId"
+                            asp-action="Edit">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="left-nav-gallery-label">My Profile</span>
+                        </a>
+
                 </ul> 
+            
             </nav>
         </div> 
         }

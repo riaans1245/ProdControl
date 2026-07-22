@@ -53,7 +53,7 @@
         var isUser = User.IsInRole("Users");
     }
     <!-- Top Navigation Bar --> 
-    <nav class="navbar navbar-expand-md navbar-dark border-bottom shadow-sm py-2" style="background-color: #4d8d96"> 
+    <nav class="navbar navbar-expand-md navbar-dark border-bottom shadow-sm py-2" style="background-color: #6a6d6d"> 
         <div class="container-fluid"> 
             @if (isAdmin)
             {
@@ -121,25 +121,11 @@
                         </li>
                     </ul>
                 </li>
-            
-                @if (User.Identity?.IsAuthenticated == true)
-                {
-                <a asp-controller="Home" asp-action="Ordering" class="nav-link text-white px-3">Start ordering</a>
-                }
-                
             </ul> 
             <!-- Topbar Right Authentication Controls --> 
             <ul class="navbar-nav align-items-center gap-2"> 
                 @if (User.Identity?.IsAuthenticated == true) 
                 { 
-                    <li class="nav-item">
-                        <a class="nav-link text-white px-3 nav-cart-link" asp-controller="Home" asp-action="Ordering" aria-label="View cart">
-                            <span class="nav-cart-icon-wrapper">
-                                <span class="nav-cart-image" aria-hidden="true"></span>
-                                <span id="nav-cart-count" class="nav-cart-count-badge">0</span>
-                            </span>
-                        </a>
-                    </li>
                     <li class="nav-item"> 
                         <span></span>
                         <label name=lblUserInfo class="text-white fw-semibold me-2">Welcome, @User.Identity.Name!</label>

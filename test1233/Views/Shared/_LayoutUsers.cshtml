@@ -61,7 +61,7 @@
                 <li class="nav-item"> 
                     <a class="nav-link text-white px-3" asp-controller="Home" asp-action="Index">Home</a> 
                 </li> 
-                <li class="nav-item dropdown">
+              @*   <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle text-white px-3"
                        href="#"
                        id="reportsDropdown"
@@ -91,7 +91,7 @@
                             </a>
                         </li>
                     </ul>
-                </li>
+                </li> *@
             
                 @if (User.Identity?.IsAuthenticated == true)
                 {
@@ -146,12 +146,12 @@
                     <p class="mb-2 user-sidebar-kicker">My Space</p>
                     <p class="mb-1 fw-semibold user-sidebar-title">Welcome</p>
                     <p class="mb-0 user-sidebar-copy">Jump between ordering, profile details, tokens, and updates.</p>
-                    <p class="user-kitchen-note mb-0"><strong>Kitchen note:</strong> good food takes time, but quick links help.</p>
                 </div>
                 <div class="user-floating-stack">
-                    <div class="user-floating-box">
-                        <span class="user-floating-label">Current User</span>
-                        <span class="user-floating-value">@(currentUsername ?? "Guest")</span>
+                    <div class="border rounded-4 p-3 mb-4 sidebar-heading-card user-sidebar-card">
+                        <span class="user-floating-label">Available Tokens</span>
+                        <!--<span class="user-floating-value">@(currentUsername ?? "Guest")</span>-->
+                        <span class="user-floating-value">123456789</span>
                     </div>
                 </div>
                 <ul class="nav nav-pills flex-column gap-2"> 
@@ -174,13 +174,13 @@
                                 <span class="left-nav-gallery-label">My Profile</span>
                         </a>
                         <a class="left-nav-gallery-card left-nav-gallery-card-tokens"
-                            asp-controller="User"
-                            asp-route-id="@currentUserId"
-                            asp-action="Edit"
-                            title="My Tokens"
-                            aria-label="My Tokens">
-                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                                <span class="left-nav-gallery-label">My Tokens</span>
+                                asp-controller="User"
+                                asp-route-id="@currentUserId"
+                                asp-action="Edit"
+                                title="My Tokens"
+                                aria-label="My Tokens">
+                                    <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                    <span class="left-nav-gallery-label">My Tokens</span>
                         </a>
                         <a class="left-nav-gallery-card left-nav-gallery-card-notifications"
                             asp-controller="Home"
@@ -188,6 +188,13 @@
                             asp-action="Specials">
                                 <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                                 <span class="left-nav-gallery-label">My Notifications</span>
+                        </a>
+                        <a class="left-nav-gallery-card left-nav-gallery-card-notifications"
+                            asp-controller="Home"
+                            title="My Notifications"
+                            asp-action="Specials">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="left-nav-gallery-label">My Purchases</span>
                         </a>
                     </div>
                 </ul> 
@@ -202,13 +209,9 @@
                     <div>
                         <p class="user-content-kicker">Customer Area</p>
                         <h1 class="h4 user-content-title">Easy Eats user dashboard</h1>
-                        <p class="user-content-copy">Track your activity, open the menu, and move around your account with quick links.</p>
+                        <p class="user-content-copy">Kitchen note: good food takes time, but quick links help.</p>
                         <p class="user-kitchen-note mb-0"><strong>Fresh from the kitchen:</strong> your menu, profile, and updates are all close at hand.</p>
                     </div>
-                   @*  <div class="user-floating-box">
-                        <span class="user-floating-label">Signed In</span>
-                        <span class="user-floating-value">@(User.Identity?.IsAuthenticated == true ? User.Identity.Name : "Not logged in")</span>
-                    </div> *@
                 </section>
                 @RenderBody()
             </div>

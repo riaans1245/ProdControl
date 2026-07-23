@@ -18,7 +18,7 @@
     </script>
     <style>
         .left-nav-toggle-btn {
-            border: 1px solid #737575;
+            border: 1px solid rgba(214, 226, 239, 0.34);
             background-color: transparent;
         }
 
@@ -118,7 +118,7 @@
                     <li class="nav-item"> 
                         <form class="m-0" asp-controller="Account" asp-action="Logout" method="post"> 
                             @Html.AntiForgeryToken() 
-                            <button type="submit" class="btn px-3 fw-semibold" style="background-color: #fff4db; color: #214049;">Logout</button> 
+                            <button type="submit" class="btn px-3 fw-semibold" style="background-color: #edf3fb; color: #18324a;">Logout</button> 
                         </form> 
                     </li> 
                     } 
@@ -189,7 +189,7 @@
                                 <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                                 <span class="left-nav-gallery-label">My Notifications</span>
                         </a>
-                        <a class="left-nav-gallery-card left-nav-gallery-card-notifications"
+                        <a class="left-nav-gallery-card left-nav-gallery-card-purchases"
                             asp-controller="Home"
                             title="My Notifications"
                             asp-action="Specials">

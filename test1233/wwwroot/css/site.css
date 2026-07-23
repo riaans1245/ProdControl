@@ -23,23 +23,23 @@ body {
 
 .user-shell {
   background:
-    radial-gradient(circle at top right, rgba(111, 176, 167, 0.16), transparent 20%),
-    radial-gradient(circle at bottom left, rgba(240, 177, 122, 0.12), transparent 24%),
-    linear-gradient(180deg, #f7fbf7 0%, #eef7f4 18%, #fcfdfb 18%, #fcfdfb 100%);
+    radial-gradient(circle at top right, rgba(74, 124, 168, 0.14), transparent 22%),
+    radial-gradient(circle at bottom left, rgba(148, 163, 184, 0.12), transparent 26%),
+    linear-gradient(180deg, #f4f7fb 0%, #edf2f8 18%, #f8fafc 18%, #f8fafc 100%);
 }
 
 .user-topbar {
-  background: linear-gradient(135deg, #356f78 0%, #4f9598 46%, #f2a86b 100%);
+  background: linear-gradient(135deg, #13293d 0%, #1f3c57 52%, #335a7d 100%);
 }
 
 .user-topbar .navbar-brand {
-  color: #fff8f0 !important;
+  color: #f8fbff !important;
   letter-spacing: 0.03em;
 }
 
 .user-topbar .nav-link,
 .user-topbar label {
-  color: #f8fffc !important;
+  color: #edf4fb !important;
 }
 
 .user-topbar .nav-link:hover,
@@ -59,17 +59,17 @@ body {
 .user-topbar .navbar-nav.flex-grow-1 .nav-link:hover,
 .user-topbar .navbar-nav.flex-grow-1 .nav-link:focus,
 .user-topbar .navbar-nav.flex-grow-1 .show > .nav-link {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .user-topbar .left-nav-toggle-btn {
-  border-color: rgba(255, 244, 228, 0.4);
-  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(222, 234, 246, 0.34);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .user-topbar .left-nav-toggle-btn:hover,
 .user-topbar .left-nav-toggle-btn:focus {
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.14);
 }
 
 .user-shell .app-shell {
@@ -78,30 +78,30 @@ body {
 }
 
 .user-sidebar-nav {
-  background: linear-gradient(180deg, #fffefd 0%, #eef8f5 100%) !important;
-  border: 1px solid rgba(180, 212, 205, 0.72);
+  background: linear-gradient(180deg, #ffffff 0%, #f4f7fb 100%) !important;
+  border: 1px solid rgba(186, 199, 214, 0.72);
   border-radius: 1.35rem;
-  box-shadow: 0 16px 34px rgba(54, 103, 96, 0.08) !important;
+  box-shadow: 0 16px 34px rgba(20, 39, 61, 0.08) !important;
 }
 
 .user-sidebar-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.99) 0%, rgba(237, 248, 244, 0.99) 100%) !important;
-  border-color: rgba(166, 210, 199, 0.52) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.99) 0%, rgba(243, 247, 252, 0.99) 100%) !important;
+  border-color: rgba(185, 199, 216, 0.62) !important;
 }
 
 .user-sidebar-kicker {
   font-size: 0.72rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #4b8a84;
+  color: #58708a;
 }
 
 .user-sidebar-title {
-  color: #24464b;
+  color: #1f3247;
 }
 
 .user-sidebar-copy {
-  color: #60706c;
+  color: #667789;
   font-size: 0.88rem;
 }
 
@@ -113,10 +113,10 @@ body {
 
 .user-floating-box {
   padding: 0.9rem 1rem;
-  border: 1px solid rgba(181, 213, 207, 0.75);
+  border: 1px solid rgba(188, 201, 218, 0.75);
   border-radius: 1.1rem;
   background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 12px 24px rgba(56, 100, 95, 0.06);
+  box-shadow: 0 12px 24px rgba(21, 39, 60, 0.06);
   backdrop-filter: blur(8px);
 }
 
@@ -126,39 +126,39 @@ body {
   font-size: 0.74rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #5b9b93;
+  color: #68809a;
 }
 
 .user-floating-value {
   display: block;
-  color: #28484d;
+  color: #22374d;
   font-weight: 700;
 }
 
 .user-shell .left-nav-gallery-card {
   background: rgba(255, 255, 255, 0.96);
-  border-color: rgba(195, 223, 216, 0.92);
+  border-color: rgba(204, 214, 226, 0.92);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45);
 }
 
 .user-shell .left-nav-gallery-card:hover,
 .user-shell .left-nav-gallery-card:focus {
   background: #ffffff;
-  border-color: rgba(95, 162, 151, 0.7);
-  box-shadow: 0 10px 18px rgba(55, 108, 101, 0.08);
+  border-color: rgba(87, 119, 153, 0.7);
+  box-shadow: 0 10px 18px rgba(25, 45, 70, 0.08);
 }
 
 .user-shell .left-nav-gallery-label {
-  color: #2f555a;
+  color: #284058;
 }
 
 .user-content-surface {
   min-height: 100%;
   padding: 1.5rem;
-  border: 1px solid rgba(206, 228, 223, 0.92);
+  border: 1px solid rgba(211, 219, 229, 0.92);
   border-radius: 1.5rem;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.99) 0%, #f7fbfa 100%);
-  box-shadow: 0 18px 36px rgba(55, 104, 97, 0.06);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.99) 0%, #f6f8fb 100%);
+  box-shadow: 0 18px 36px rgba(24, 42, 66, 0.06);
 }
 
 .user-content-hero {
@@ -168,10 +168,10 @@ body {
   gap: 1rem;
   margin-bottom: 1.25rem;
   padding: 1.15rem 1.2rem;
-  border: 1px solid rgba(196, 224, 216, 0.82);
+  border: 1px solid rgba(202, 214, 227, 0.82);
   border-radius: 1.25rem;
-  background: linear-gradient(135deg, rgba(250, 255, 253, 0.99) 0%, rgba(240, 249, 246, 0.99) 100%);
-  box-shadow: 0 14px 28px rgba(54, 106, 99, 0.06);
+  background: linear-gradient(135deg, rgba(251, 253, 255, 0.99) 0%, rgba(241, 246, 251, 0.99) 100%);
+  box-shadow: 0 14px 28px rgba(24, 43, 67, 0.06);
   position: relative;
   overflow: hidden;
 }
@@ -181,21 +181,21 @@ body {
   font-size: 0.74rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #57928b;
+  color: #617b97;
 }
 
 .user-content-title {
   margin-bottom: 0.25rem;
-  color: #29494e;
+  color: #22374b;
 }
 
 .user-content-copy {
   margin-bottom: 0;
-  color: #61716d;
+  color: #667789;
 }
 
 .user-footer {
-  background: #427a81 !important;
+  background: #162c42 !important;
 }
 
 .user-content-hero::after {
@@ -206,19 +206,19 @@ body {
   width: 120px;
   height: 120px;
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(104, 181, 166, 0.18) 0%, rgba(104, 181, 166, 0) 72%);
+  background: radial-gradient(circle, rgba(112, 146, 182, 0.18) 0%, rgba(112, 146, 182, 0) 72%);
 }
 
 .user-kitchen-note {
   margin-top: 0.85rem;
   padding-top: 0.75rem;
-  border-top: 1px dashed rgba(142, 196, 185, 0.5);
-  color: #69827d;
+  border-top: 1px dashed rgba(159, 178, 200, 0.5);
+  color: #6b7c8e;
   font-size: 0.84rem;
 }
 
 .user-kitchen-note strong {
-  color: #3a726f;
+  color: #35516f;
 }
 
 .admin-shell {
@@ -568,6 +568,14 @@ body {
   flex: 0 0 24px;
   border-radius: 0.45rem;
   background-image: url("/images/notifications-icon.png");
+}
+
+.left-nav-gallery-card-purchases .left-nav-gallery-icon {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  border-radius: 0.45rem;
+  background-image: url("/images/purchases-icon.png");
 }
 
 .nav-cart-image {

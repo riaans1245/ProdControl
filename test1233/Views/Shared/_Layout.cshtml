@@ -60,70 +60,56 @@
         {
             <aside class="flex-shrink-0 app-sidebar">
                 <nav class="p-4 shadow-sm h-100 admin-sidebar-nav">
-                    <div class="border rounded-4 p-3 mb-4 sidebar-heading-card admin-sidebar-card">
-                        <p class="mb-2 admin-sidebar-kicker">Navigation</p>
-                        <p class="mb-1 fw-semibold admin-sidebar-title">Admin menu</p>
-                        <p class="mb-0 admin-sidebar-copy">Move through pages and reports without crowding the top bar.</p>
+                    <div class="admin-sidebar-scroll">
+                        <div class="border rounded-4 p-3 mb-4 sidebar-heading-card admin-sidebar-card">
+                            <p class="mb-2 admin-sidebar-kicker">Navigation</p>
+                            <p class="mb-1 fw-semibold admin-sidebar-title">Admin menu</p>
+                            <p class="mb-0 admin-sidebar-copy">Move through pages and reports without crowding the top bar.</p>
+                        </div>
+                        <div class="left-nav-gallery-panel">
+                            <a class="left-nav-gallery-card left-nav-gallery-card-menu" asp-controller="Home" asp-action="Index">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="left-nav-gallery-label">Home</span>
+                            </a>
+                            <a class="left-nav-gallery-card left-nav-gallery-card-users" asp-controller="Home" asp-action="Private">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="left-nav-gallery-label">Registered Users</span>
+                            </a>
+                            <a class="left-nav-gallery-card left-nav-gallery-card-users" asp-controller="User" asp-action="Index">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="left-nav-gallery-label">Users</span>
+                            </a>
+                            <a class="left-nav-gallery-card left-nav-gallery-card-roles" asp-controller="Role" asp-action="Index">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="left-nav-gallery-label">Roles</span>
+                            </a>
+                            <a class="left-nav-gallery-card left-nav-gallery-card-products" asp-controller="Product" asp-action="Index">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="left-nav-gallery-label">Products</span>
+                            </a>
+                            <a class="left-nav-gallery-card left-nav-gallery-card-categories" asp-controller="Category" asp-action="Index">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="left-nav-gallery-label">Categories</span>
+                            </a>
+                            <a class="left-nav-gallery-card left-nav-gallery-card-menu" asp-controller="Home" asp-action="Ordering">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="left-nav-gallery-label">Our Menu</span>
+                            </a>
+                            <a class="left-nav-gallery-card left-nav-gallery-card-notifications" asp-controller="Home" asp-action="Specials">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="left-nav-gallery-label">Notifications</span>
+                            </a>
+                            <a class="left-nav-gallery-card left-nav-gallery-card-tokens" asp-controller="Home" asp-action="Tokens">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="left-nav-gallery-label">Tokens</span>
+                            </a>
+                        </div>
                     </div>
-                  <div class="left-nav-gallery-panel">
-                        <a class="left-nav-gallery-card left-nav-gallery-card-menu" asp-controller="Home" asp-action="Index">
-                            <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                            <span class="left-nav-gallery-label">Home</span>
-                        </a>
-                        <a class="left-nav-gallery-card left-nav-gallery-card-users" asp-controller="Home" asp-action="Private">
-                            <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                            <span class="left-nav-gallery-label">Registered Users</span>
-                        </a>
-                        <a class="left-nav-gallery-card left-nav-gallery-card-users" asp-controller="User" asp-action="Index">
-                            <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                            <span class="left-nav-gallery-label">Users</span>
-                        </a>
-                        <a class="left-nav-gallery-card left-nav-gallery-card-roles" asp-controller="Role" asp-action="Index">
-                            <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                            <span class="left-nav-gallery-label">Roles</span>
-                        </a>
-                        <a class="left-nav-gallery-card left-nav-gallery-card-products" asp-controller="Product" asp-action="Index">
-                            <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                            <span class="left-nav-gallery-label">Products</span>
-                        </a>
-                        <a class="left-nav-gallery-card left-nav-gallery-card-categories" asp-controller="Category" asp-action="Index">
-                            <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                            <span class="left-nav-gallery-label">Categories</span>
-                        </a>
-                        <a class="left-nav-gallery-card left-nav-gallery-card-menu" asp-controller="Home" asp-action="Ordering">
-                            <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                            <span class="left-nav-gallery-label">Our Menu</span>
-                        </a>
-                        <a class="left-nav-gallery-card left-nav-gallery-card-notifications" asp-controller="Home" asp-action="Specials">
-                            <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                            <span class="left-nav-gallery-label">Notifications</span>
-                        </a>
-                        <a class="left-nav-gallery-card left-nav-gallery-card-tokens" asp-controller="Home" asp-action="Tokens">
-                            <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                            <span class="left-nav-gallery-label">Tokens</span>
-                        </a>
-                    </div> 
                     <hr class="admin-nav-divider" />
                     <div class="left-nav-gallery-panel">
-                        <a class="left-nav-gallery-card left-nav-gallery-card-roles" asp-controller="Reports" asp-action="Roles" target="_blank" rel="noopener noreferrer">
+                        <a class="left-nav-gallery-card left-nav-gallery-card-roles" asp-controller="Reports" asp-action="Index">
                             <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                            <span class="left-nav-gallery-label">Role Report</span>
-                        </a>
-                        <a class="left-nav-gallery-card left-nav-gallery-card-users" asp-controller="Reports" asp-action="Users" target="_blank" rel="noopener noreferrer">
-                            <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                            <span class="left-nav-gallery-label">User Report</span>
-                        </a>
-                        <a class="left-nav-gallery-card left-nav-gallery-card-products" asp-controller="Reports" asp-action="Products" target="_blank" rel="noopener noreferrer">
-                            <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                            <span class="left-nav-gallery-label">Product Report</span>
-                        </a>
-                        <a class="left-nav-gallery-card left-nav-gallery-card-categories" asp-controller="Reports" asp-action="Categories" target="_blank" rel="noopener noreferrer">
-                            <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                            <span class="left-nav-gallery-label">Category Report</span>
-                        </a>
-                        <a class="left-nav-gallery-card left-nav-gallery-card-notifications" asp-controller="Reports" asp-action="Contactus" target="_blank" rel="noopener noreferrer">
-                            <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                            <span class="left-nav-gallery-label">Contact Us Report</span>
+                            <span class="left-nav-gallery-label">Report</span>
                         </a>
                     </div>
                 </nav>

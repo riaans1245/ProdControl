@@ -290,10 +290,18 @@ body {
 }
 
 .admin-sidebar-nav {
+  display: flex;
+  flex-direction: column;
   background: linear-gradient(180deg, #152736 0%, #1b3245 100%) !important;
   border: 1px solid rgba(148, 179, 200, 0.18);
   border-radius: 1.4rem;
   box-shadow: 0 22px 48px rgba(8, 15, 24, 0.18) !important;
+}
+
+.admin-sidebar-scroll {
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 0.2rem;
 }
 
 .admin-sidebar-card {
@@ -469,12 +477,14 @@ body {
 
 .app-sidebar {
   width: 240px;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   transition: width 0.2s ease;
 }
 
 .app-sidebar nav {
   height: 100%;
+  padding-bottom: 1rem;
 }
 
 .app-sidebar.app-sidebar-collapsed {

@@ -20,6 +20,12 @@ public interface IUserStore
 
     IReadOnlyCollection<AppUser> GetAllUsers();
 
+    IReadOnlyCollection<AppUser> GetAllUsersList();
+
+    IReadOnlyCollection<AppTokens> GetAllTokens();
+
+    void CreateToken(AppTokens tokens);
+
     AppUser? GetUserById(int id);
 
     AppUser? GetUserByEmailAddress(string emailAddress);
@@ -42,6 +48,8 @@ public interface IUserStore
 
     AppCategory? GetCategoryById(int id);
 
+    //AppTokens? GetTokensById(int id);
+
     void CreateCategory(AppCategory category);
 
     bool UpdateCategory(AppCategory category);
@@ -49,6 +57,8 @@ public interface IUserStore
     bool DeleteCategory(int id);
 
     bool ProductNameExists(string productName, int categoryId, int? excludeProductId = null);
+
+    bool TokenNameExists(string tokenName, int userId, int? excludeTokenId = null);
 
     IReadOnlyCollection<AppProduct> GetAllProducts();
 

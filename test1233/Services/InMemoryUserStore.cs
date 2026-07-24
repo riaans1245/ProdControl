@@ -50,7 +50,12 @@ public class InMemoryUserStore : IUserStore
         new AppRole { Id = 2, Name = "Users", IdentityCode = 2 }
     ];
 
-      private readonly List<ContactUs> _contactUs =
+    private readonly List<AppTokens> _tokens =
+    [
+    
+    ];
+
+    private readonly List<ContactUs> _contactUs =
     [
 
     ];
@@ -72,6 +77,16 @@ public class InMemoryUserStore : IUserStore
     ];
 
     private readonly object _lock = new();
+
+    private static decimal NormalizePrice(decimal price)
+    {
+        if (price < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(price), "Price cannot be negative.");
+        }
+
+        return decimal.Round(price, 2, MidpointRounding.AwayFromZero);
+    }
 
     public AppUser? ValidateUser(string username, string password)
     {
@@ -140,6 +155,15 @@ public class InMemoryUserStore : IUserStore
         }
     }
 
+    public IReadOnlyCollection<AppTokens> GetAllTokens()
+    {
+        lock (_lock)
+        {
+            return _tokens.ToList().AsReadOnly();
+        }
+    }
+
+
     public AppUser? GetUserById(int id)
     {
         lock (_lock)
@@ -187,15 +211,15 @@ public class InMemoryUserStore : IUserStore
             var nextId = _contactUs.Count == 0 ? 1 : _contactUs.Max(item => item.Id) + 1;
             _contactUs.Add(new ContactUs
             {
-                Id = user.Id,
+                Id = nextId,
                 Name = user.Name,
                 Surname = user.Surname,
                 CellNo = user.CellNo,
                 EmailAddress = user.EmailAddress
             });
-        }
 
-        return false;
+            return true;
+        }
     }
 
 
@@ -266,6 +290,29 @@ public class InMemoryUserStore : IUserStore
         }
     }
 
+    public IReadOnlyCollection<AppUser> GetAllUsersList()
+     {
+         lock (_lock)
+         {
+             return _users
+                .OrderBy(users => users.Id)
+                .Select(users => new AppUser
+                {
+                    Id = users.Id,
+                    Username = users.Username,
+                    Name = users.Name,
+                    Surname = users.Surname,
+                    EmailAddress = users.EmailAddress,
+                    CellNo = users.CellNo,
+                    Password = users.Password,
+                    RoleId = users.RoleId,
+                    Role = users.Role
+                })
+                .ToList()
+                .AsReadOnly();
+         }
+    }
+
     public AppCategory? GetCategoryById(int id)
     {
         lock (_lock)
@@ -293,6 +340,7 @@ public class InMemoryUserStore : IUserStore
             });
         }
     }
+
 
     public bool UpdateCategory(AppCategory category)
     {
@@ -340,6 +388,17 @@ public class InMemoryUserStore : IUserStore
         }
     }
 
+    public bool TokenNameExists(string tokenName, int userId, int? excludeTokenId = null)
+    {
+lock (_lock)
+        {
+            return _tokens.Any(token =>
+                token.TokenId != excludeTokenId &&
+                token.UserId == userId &&
+                string.Equals(token.Token, tokenName, StringComparison.OrdinalIgnoreCase));
+        }
+    }
+
     public IReadOnlyCollection<AppProduct> GetAllProducts()
     {
         lock (_lock)
@@ -347,13 +406,13 @@ public class InMemoryUserStore : IUserStore
            return _products
             //.Where(product => product.CategoryId != 4)
             .OrderBy(product => product.Id)
-            .Select(product => new AppProduct 
-            { 
-                Id = product.Id, 
-                Name = product.Name, 
-                Price = product.Price, 
-                CategoryId = product.CategoryId, 
-                CategoryName = product.CategoryName 
+            .Select(product => new AppProduct
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = NormalizePrice(product.Price),
+                CategoryId = product.CategoryId,
+                CategoryName = product.CategoryName
             })
             .ToList()
             .AsReadOnly();
@@ -371,7 +430,7 @@ public class InMemoryUserStore : IUserStore
                 {
                     Id = product.Id,
                     Name = product.Name,
-                    Price = product.Price,
+                    Price = NormalizePrice(product.Price),
                     CategoryId = product.CategoryId,
                     CategoryName = product.CategoryName
                 };
@@ -387,9 +446,24 @@ public class InMemoryUserStore : IUserStore
             {
                 Id = nextId,
                 Name = product.Name,
-                Price = product.Price,
+                Price = NormalizePrice(product.Price),
                 CategoryId = product.CategoryId,
                 CategoryName = product.CategoryName
+            });
+        }
+    }
+
+    public void CreateToken(AppTokens tokens)
+    {
+        lock (_lock)
+        {
+            var nextId = _tokens.Count == 0 ? 1 : _tokens.Max(item => item.TokenId) + 1;
+            _tokens.Add(new AppTokens
+            {
+                TokenId = nextId,
+                Token = tokens.Token,
+                UserId = tokens.UserId,
+                Username = tokens.Username
             });
         }
     }
@@ -405,7 +479,7 @@ public class InMemoryUserStore : IUserStore
             }
 
             existingProduct.Name = product.Name;
-            existingProduct.Price = product.Price;
+            existingProduct.Price = NormalizePrice(product.Price);
             existingProduct.CategoryId = product.CategoryId;
             existingProduct.CategoryName = product.CategoryName;
             return true;
@@ -472,7 +546,6 @@ public class InMemoryUserStore : IUserStore
                 return false;
             }
 
-            var previousName = existingRole.Name;
             existingRole.Name = role.Name;
             existingRole.IdentityCode = role.IdentityCode;
 
@@ -481,7 +554,7 @@ public class InMemoryUserStore : IUserStore
                 user.Role = role.Name;
             }
 
-            return !string.Equals(previousName, role.Name, StringComparison.Ordinal);
+            return true;
         }
     }
 

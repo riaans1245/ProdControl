@@ -6,7 +6,7 @@ public class AppProduct
 
     public required string Name { get; set; }
 
-    public decimal Price { get; set; }
+    public decimal Price { get; internal set; }
 
     public int CategoryId { get; set; }
 

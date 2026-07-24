@@ -1,5 +1,6 @@
 using test1233.Models;
 using test1233.Services;
+using System.Reflection;
 
 namespace test1233.Tests;
 
@@ -12,9 +13,9 @@ public class InMemoryUserStoreTests
 
         var products = store.GetAllProducts();
 
-        Assert.Contains(products, product => product.Name == "PC" && product.CategoryName == "InformationTechnology");
-        Assert.Contains(products, product => product.Name == "Files" && product.CategoryName == "Finance");
-        Assert.Contains(products, product => product.Name == "CNC Machines" && product.CategoryName == "Engineering");
+        Assert.Contains(products, product => product.Name == "Toast" && product.CategoryName == "Sides" && product.Price == 1.00m);
+        Assert.Contains(products, product => product.Name == "EggBenedict" && product.CategoryName == "Breakfast" && product.Price == 19.50m);
+        Assert.Contains(products, product => product.Name == "BuffaloWings" && product.CategoryName == "Specials" && product.Price == 18.00m);
     }
 
     [Fact]
@@ -44,18 +45,63 @@ public class InMemoryUserStoreTests
     public void UpdateCategory_ChangesStoredCategoryName()
     {
         var store = new InMemoryUserStore();
-        var category = store.GetAllCategories().Single(item => item.Name == "Finance");
+        var category = store.GetAllCategories().Single(item => item.Name == "Mains");
 
         var updated = store.UpdateCategory(new AppCategory
         {
             Id = category.Id,
-            Name = "FinanceOps"
+            Name = "Main Meals"
         });
 
         var savedCategory = store.GetCategoryById(category.Id);
 
         Assert.True(updated);
         Assert.NotNull(savedCategory);
-        Assert.Equal("FinanceOps", savedCategory!.Name);
+        Assert.Equal("Main Meals", savedCategory!.Name);
+    }
+
+    [Fact]
+    public void CreateProduct_RoundsPriceToTwoDecimalPlaces()
+    {
+        var store = new InMemoryUserStore();
+        var category = store.GetAllCategories().First();
+
+        store.CreateProduct(CreateProduct("Rounded Product", 12.345m, category.Id, category.Name));
+
+        var savedProduct = store.GetAllProducts().Single(product => product.Name == "Rounded Product");
+
+        Assert.Equal(12.35m, savedProduct.Price);
+    }
+
+    [Fact]
+    public void UpdateProduct_RoundsPriceToTwoDecimalPlaces()
+    {
+        var store = new InMemoryUserStore();
+        var product = store.GetAllProducts().First();
+
+        var updated = store.UpdateProduct(CreateProduct(product.Name, 7.995m, product.CategoryId, product.CategoryName, product.Id));
+
+        var savedProduct = store.GetProductById(product.Id);
+
+        Assert.True(updated);
+        Assert.NotNull(savedProduct);
+        Assert.Equal(8.00m, savedProduct!.Price);
+    }
+
+    private static AppProduct CreateProduct(string name, decimal price, int categoryId, string categoryName, int id = 0)
+    {
+        var product = new AppProduct
+        {
+            Id = id,
+            Name = name,
+            CategoryId = categoryId,
+            CategoryName = categoryName
+        };
+
+        typeof(AppProduct)
+            .GetProperty(nameof(AppProduct.Price), BindingFlags.Instance | BindingFlags.Public)!
+            .SetValue(product, price);
+
+        return product;
     }
 }

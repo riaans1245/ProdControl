@@ -64,6 +64,8 @@ public interface IUserStore
 
     AppProduct? GetProductById(int id);
 
+    AppTokens? GetTokenById(int id);
+
     void CreateProduct(AppProduct product);
 
     bool UpdateProduct(AppProduct product);

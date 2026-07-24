@@ -437,6 +437,23 @@ lock (_lock)
         }
     }
 
+     public AppTokens? GetTokenById(int id)
+    {
+        lock (_lock)
+        {
+            var token = _tokens.FirstOrDefault(item => item.TokenId == id);
+            return token is null
+                ? null
+                : new AppTokens
+                {
+                    TokenId = token.TokenId,
+                    Token = token.Token,
+                    UserId = token.UserId,
+                    Username = token.Username
+                };
+        }
+    }
+
     public void CreateProduct(AppProduct product)
     {
         lock (_lock)
@@ -613,5 +630,4 @@ lock (_lock)
 
         }
     }
-
 }

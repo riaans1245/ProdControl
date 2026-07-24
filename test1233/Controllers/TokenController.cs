@@ -59,6 +59,24 @@ public class TokenController(IUserStore userStore) : Controller
         return RedirectToAction(nameof(Index));
     }
 
+     public IActionResult Edit(int id)
+    {
+        var token = _userStore.GetTokenById(id);
+        if (token is null)
+        {
+            return NotFound();
+        }
+
+         return View(new TokenFormViewModel
+         {
+             TokenId = token.TokenId,
+             Token = token.Token,
+             UserId = token.UserId,
+             AvailableUsers = GetUserSelectList()
+             
+         });
+    }
+
     private IReadOnlyCollection<SelectListItem> GetUserSelectList()
     {
         return _userStore.GetAllUsers()

@@ -485,6 +485,38 @@ lock (_lock)
         }
     }
 
+    public bool UpdateToken(AppTokens tokens)
+    {
+        lock (_lock)
+        {
+            var existingToken = _tokens.FirstOrDefault(item => item.TokenId == tokens.TokenId);
+            if (existingToken is null)
+            {
+                return false;
+            }
+
+            existingToken.Token = tokens.Token;
+            existingToken.UserId = tokens.UserId;
+            existingToken.Username = tokens.Username;
+            return true;
+        }
+    }
+
+    public bool DeleteToken(int id)
+    {
+        lock (_lock)
+        {
+            var token = _tokens.FirstOrDefault(item => item.TokenId == id);
+            if (token is null)
+            {
+                return false;
+            }
+
+            _tokens.Remove(token);
+            return true;
+        }
+    }
+
     public bool UpdateProduct(AppProduct product)
     {
         lock (_lock)

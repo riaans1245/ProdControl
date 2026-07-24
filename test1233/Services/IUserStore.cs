@@ -26,6 +26,10 @@ public interface IUserStore
 
     void CreateToken(AppTokens tokens);
 
+    bool UpdateToken(AppTokens tokens);
+
+    bool DeleteToken(int id);
+
     AppUser? GetUserById(int id);
 
     AppUser? GetUserByEmailAddress(string emailAddress);

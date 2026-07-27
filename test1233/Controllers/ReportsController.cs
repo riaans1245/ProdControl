@@ -11,7 +11,7 @@ namespace test1233.Controllers;
 public class ReportsController(IUserStore userStore) : Controller
 {
     private readonly IUserStore _userStore = userStore;
-    
+
 
     public IActionResult Index()
     {

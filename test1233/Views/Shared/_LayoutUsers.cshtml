@@ -142,27 +142,31 @@
                             <span class="left-nav-gallery-label">Profile</span>
                         </a>
                         <a class="left-nav-gallery-card left-nav-gallery-card-tokens"
-                            asp-controller="User"
+                            asp-controller="UserNavigation"
                             asp-route-id="@currentUserId"
-                            asp-action="Edit"
+                            asp-action="UserTokenList"
                             title="My Tokens"
                             aria-label="My Tokens">
                             <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                             <span class="left-nav-gallery-label">Tokens</span>
                         </a>
                         <a class="left-nav-gallery-card left-nav-gallery-card-notifications"
-                            asp-controller="Home"
+                            asp-controller="UserNavigation"
+                            asp-route-id="@currentUserId"
+                            asp-action="UserNotificationsList"                            
                             title="My Notifications"
-                            asp-action="Specials">
+                            aria-label="My Notifications">
                             <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                             <span class="left-nav-gallery-label">Notifications</span>
                         </a>
                         <a class="left-nav-gallery-card left-nav-gallery-card-purchases"
-                            asp-controller="Home"
-                            title="My Notifications"
-                            asp-action="Specials">
+                             asp-controller="UserNavigation"
+                            asp-route-id="@currentUserId"
+                            asp-action="UserOrderList"                            
+                            title="My Orders"
+                            aria-label="My Orders">
                             <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                            <span class="left-nav-gallery-label">Purchases</span>
+                            <span class="left-nav-gallery-label">Orders</span>
                         </a>
                     </div> 
                 </nav>

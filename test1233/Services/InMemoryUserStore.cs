@@ -52,10 +52,20 @@ public class InMemoryUserStore : IUserStore
 
     private readonly List<AppTokens> _tokens =
     [
-    
+
     ];
 
     private readonly List<ContactUs> _contactUs =
+    [
+
+    ];
+
+     private readonly List<AppNotification> _notifi =
+    [
+
+    ];
+
+       private readonly List<AppNotification> _order =
     [
 
     ];
@@ -160,6 +170,22 @@ public class InMemoryUserStore : IUserStore
         lock (_lock)
         {
             return _tokens.ToList().AsReadOnly();
+        }
+    }
+
+    public IReadOnlyCollection<AppNotification> GetAllNotifications()
+    {
+        lock (_lock)
+        {
+            return _notifi.ToList().AsReadOnly();
+        }
+    }
+
+ public IReadOnlyCollection<AppProduct> GetAllUserOrders()
+    {
+        lock (_lock)
+        {
+            return _products.ToList().AsReadOnly();
         }
     }
 
@@ -454,6 +480,43 @@ lock (_lock)
         }
     }
 
+
+     public AppNotification? GetDelNotificationById(int id)
+    {
+        lock (_lock)
+        {
+            var notifi = _notifi.FirstOrDefault(item => item.NotificationId == id);
+            return notifi is null
+                ? null
+                : new AppNotification
+                {
+                    NotificationId = notifi.NotificationId,
+                    Notification = notifi.Notification,
+                    UserId = notifi.UserId,
+                    UserName = notifi.UserName
+                };
+        }
+    }
+
+
+    public AppNotification? GetNotificationById(int id)
+    {
+        lock (_lock)
+        {
+            var notifi = _notifi.FirstOrDefault(item => item.NotificationId == id);
+            return notifi is null
+                ? null
+                : new AppNotification
+                {
+                    NotificationId = notifi.NotificationId,
+                    Notification = notifi.Notification,
+                    UserId = notifi.UserId,
+                    UserName = notifi.UserName
+                };
+        }
+    }
+
+
     public void CreateProduct(AppProduct product)
     {
         lock (_lock)
@@ -485,6 +548,21 @@ lock (_lock)
         }
     }
 
+    public void CreateNotification(AppNotification notification)
+    {
+        lock (_lock)
+        {
+             var nextId = _notifi.Count == 0 ? 1 : _notifi.Max(item => item.NotificationId) + 1;
+            _notifi.Add(new AppNotification
+            {
+                 NotificationId = nextId,
+                 Notification = notification.Notification,
+                 UserId = notification.UserId,
+                 UserName = notification.UserName
+             });
+        }
+    }
+
     public bool UpdateToken(AppTokens tokens)
     {
         lock (_lock)
@@ -498,6 +576,23 @@ lock (_lock)
             existingToken.Token = tokens.Token;
             existingToken.UserId = tokens.UserId;
             existingToken.Username = tokens.Username;
+            return true;
+        }
+    }
+
+    public bool UpdateNotification(AppNotification notification)
+    {
+        lock (_lock)
+        {
+            var existingNotifi = _notifi.FirstOrDefault(item => item.NotificationId == notification.NotificationId);
+            if (existingNotifi is null)
+            {
+                return false;
+            }
+
+            existingNotifi.Notification = notification.Notification;
+            existingNotifi.UserId = notification.UserId;
+            existingNotifi.UserName = notification.UserName;
             return true;
         }
     }
@@ -516,6 +611,22 @@ lock (_lock)
             return true;
         }
     }
+
+    public bool DeleteNotification(int id)
+    {
+        lock (_lock)
+        {
+            var notifi = _notifi.FirstOrDefault(item => item.NotificationId == id);
+            if (notifi is null)
+            {
+                return false;
+            }
+
+            _notifi.Remove(notifi);
+            return true;
+        }
+    }
+
 
     public bool UpdateProduct(AppProduct product)
     {
@@ -662,4 +773,6 @@ lock (_lock)
 
         }
     }
+
+
 }

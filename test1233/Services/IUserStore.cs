@@ -24,11 +24,19 @@ public interface IUserStore
 
     IReadOnlyCollection<AppTokens> GetAllTokens();
 
+    IReadOnlyCollection<AppNotification> GetAllNotifications();
+
     void CreateToken(AppTokens tokens);
+
+    void CreateNotification(AppNotification notification);
 
     bool UpdateToken(AppTokens tokens);
 
+    bool UpdateNotification(AppNotification notification);
+
     bool DeleteToken(int id);
+
+    bool DeleteNotification(int id);
 
     AppUser? GetUserById(int id);
 
@@ -66,9 +74,15 @@ public interface IUserStore
 
     IReadOnlyCollection<AppProduct> GetAllProducts();
 
+    IReadOnlyCollection<AppProduct> GetAllUserOrders();
+
     AppProduct? GetProductById(int id);
 
     AppTokens? GetTokenById(int id);
+
+    AppNotification? GetDelNotificationById(int id);
+
+    AppNotification? GetNotificationById(int id);
 
     void CreateProduct(AppProduct product);
 

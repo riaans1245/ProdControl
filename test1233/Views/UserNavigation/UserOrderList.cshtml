@@ -1,0 +1,108 @@
+@{
+    ViewData["Title"] = "My Orders";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">My Orders</h1>
+            <p class="text-muted mb-0">View the orders saved from the cart after checkout.</p>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div id="empty-order-history" class="text-muted">No saved orders yet. Place an order from the cart to see it here.</div>
+            <div id="order-history-table-wrapper" class="table-responsive d-none">
+                <table class="table table-striped align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Placed</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody id="order-history-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (() => {
+            const orderHistoryStorageKey = "easy-eats-order-history";
+            const emptyOrderHistory = document.getElementById("empty-order-history");
+            const orderHistoryTableWrapper = document.getElementById("order-history-table-wrapper");
+            const orderHistoryTableBody = document.getElementById("order-history-table-body");
+
+            const formatCurrency = (value) =>
+                new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value);
+
+            const formatPlacedDate = (value) => {
+                const parsedDate = new Date(value);
+                return Number.isNaN(parsedDate.getTime())
+                    ? "Unknown"
+                    : parsedDate.toLocaleString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "2-digit"
+                    });
+            };
+
+            const readOrderHistory = () => {
+                try {
+                    const rawHistory = localStorage.getItem(orderHistoryStorageKey);
+                    const parsedHistory = rawHistory ? JSON.parse(rawHistory) : [];
+                    return Array.isArray(parsedHistory) ? parsedHistory : [];
+                } catch {
+                    localStorage.removeItem(orderHistoryStorageKey);
+                    return [];
+                }
+            };
+
+            const renderOrderHistory = () => {
+                const orderHistory = readOrderHistory();
+                orderHistoryTableBody.innerHTML = "";
+
+                if (orderHistory.length === 0) {
+                    emptyOrderHistory.classList.remove("d-none");
+                    orderHistoryTableWrapper.classList.add("d-none");
+                    return;
+                }
+
+                emptyOrderHistory.classList.add("d-none");
+                orderHistoryTableWrapper.classList.remove("d-none");
+
+                for (const order of orderHistory) {
+                    const items = Array.isArray(order.items) ? order.items : [];
+
+                    for (const item of items) {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${order.orderId ?? ""}</td>
+                            <td>${formatPlacedDate(order.placedAtUtc)}</td>
+                            <td>${item.name ?? ""}</td>
+                            <td>${item.categoryName ?? ""}</td>
+                            <td>${Number(item.quantity) || 0}</td>
+                            <td>${formatCurrency(Number(item.price) || 0)}</td>
+                            <td>${formatCurrency((Number(item.quantity) || 0) * (Number(item.price) || 0))}</td>`;
+
+                        orderHistoryTableBody.appendChild(row);
+                    }
+                }
+            };
+
+            renderOrderHistory();
+            window.addEventListener("storage", renderOrderHistory);
+            window.addEventListener("order-history-updated", renderOrderHistory);
+        })();
+    </script>
+}

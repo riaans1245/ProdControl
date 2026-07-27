@@ -77,6 +77,12 @@
                     </div>
 
                     <button type="button" class="btn btn-success w-100 mt-4" id="checkout-btn">Place order</button>
+                    <a asp-controller="UserNavigation"
+                       asp-action="UserOrderList"
+                       class="btn btn-outline-dark w-100 mt-2 d-none"
+                       id="view-orders-btn">
+                        View order list
+                    </a>
                     <p id="checkout-message" class="small text-muted mt-3 mb-0"></p>
                 </div>
             </div>
@@ -88,6 +94,7 @@
     <script>
         (() => {
             const cartStorageKey = "easy-eats-cart";
+            const orderHistoryStorageKey = "easy-eats-order-history";
             const cart = new Map();
             const cartItems = document.getElementById("cart-items");
             const emptyCartState = document.getElementById("empty-cart-state");
@@ -96,6 +103,7 @@
             const checkoutMessage = document.getElementById("checkout-message");
             const clearCartButton = document.getElementById("clear-cart-btn");
             const checkoutButton = document.getElementById("checkout-btn");
+            const viewOrdersButton = document.getElementById("view-orders-btn");
 
             const formatCurrency = (value) =>
                 new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value);
@@ -103,6 +111,22 @@
             const persistCart = () => {
                 localStorage.setItem(cartStorageKey, JSON.stringify(Array.from(cart.values())));
                 window.dispatchEvent(new Event("cart-updated"));
+            };
+
+            const readOrderHistory = () => {
+                try {
+                    const rawHistory = localStorage.getItem(orderHistoryStorageKey);
+                    const parsedHistory = rawHistory ? JSON.parse(rawHistory) : [];
+                    return Array.isArray(parsedHistory) ? parsedHistory : [];
+                } catch {
+                    localStorage.removeItem(orderHistoryStorageKey);
+                    return [];
+                }
+            };
+
+            const syncViewOrdersButton = () => {
+                const hasOrderHistory = readOrderHistory().length > 0;
+                viewOrdersButton.classList.toggle("d-none", !hasOrderHistory);
             };
 
             const loadCart = () => {
@@ -139,6 +163,7 @@
                     emptyCartState.classList.remove("d-none");
                     cartItemCount.textContent = "0";
                     cartTotalValue.textContent = formatCurrency(0);
+                    syncViewOrdersButton();
                     return;
                 }
 
@@ -173,6 +198,7 @@
 
                 cartItemCount.textContent = totalItems.toString();
                 cartTotalValue.textContent = formatCurrency(totalValue);
+                syncViewOrdersButton();
 
                 document.querySelectorAll(".remove-cart-item-btn").forEach((button) => {
                     button.addEventListener("click", () => {
@@ -182,6 +208,36 @@
                         renderCart();
                     });
                 });
+            };
+
+            const saveOrderHistory = () => {
+                const items = Array.from(cart.values()).map((item) => ({
+                    id: item.id,
+                    name: item.name,
+                    categoryName: item.categoryName,
+                    price: item.price,
+                    quantity: item.quantity
+                }));
+
+                const history = readOrderHistory();
+                const nextOrderId = history.reduce((maxOrderId, order) => {
+                    const currentOrderId = Number(order.orderId) || 0;
+                    return Math.max(maxOrderId, currentOrderId);
+                }, 0) + 1;
+
+                const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+                const totalValue = items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+
+                history.unshift({
+                    orderId: nextOrderId,
+                    placedAtUtc: new Date().toISOString(),
+                    totalItems,
+                    totalValue,
+                    items
+                });
+
+                localStorage.setItem(orderHistoryStorageKey, JSON.stringify(history));
+                window.dispatchEvent(new Event("order-history-updated"));
             };
 
             document.querySelectorAll(".add-to-cart-btn").forEach((button) => {
@@ -223,13 +279,15 @@
                     return;
                 }
 
+                saveOrderHistory();
                 cart.clear();
                 persistCart();
-                checkoutMessage.textContent = "Payment complete. Your cart has been cleared.";
+                checkoutMessage.textContent = "Payment complete. Your order was saved and your cart has been cleared.";
                 renderCart();
             });
 
             loadCart();
+            syncViewOrdersButton();
             renderCart();
         })();
     </script>

@@ -6,9 +6,8 @@ using test1233.Services;
 
 namespace test1233.Controllers;
 
-public class HomeController(ILogger<HomeController> logger, IUserStore userStore) : Controller
+public class HomeController(IUserStore userStore) : Controller
 {
-    private readonly ILogger<HomeController> _logger = logger;
     private readonly IUserStore _userStore = userStore;
 
     public IActionResult Index()

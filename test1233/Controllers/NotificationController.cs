@@ -21,7 +21,6 @@ public class NotificationController(IUserStore userStore) : Controller
             AvailableUsers = GetUserSelectList()
         });
     }
-   
 
      [HttpPost]
     [ValidateAntiForgeryToken]

@@ -93,8 +93,10 @@
 @section Scripts {
     <script>
         (() => {
-            const cartStorageKey = "easy-eats-cart";
-            const orderHistoryStorageKey = "easy-eats-order-history";
+            const currentUsername = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(User.Identity?.Name ?? string.Empty));
+            const buildUserStorageKey = (baseKey) => `${baseKey}:${currentUsername || "anonymous"}`;
+            const cartStorageKey = buildUserStorageKey("easy-eats-cart");
+            const orderHistoryStorageKey = buildUserStorageKey("easy-eats-order-history");
             const cart = new Map();
             const cartItems = document.getElementById("cart-items");
             const emptyCartState = document.getElementById("empty-cart-state");

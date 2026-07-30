@@ -251,7 +251,8 @@
     </script>
     <script>
         (() => {
-            const cartStorageKey = "easy-eats-cart";
+            const currentUsername = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(User.Identity?.Name ?? string.Empty));
+            const cartStorageKey = `easy-eats-cart:${currentUsername || "anonymous"}`;
             const cartCount = document.getElementById("nav-cart-count");
 
             if (!cartCount) {

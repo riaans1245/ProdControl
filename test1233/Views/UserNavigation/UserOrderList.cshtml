@@ -36,7 +36,8 @@
 @section Scripts {
     <script>
         (() => {
-            const orderHistoryStorageKey = "easy-eats-order-history";
+            const currentUsername = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(User.Identity?.Name ?? string.Empty));
+            const orderHistoryStorageKey = `easy-eats-order-history:${currentUsername || "anonymous"}`;
             const emptyOrderHistory = document.getElementById("empty-order-history");
             const orderHistoryTableWrapper = document.getElementById("order-history-table-wrapper");
             const orderHistoryTableBody = document.getElementById("order-history-table-body");

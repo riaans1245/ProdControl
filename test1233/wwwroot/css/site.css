@@ -728,6 +728,8 @@ body {
   display: inline-block;
   width: 1.4rem;
   height: 1.4rem;
+  border-radius: 999px;
+  background-color: #1f3c57;
   background-image: url("/images/notifications-icon.png");
   background-repeat: no-repeat;
   background-position: center;

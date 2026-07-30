@@ -1,0 +1,25 @@
+@model test1233.Models.MenuUploadViewModel
+
+@{
+    ViewData["Title"] = "Menu";
+}
+
+<div class="container py-4">
+    @if (Model.LatestMenu is null)
+    {
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <p class="text-muted mb-0">No menu images are available yet.</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0 overflow-hidden">
+            <img src="@Model.LatestMenu.Path"
+                 asp-append-version="true"
+                 alt="Easy Eats menu"
+                 class="img-fluid w-100" />
+        </div>
+    }
+</div>

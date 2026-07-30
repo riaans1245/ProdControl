@@ -1,0 +1,108 @@
+@model test1233.Models.MenuUploadViewModel
+
+@{
+    ViewData["Title"] = "Manage Menu";
+
+    string FormatUploadDate(DateTime value) => value == default
+        ? "Unknown upload date"
+        : value.ToLocalTime().ToString("dd MMM yyyy HH:mm");
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">Manage Menu</h1>
+            <p class="text-muted mb-0">Upload a new JPG menu image for customers to view.</p>
+        </div>
+    </div>
+
+    @if (TempData["MenuUploadSuccess"] is string successMessage)
+    {
+        <div class="alert alert-success shadow-sm" role="alert">
+            @successMessage
+        </div>
+    }
+
+    <div class="row g-4">
+        <div class="col-lg-5">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <form asp-action="ManageMenu" asp-controller="Home" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="MenuFile" class="form-label">Select menu image</label>
+                            <input asp-for="MenuFile" type="file" accept=".jpg,.jpeg,image/jpeg" class="form-control" />
+                            <span asp-validation-for="MenuFile" class="text-danger"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Upload Menu</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0">
+                <div class="card-body border-bottom">
+                    <h2 class="h5 mb-1">Latest Menu</h2>
+                    <p class="text-muted mb-0">The newest uploaded menu appears first and stays in the folder history.</p>
+                </div>
+                @if (Model.LatestMenu is not null)
+                {
+                    <div class="card-body py-2 border-bottom bg-light small text-muted">
+                        Uploaded: @FormatUploadDate(Model.LatestMenu.UploadedAtUtc)
+                    </div>
+                    <img src="@Model.LatestMenu.Path"
+                         asp-append-version="true"
+                         alt="Latest Easy Eats menu"
+                         class="img-fluid w-100" />
+                }
+                else
+                {
+                    <div class="card-body">
+                        <p class="text-muted mb-0">No menu images have been uploaded yet.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mt-4">
+        <div class="card-body border-bottom">
+            <h2 class="h5 mb-1">Menu List</h2>
+            <p class="text-muted mb-0">Every uploaded menu is kept in the folder and listed here.</p>
+        </div>
+        <div class="card-body">
+            @if (Model.Menus.Count == 0)
+            {
+                <p class="text-muted mb-0">No menu images have been uploaded yet.</p>
+            }
+            else
+            {
+                <div class="row g-3">
+                    @foreach (var menu in Model.Menus)
+                    {
+                        <div class="col-sm-6 col-lg-4 col-xl-3">
+                            <div class="border rounded-4 overflow-hidden bg-light h-100">
+                                <div class="px-3 py-2 small text-muted border-bottom bg-white">
+                                    Uploaded: @FormatUploadDate(menu.UploadedAtUtc)
+                                </div>
+                                <img src="@menu.Path"
+                                     asp-append-version="true"
+                                     alt="Easy Eats menu"
+                                     class="img-fluid w-100"
+                                     style="max-height: 180px; object-fit: cover;" />
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -52,6 +52,11 @@ public class UserNavigationController(IUserStore userStore) : Controller
 
     public IActionResult UserOrderList()
     {
+        var currentUser = GetCurrentUser();
+        if (currentUser is null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
         return View();
     }
 

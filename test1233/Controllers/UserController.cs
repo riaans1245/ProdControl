@@ -72,8 +72,14 @@ public class UserController(IUserStore userStore) : Controller
         var user = _userStore.GetUserById(id);
         if (user is null)
         {
-            return NotFound();
+            return RedirectToAction("Login", "Account");
         }
+
+        // var currentUser = GetCurrentUser();
+        // if (currentUser is null)
+        // {
+        //     return RedirectToAction("Login", "Account");
+        // }
 
         return View(BuildUserEditViewModel(user));
     }

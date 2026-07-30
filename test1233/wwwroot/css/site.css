@@ -692,7 +692,7 @@ body {
   height: 24px;
   flex: 0 0 24px;
   border-radius: 0.45rem;
-  background-image: url("/images/our-menu-icon.png");
+  background-image: url("/images/menu-nav-icon.png");
 }
 
 .left-nav-gallery-card-tokens .left-nav-gallery-icon {

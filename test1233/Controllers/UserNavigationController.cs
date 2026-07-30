@@ -20,12 +20,34 @@ public class UserNavigationController(IUserStore userStore) : Controller
 
     public IActionResult UserTokenList()
     {
-        return View(_userStore.GetAllTokens());
+        var currentUser = GetCurrentUser();
+        if (currentUser is null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var tokens = _userStore.GetAllTokens()
+            .Where(token => token.UserId == currentUser.Id)
+            .ToList()
+            .AsReadOnly();
+
+        return View(tokens);
     }
 
     public IActionResult UserNotificationsList()
     {
-        return View(_userStore.GetAllNotifications());
+        var currentUser = GetCurrentUser();
+        if (currentUser is null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var notifications = _userStore.GetAllNotifications()
+            .Where(notification => notification.UserId == currentUser.Id)
+            .ToList()
+            .AsReadOnly();
+
+        return View(notifications);
     }
 
     public IActionResult UserOrderList()
@@ -46,5 +68,17 @@ public class UserNavigationController(IUserStore userStore) : Controller
     public IActionResult ContactUs()
     {
         return View(_userStore.GetAllContactUs());
+    }
+
+    private AppUser? GetCurrentUser()
+    {
+        var username = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(username))
+        {
+            return null;
+        }
+
+        return _userStore.GetAllUsers()
+            .FirstOrDefault(user => string.Equals(user.Username, username, StringComparison.OrdinalIgnoreCase));
     }
 }

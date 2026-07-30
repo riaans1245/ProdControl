@@ -40,6 +40,9 @@
         var currentUserToken = currentUserId.HasValue
             ? UserStore.GetAllTokens().FirstOrDefault(tokens => tokens.UserId == currentUserId.Value)?.Token
             : null;
+        var currentUserNotificationCount = currentUserId.HasValue
+            ? UserStore.GetAllNotifications().Count(notification => notification.UserId == currentUserId.Value)
+            : 0;
     }
     <!-- Top Navigation Bar --> 
     <nav class="navbar navbar-expand-md navbar-dark border-bottom shadow-sm py-3 user-topbar"> 
@@ -79,6 +82,19 @@
                                 <span class="nav-cart-icon-wrapper">
                                     <span class="nav-cart-image" aria-hidden="true"></span>
                                     <span id="nav-cart-count" class="nav-cart-count-badge">0</span>
+                                </span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white px-3 nav-cart-link"
+                               asp-controller="UserNavigation"
+                               asp-action="UserNotificationsList"
+                               aria-label="View notifications">
+                                <span class="nav-notification-icon-wrapper">
+                                    <span class="nav-notification-image" aria-hidden="true"></span>
+                                    <span class="nav-notification-count-badge @(currentUserNotificationCount > 0 ? string.Empty : "d-none")">
+                                        @currentUserNotificationCount
+                                    </span>
                                 </span>
                             </a>
                         </li>

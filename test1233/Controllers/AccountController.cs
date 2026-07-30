@@ -16,10 +16,10 @@ public class AccountController(IUserStore userStore) : Controller
     [AllowAnonymous]
     public IActionResult Login(string? returnUrl = null)
     {
-        if (User.Identity?.IsAuthenticated is true)
-        {
-            return RedirectToAction("Index", "Home");
-        }
+        // if (User.Identity?.IsAuthenticated is true)
+        // {
+        //     return RedirectToAction("Index", "Home");
+        // }
 
         ViewData["ReturnUrl"] = returnUrl;
         return View(new LoginViewModel());

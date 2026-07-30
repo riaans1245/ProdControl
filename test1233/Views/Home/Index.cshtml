@@ -1,8 +1,7 @@
 @{
     ViewData["Title"] = "Home Page";
     var isAdmin = User.IsInRole("Admin");
-    var isNotAdmin = User.IsInRole("Users");
-       
+    var isUser = User.IsInRole("Users");
 }
 
 <div class="container py-4">
@@ -13,6 +12,21 @@
             <a href="@magicLinkUrl">@magicLinkUrl</a>
         </div>
     }
+
+    @if (!isAdmin)
+    {
+        <section class="public-hero-panel mb-4">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-7">
+                    <p class="text-uppercase fw-semibold text-muted mb-2" style="letter-spacing: 0.12em;">Welcome to Easy Eats</p>
+                    <h1 class="display-6 mb-3">Fresh meals, quick ordering, and a simple way to stay connected.</h1>
+                    <p class="text-muted mb-4">
+                        Easy Eats gives guests a clear path into the platform and gives returning customers a simple place to order, track activity, and manage their details.
+                    </p>
+                </div>
+        </section>
+    }
+
     @if (isAdmin)
     {
         <section class="admin-blocks-panel">

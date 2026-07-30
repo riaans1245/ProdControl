@@ -1,6 +1,53 @@
-﻿@{
+@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container py-4">
+    <div class="card border-0 shadow-sm public-story-card">
+        <div class="card-body p-4 p-lg-5">
+            <p class="text-uppercase small fw-semibold mb-2 public-section-kicker">Privacy</p>
+            <h1 class="h3 mb-3">@ViewData["Title"]</h1>
+            <p class="text-muted mb-4">
+                Easy Eats uses the information you provide to support account access, communication, and customer activity inside the site.
+            </p>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="public-step-card h-100">
+                        <h2 class="h6">What we collect</h2>
+                        <p class="text-muted small mb-0">Name, surname, email address, cellphone number, username, and account-related activity.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="public-step-card h-100">
+                        <h2 class="h6">Why we collect it</h2>
+                        <p class="text-muted small mb-0">To create accounts, manage sign-in, support orders, and keep customer communication clear.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="public-step-card h-100">
+                        <h2 class="h6">How it helps you</h2>
+                        <p class="text-muted small mb-0">Your details help keep your dashboard, order history, notifications, and contact follow-up tied to you.</p>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4" />
+
+            <div class="d-grid gap-3">
+                <div>
+                    <h2 class="h5 mb-2">Account information</h2>
+                    <p class="text-muted mb-0">Profile information is used to identify your account and personalise your experience on the platform.</p>
+                </div>
+                <div>
+                    <h2 class="h5 mb-2">Orders and activity</h2>
+                    <p class="text-muted mb-0">Order and dashboard activity may be stored so you can review previous actions inside your account area.</p>
+                </div>
+                <div>
+                    <h2 class="h5 mb-2">Questions or updates</h2>
+                    <p class="text-muted mb-0">If you need help with your information, use the contact page so the team can follow up with you directly.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

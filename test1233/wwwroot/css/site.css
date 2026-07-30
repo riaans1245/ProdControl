@@ -229,6 +229,60 @@ body {
   color: #35516f;
 }
 
+.public-hero-panel {
+  padding: 1.5rem;
+  border: 1px solid rgba(164, 181, 197, 0.26);
+  border-radius: 1.4rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(239, 245, 251, 0.96) 100%);
+  box-shadow: 0 18px 34px rgba(18, 33, 48, 0.08);
+}
+
+.public-highlight-card,
+.public-feature-card,
+.public-story-card,
+.public-cta-card,
+.public-contact-card {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbfd 100%);
+}
+
+.public-feature-card,
+.public-step-card {
+  border: 1px solid rgba(181, 196, 209, 0.34);
+  border-radius: 1.1rem;
+}
+
+.public-story-card,
+.public-cta-card,
+.public-contact-card {
+  border: 1px solid rgba(170, 186, 201, 0.24);
+  border-radius: 1.35rem;
+}
+
+.public-step-card {
+  height: 100%;
+  padding: 1rem;
+  background: rgba(247, 250, 253, 0.92);
+}
+
+.public-step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 999px;
+  background: #17324a;
+  color: #f7fbff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.public-section-kicker {
+  color: #5f7890;
+  letter-spacing: 0.12em;
+}
+
 .admin-shell {
   background:
     radial-gradient(circle at top right, rgba(72, 187, 212, 0.16), transparent 24%),
@@ -642,7 +696,41 @@ body {
   justify-content: center;
 }
 
+.nav-notification-icon-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .nav-cart-count-badge {
+  position: absolute;
+  top: -0.45rem;
+  right: -0.65rem;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.25rem;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #1f5961;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.15rem;
+  text-align: center;
+  box-shadow: 0 0 0 1px rgba(77, 141, 150, 0.35);
+}
+
+.nav-notification-image {
+  display: inline-block;
+  width: 1.4rem;
+  height: 1.4rem;
+  background-image: url("/images/notifications-icon.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.nav-notification-count-badge {
   position: absolute;
   top: -0.45rem;
   right: -0.65rem;

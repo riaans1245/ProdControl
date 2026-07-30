@@ -14,28 +14,34 @@
 
     <div class="card shadow-sm border-0">
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-striped align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th>TokenId</th>
-                            <th>Token</th>
-                            <th>User</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    @foreach (var tokens in Model)
-                    {
-                        <tr>
-                            <td>@tokens.TokenId</td>
-                            <td>@tokens.Token</td>
-                            <td>@tokens.Username</td>
-                        </tr>
-                    }
-                    </tbody>
-                </table>
-            </div>
-
+            @if (Model.Count == 0)
+            {
+                <div class="text-muted">No tokens are currently assigned to your account.</div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Token ID</th>
+                                <th>Token</th>
+                                <th>User</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var tokens in Model)
+                        {
+                            <tr>
+                                <td>@tokens.TokenId</td>
+                                <td><span class="badge text-bg-light border">@tokens.Token</span></td>
+                                <td>@tokens.Username</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
         </div>
     </div>
 </div>

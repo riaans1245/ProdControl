@@ -46,7 +46,28 @@ public class HomeController(IUserStore userStore) : Controller
 
     public IActionResult ContactUs()
     {
-        return View();
+        return View(new ContactUs
+        {
+            Name = string.Empty,
+            Surname = string.Empty,
+            EmailAddress = string.Empty,
+            CellNo = string.Empty
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult ContactUs(ContactUs model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        _userStore.ContactUs(model);
+        TempData["ContactSuccess"] = "Thanks for reaching out. The Easy Eats team will contact you soon.";
+
+        return RedirectToAction(nameof(ContactUs));
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

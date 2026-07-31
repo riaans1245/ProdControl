@@ -118,7 +118,7 @@ public class NotificationController(IUserStore userStore) : Controller
             return NotFound();
         }
 
-        return View();
+        return View(notifi);
     }
 
      [HttpPost, ActionName("Delete")]
@@ -135,16 +135,16 @@ public class NotificationController(IUserStore userStore) : Controller
         return RedirectToAction(nameof(Index));
     }
 
-     public IActionResult UserNotificationDelete(int id)
-    {
-        var notifi = _userStore.GetDelNotificationById(id);
-        if (notifi is null)
-        {
-            return NotFound();
-        }
+    //  public IActionResult UserNotificationDelete(int id)
+    // {
+    //     var notifi = _userStore.GetDelNotificationById(id);
+    //     if (notifi is null)
+    //     {
+    //         return NotFound();
+    //     }
 
-        return View();
-    }
+    //     return View(notifi);
+    // }
 
     private IReadOnlyCollection<SelectListItem> GetUserSelectList()
     {

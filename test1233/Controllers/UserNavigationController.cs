@@ -50,6 +50,43 @@ public class UserNavigationController(IUserStore userStore) : Controller
         return View(notifications);
     }
 
+    public IActionResult UserNotificationDelete(int id)
+    {
+        var currentUser = GetCurrentUser();
+        if (currentUser is null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var notification = _userStore.GetNotificationById(id);
+        if (notification is null || notification.UserId != currentUser.Id)
+        {
+            return NotFound();
+        }
+
+        return View(notification);
+    }
+
+    [HttpPost, ActionName("UserNotificationDelete")]
+    [ValidateAntiForgeryToken]
+    public IActionResult UserNotificationDeleteConfirmed(int notificationId)
+    {
+        var currentUser = GetCurrentUser();
+        if (currentUser is null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var notification = _userStore.GetNotificationById(notificationId);
+        if (notification is null || notification.UserId != currentUser.Id)
+        {
+            return NotFound();
+        }
+
+        _userStore.DeleteNotification(notificationId);
+        return RedirectToAction(nameof(UserNotificationsList));
+    }
+
     public IActionResult UserOrderList()
     {
         var currentUser = GetCurrentUser();

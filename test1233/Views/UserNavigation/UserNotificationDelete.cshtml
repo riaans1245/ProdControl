@@ -18,12 +18,12 @@
                 <dd class="col-sm-9">@Model.UserName</dd>
             </dl>
 
-            <form asp-action="Delete" method="post">
+            <form asp-action="UserNotificationDelete" method="post">
                 @Html.AntiForgeryToken()
                 <input type="hidden" asp-for="NotificationId" />
                 <div class="d-flex gap-2">
                     <button type="submit" class="btn btn-danger">Delete</button>
-                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                    <a asp-action="UserNotificationsList" class="btn btn-outline-secondary">Cancel</a>
                 </div>
             </form>
         </div>

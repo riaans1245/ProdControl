@@ -19,7 +19,7 @@
                 <table class="table table-striped align-middle mb-0">
                     <thead>
                         <tr>
-                            <th>Id</th>
+                            @* <th>Id</th> *@
                             <th>Name</th>
                             <th class="text-end">Actions</th>
                         </tr>
@@ -28,7 +28,7 @@
                     @foreach (var category in Model.Items)
                     {
                         <tr>
-                            <td>@category.Id</td>
+                            @* <td>@category.Id</td> *@
                             <td>@category.Name</td>
                             <td class="text-end">
                                 <a asp-action="Edit" asp-route-id="@category.Id" class="btn btn-sm btn-outline-secondary">Edit</a>

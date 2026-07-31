@@ -24,18 +24,22 @@
                     <table class="table table-striped align-middle mb-0">
                         <thead>
                             <tr>
-                                <th>Notification ID</th>
+                                @* <th>Notification ID</th> *@
                                 <th>Notification</th>
                                 <th>User</th>
+                                <th class="text-end">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                         @foreach (var notifications in Model)
                         {
                             <tr>
-                                <td>@notifications.NotificationId</td>
+                                @* <td>@notifications.NotificationId</td> *@
                                 <td>@notifications.Notification</td>
                                 <td>@notifications.UserName</td>
+                                <td class="text-end">
+                                <a asp-action="UserNotificationDelete" asp-route-id="@notifications.NotificationId" class="btn btn-sm btn-outline-danger">Delete</a>
+                            </td>
                             </tr>
                         }
                         </tbody>

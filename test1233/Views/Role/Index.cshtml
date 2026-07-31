@@ -19,7 +19,7 @@
                 <table class="table table-striped align-middle mb-0">
                     <thead>
                         <tr>
-                            <th>Id</th>
+                            @* <th>Id</th> *@
                             <th>Name</th>
                             <th>Code</th>
                             <th>Users</th>
@@ -30,7 +30,7 @@
                     @foreach (var role in Model.Roles)
                     {
                         <tr>
-                            <td>@role.Id</td>
+                            @* <td>@role.Id</td> *@
                             <td>@role.Name</td>
                             <td>@role.IdentityCode</td>
                             <td>@Model.UserCountsByRoleId.GetValueOrDefault(role.Id)</td>

@@ -19,7 +19,7 @@
                 <table class="table table-striped align-middle mb-0">
                     <thead>
                         <tr>
-                            <th>Id</th>
+                            @* <th>Id</th> *@
                             <th>Product</th>
                             <th>Price</th>
                             <th>Category</th>
@@ -30,7 +30,7 @@
                     @foreach (var product in Model.Items)
                     {
                         <tr>
-                            <td>@product.Id</td>
+                            @* <td>@product.Id</td> *@
                             <td>@product.Name</td>
                             <td>@product.Price.ToString("C")</td>
                             <td>@product.CategoryName</td>

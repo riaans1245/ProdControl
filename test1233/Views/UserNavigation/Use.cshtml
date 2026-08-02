@@ -1,0 +1,31 @@
+@model test1233.Models.AppTokens
+
+@{
+    ViewData["Title"] = "Token";
+}
+
+<div class="container py-4" style="max-width: 620px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <h1 class="h3 mb-3">Notification</h1>
+            <p class="text-muted">Are you sure you want to access this token?</p>
+
+            <dl class="row mb-4">
+                <dt class="col-sm-3">TokenId</dt>
+                <dd class="col-sm-9">@Model.TokenId</dd>
+
+                <dt class="col-sm-3">Token</dt>
+                <dd class="col-sm-9">@Model.Token</dd>
+            </dl>
+
+            @* <form asp-action="UserNotificationDelete" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="NotificationId" />
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <a asp-action="UserNotificationsList" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form> *@
+        </div>
+    </div>
+</div>

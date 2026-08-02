@@ -123,4 +123,21 @@ public class UserNavigationController(IUserStore userStore) : Controller
         return _userStore.GetAllUsers()
             .FirstOrDefault(user => string.Equals(user.Username, username, StringComparison.OrdinalIgnoreCase));
     }
+
+    public IActionResult Use(int id)
+    {
+         var currentUser = GetCurrentUser();
+         if (currentUser is null)
+         {
+             return RedirectToAction("Login", "Account");
+         }
+
+         var tokens = _userStore.GetTokenById(id);
+         if (tokens is null || tokens.UserId != currentUser.Id)
+         {
+             return NotFound();
+         }
+
+        return View(tokens);
+    }
 }

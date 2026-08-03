@@ -43,6 +43,16 @@ public class ReportsController(IUserStore userStore) : Controller
         return View(_userStore.GetAllContactUs());
     }
 
+     public IActionResult Tokens()
+    {
+        return View(_userStore.GetAllTokens());
+    }
+
+     public IActionResult Notifications()
+    {
+        return View(_userStore.GetAllNotifications());
+    }
+
     public IActionResult ExportRoles()
     {
         using var workbook = new XLWorkbook();

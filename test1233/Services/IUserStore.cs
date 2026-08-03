@@ -1,5 +1,5 @@
-using test1233.Models;
 using Microsoft.AspNetCore.Mvc;
+using test1233.Models;
 
 namespace test1233.Services;
 
@@ -19,11 +19,14 @@ public interface IUserStore
 
     void CreateUser(AppUser user);
 
+    void SuggestionCreate(AppSuggestion suggest);
+
     IReadOnlyCollection<AppUser> GetAllUsers();
 
     IReadOnlyCollection<AppUser> GetAllUsersList();
 
     IReadOnlyCollection<AppTokens> GetAllTokens();
+    IReadOnlyCollection<AppSuggestion> GetAllSuggestions();
 
     IReadOnlyCollection<AppNotification> GetAllNotifications();
 

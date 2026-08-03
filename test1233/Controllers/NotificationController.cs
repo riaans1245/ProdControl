@@ -135,18 +135,11 @@ public class NotificationController(IUserStore userStore) : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    //  public IActionResult UserNotificationDelete(int id)
-    // {
-    //     var notifi = _userStore.GetDelNotificationById(id);
-    //     if (notifi is null)
-    //     {
-    //         return NotFound();
-    //     }
-
-    //     return View(notifi);
-    // }
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
 
     private IReadOnlyCollection<SelectListItem> GetUserSelectList()
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
+
     {
         return _userStore.GetAllUsers()
             .Select(user => new SelectListItem(user.Username, user.Id.ToString()))

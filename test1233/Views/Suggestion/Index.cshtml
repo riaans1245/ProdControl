@@ -1,0 +1,40 @@
+@model IReadOnlyCollection<test1233.Models.AppSuggestion>
+
+@{
+    ViewData["Title"] = "Suggestion";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">All Suggestions</h1>
+            <p class="text-muted mb-0">Read all the Suggestions.</p>
+        </div>
+        <a asp-action="Create" class="btn text-white" style="background-color: #080808; color: #123246;">Add Suggestion</a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Suggestion From</th>
+                            <th>Suggestion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var suggestion in Model)
+                    {
+                        <tr>
+                            <td>@suggestion.MyName</td>
+                            <td>@suggestion.Suggestion</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>

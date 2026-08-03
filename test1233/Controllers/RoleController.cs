@@ -42,7 +42,11 @@ public class RoleController(IUserStore userStore) : Controller
             return View(model);
         }
 
-        _userStore.CreateRole(new AppRole { Name = model.Name.Trim(), IdentityCode = model.IdentityCode });
+        _userStore.CreateRole(new AppRole
+        {
+            Name = model.Name.Trim(),
+            IdentityCode = model.IdentityCode
+        });
         return RedirectToAction(nameof(Index));
     }
 

@@ -66,10 +66,13 @@
                     <li class="nav-item"> 
                         <a class="nav-link text-white px-3" asp-controller="Home" asp-action="Index">Home</a> 
                     </li> 
+                <li class="nav-item"> 
+                        <a class="nav-link text-white px-3" asp-controller="Suggestion" asp-action="Index">Suggestions</a> 
+                    </li>
                     @if (User.Identity?.IsAuthenticated == true)
                     {
                         <li class="nav-item">
-                            <a asp-controller="Home" asp-action="Ordering" class="nav-link text-white px-3">Start ordering</a>
+                            <a asp-controller="Home" asp-action="Ordering" class="nav-link text-white px-3">Start Ordering</a>
                         </li>
                     }
                 </ul> 

@@ -65,6 +65,12 @@ public class InMemoryUserStore : IUserStore
 
     ];
 
+     private readonly List<AppSuggestion> _suggest =
+    [
+
+    ];
+
+
     private readonly List<AppUser> _users =
     [
         new AppUser
@@ -543,6 +549,21 @@ lock (_lock)
         }
     }
 
+public void SuggestionCreate(AppSuggestion suggest)
+    {
+         lock (_lock)
+        {
+             var nextId = _suggest.Count == 0 ? 1 : _suggest.Max(item => item.SuggestId) + 1;
+             _suggest.Add(new AppSuggestion
+             {
+                 SuggestId = nextId,
+                 Suggestion = suggest.Suggestion,
+                 MyName = suggest.MyName
+             });
+         }
+    }
+
+
     public void CreateNotification(AppNotification notification)
     {
         lock (_lock)
@@ -769,5 +790,12 @@ lock (_lock)
         }
     }
 
+    public IReadOnlyCollection<AppSuggestion> GetAllSuggestions()
+    {
+       lock (_lock)
+        {
+            return _suggest.ToList().AsReadOnly();
+        }
+    }
 
 }

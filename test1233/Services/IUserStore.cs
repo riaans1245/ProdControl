@@ -26,6 +26,7 @@ public interface IUserStore
     IReadOnlyCollection<AppUser> GetAllUsersList();
 
     IReadOnlyCollection<AppTokens> GetAllTokens();
+    
     IReadOnlyCollection<AppSuggestion> GetAllSuggestions();
 
     IReadOnlyCollection<AppNotification> GetAllNotifications();

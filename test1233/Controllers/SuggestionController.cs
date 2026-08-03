@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using test1233.Models;
 using test1233.Services;
@@ -13,9 +12,18 @@ public class SuggestionController(IUserStore userStore) : Controller
          return View(_userStore.GetAllSuggestions());
     }
 
+    public IActionResult Create()
+    {
+         return View(new SuggestionFormViewModel
+         {
+             MyName = string.Empty,
+             Suggestion = string.Empty
+         });
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public object SuggestionCreate(AppSuggestion model)
+    public IActionResult Create(SuggestionFormViewModel model)
     {
          if (!ModelState.IsValid)
          {
@@ -24,9 +32,10 @@ public class SuggestionController(IUserStore userStore) : Controller
 
          _userStore.SuggestionCreate(new AppSuggestion
          {
-            MyName = model.MyName,
-            Suggestion = model.Suggestion,
+            MyName = model.MyName.Trim(),
+            Suggestion = model.Suggestion.Trim()
          });
-         return RedirectToAction();
+
+         return RedirectToAction(nameof(Index));
     }
 }

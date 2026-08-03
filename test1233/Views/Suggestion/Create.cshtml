@@ -1,4 +1,4 @@
-@model test1233.Models.AppSuggestion
+@model test1233.Models.SuggestionFormViewModel
 
 @{
     ViewData["Title"] = "Suggestions";
@@ -11,7 +11,7 @@
                 <div class="card-body p-4">
                     <p class="text-uppercase small fw-semibold mb-2 public-section-kicker">Suggestions for Easy Eats</p>
                     <h1 class="h3 mb-3">We are happy to help.</h1>
-                    <p class="text-muted">Reach out if you have any Suggestions about food, service, website, menu access, tokens, or your customer profile.</p>
+                    <p class="text-muted">Reach out if you have suggestions about food, service, the website, menu access, tokens, or your customer profile.</p>
 
                     <div class="mt-4 d-grid gap-3">
                         <div>
@@ -24,7 +24,7 @@
                         </div>
                         <div>
                             <div class="fw-semibold">Best use</div>
-                            <div class="text-muted">Any Suggestions about food, service, website, menu access, tokens, or your customer profile.</div>
+                            <div class="text-muted">Share ideas to improve food, service, website access, tokens, or your profile experience.</div>
                         </div>
                     </div>
                 </div>
@@ -34,20 +34,13 @@
         <div class="col-lg-7">
             <div class="card shadow-sm border-0">
                 <div class="card-body p-4">
-                    <h2 class="h4 mb-3">Send us your Suggestion</h2>
-                    <p class="text-muted">We read through all the Suggestions ans together we will make this experience great.</p>
+                    <h2 class="h4 mb-3">Send us your suggestion</h2>
+                    <p class="text-muted">We read through all suggestions and use them to improve the experience.</p>
 
-                    @if (TempData["ContactSuccess"] is string contactSuccess)
-                    {
-                        <div class="alert alert-success" role="alert">
-                            @contactSuccess
-                        </div>
-                    }
-
-                    <form asp-action="Index" method="post">
+                    <form asp-action="Create" method="post">
                         @Html.AntiForgeryToken()
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-                        
+
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label asp-for="MyName" class="form-label"></label>
@@ -57,7 +50,8 @@
 
                             <div class="col-md-6">
                                 <label asp-for="Suggestion" class="form-label"></label>
-                                <input asp-for="Suggestion" class="form-control" />
+                                @* <input asp-for="Suggestion" class="form-control" /> *@
+                                <textarea name="Suggestion" rows="4" class="form-control" placeholder="Enter your text here..."></textarea>
                                 <span asp-validation-for="Suggestion" class="text-danger"></span>
                             </div>
                         </div>

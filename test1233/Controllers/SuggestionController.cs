@@ -54,4 +54,28 @@ public class SuggestionController(IUserStore userStore) : Controller
             MyName = suggest.MyName
         });
     }
+
+    public IActionResult Delete(int id)
+    {
+        var suggest = _userStore.GetSuggestById(id);
+        if (suggest is null)
+        {
+            return NotFound();
+        }
+        return View(suggest);
+    }
+
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public IActionResult DeleteConfirmed(int suggestId)
+    {
+        var suggest = _userStore.GetSuggestById(suggestId);
+        if (suggest is null)
+        {
+            return NotFound();
+        }
+
+        _userStore.DeleteSuggestion(suggestId);
+        return RedirectToAction(nameof(Index));
+    }
 }

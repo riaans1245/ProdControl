@@ -23,6 +23,13 @@
         </div>
     }
 
+    @if (TempData["MenuUploadError"] is string errorMessage)
+    {
+        <div class="alert alert-danger shadow-sm" role="alert">
+            @errorMessage
+        </div>
+    }
+
     <div class="row g-4">
         <div class="col-lg-5">
             <div class="card shadow-sm border-0">
@@ -46,17 +53,17 @@
         <div class="col-lg-7">
             <div class="card shadow-sm border-0">
                 <div class="card-body border-bottom">
-                    <h2 class="h5 mb-1">Latest Menu</h2>
-                    <p class="text-muted mb-0">The newest uploaded menu appears first and stays in the folder history.</p>
+                    <h2 class="h5 mb-1">Active Menu</h2>
+                    <p class="text-muted mb-0">This is the menu shown when admins or users open the Menu page.</p>
                 </div>
-                @if (Model.LatestMenu is not null)
+                @if (Model.ActiveMenu is not null)
                 {
                     <div class="card-body py-2 border-bottom bg-light small text-muted">
-                        Uploaded: @FormatUploadDate(Model.LatestMenu.UploadedAtUtc)
+                        Uploaded: @FormatUploadDate(Model.ActiveMenu.UploadedAtUtc)
                     </div>
-                    <img src="@Model.LatestMenu.Path"
+                    <img src="@Model.ActiveMenu.Path"
                          asp-append-version="true"
-                         alt="Latest Easy Eats menu"
+                         alt="Active Easy Eats menu"
                          class="img-fluid w-100" />
                 }
                 else
@@ -71,8 +78,8 @@
 
     <div class="card shadow-sm border-0 mt-4">
         <div class="card-body border-bottom">
-            <h2 class="h5 mb-1">Menu List</h2>
-            <p class="text-muted mb-0">Every uploaded menu is kept in the folder and listed here.</p>
+            <h2 class="h5 mb-1">Menu History</h2>
+            <p class="text-muted mb-0">Browse saved menus and choose which one should appear on the Menu page.</p>
         </div>
         <div class="card-body">
             @if (Model.Menus.Count == 0)
@@ -86,14 +93,32 @@
                     {
                         <div class="col-sm-6 col-lg-4 col-xl-3">
                             <div class="border rounded-4 overflow-hidden bg-light h-100">
-                                <div class="px-3 py-2 small text-muted border-bottom bg-white">
-                                    Uploaded: @FormatUploadDate(menu.UploadedAtUtc)
+                                <div class="px-3 py-2 small text-muted border-bottom bg-white d-flex justify-content-between align-items-center gap-2">
+                                    <span>Uploaded: @FormatUploadDate(menu.UploadedAtUtc)</span>
+                                    @if (menu.IsSelected)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
                                 </div>
                                 <img src="@menu.Path"
                                      asp-append-version="true"
                                      alt="Easy Eats menu"
                                      class="img-fluid w-100"
                                      style="max-height: 180px; object-fit: cover;" />
+                                <div class="p-3 bg-white border-top">
+                                    @if (menu.IsSelected)
+                                    {
+                                        <button type="button" class="btn btn-sm btn-outline-success w-100" disabled>Currently Showing</button>
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="SelectMenu" asp-controller="Home" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="menuPath" value="@menu.Path" />
+                                            <button type="submit" class="btn btn-sm btn-dark w-100">Show This Menu</button>
+                                        </form>
+                                    }
+                                </div>
                             </div>
                         </div>
                     }

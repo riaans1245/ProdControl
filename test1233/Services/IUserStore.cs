@@ -99,7 +99,11 @@ public interface IUserStore
 
     AppRole? GetRoleById(int id);
 
+    //AppSuggestion? GetSuggestionById(int Id);
+
     AppSuggestion? GetSuggestById(int id);
+
+    bool DeleteSuggestion(int id);
 
     void CreateRole(AppRole role);
 

@@ -707,6 +707,21 @@ public void SuggestionCreate(AppSuggestion suggest)
         }
     }
 
+    public bool DeleteSuggestion(int id)
+    {
+        lock (_lock)
+        {
+            var suggest = _suggest.FirstOrDefault(item => item.SuggestId == id);
+            if (suggest is null)
+            {
+                return false;
+            }
+
+            _suggest.Remove(suggest);
+            return true;
+        }
+    }
+
     public void CreateRole(AppRole role)
     {
         lock (_lock)

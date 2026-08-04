@@ -128,8 +128,34 @@ public class HomeController(IUserStore userStore, IWebHostEnvironment environmen
 
         await System.IO.File.WriteAllBytesAsync(historyImagePath, fileBytes);
 
+        var uploadedMenuPath = $"/images/menu-history/{historyFileName}";
+        if (string.IsNullOrWhiteSpace(ReadSelectedMenuPath()))
+        {
+            WriteSelectedMenuPath(uploadedMenuPath);
+        }
+
         TempData["MenuUploadSuccess"] = "Menu image uploaded successfully.";
 
+        return RedirectToAction(nameof(ManageMenu));
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Admin")]
+    [ValidateAntiForgeryToken]
+    public IActionResult SelectMenu(string menuPath)
+    {
+        var menus = GetMenus();
+        var selectedMenu = menus.FirstOrDefault(menu =>
+            string.Equals(menu.Path, menuPath, StringComparison.OrdinalIgnoreCase));
+
+        if (selectedMenu is null)
+        {
+            TempData["MenuUploadError"] = "The selected menu could not be found.";
+            return RedirectToAction(nameof(ManageMenu));
+        }
+
+        WriteSelectedMenuPath(selectedMenu.Path);
+        TempData["MenuUploadSuccess"] = "Active menu updated successfully.";
         return RedirectToAction(nameof(ManageMenu));
     }
 
@@ -141,6 +167,14 @@ public class HomeController(IUserStore userStore, IWebHostEnvironment environmen
     private MenuUploadViewModel BuildManageMenuViewModel(MenuUploadViewModel model)
     {
         var menus = GetMenus();
+        var activeMenu = menus.FirstOrDefault(menu => menu.IsSelected) ?? menus.FirstOrDefault();
+
+        if (activeMenu is not null && !activeMenu.IsSelected)
+        {
+            activeMenu.IsSelected = true;
+        }
+
+        model.ActiveMenu = activeMenu;
         model.LatestMenu = menus.FirstOrDefault();
         model.Menus = menus;
         return model;
@@ -151,6 +185,7 @@ public class HomeController(IUserStore userStore, IWebHostEnvironment environmen
         var imagesFolder = Path.Combine(_environment.WebRootPath, "images");
         var menuHistoryFolder = Path.Combine(imagesFolder, "menu-history");
         var menus = new List<MenuListItemViewModel>();
+        var selectedMenuPath = ReadSelectedMenuPath();
 
         if (Directory.Exists(menuHistoryFolder))
         {
@@ -160,7 +195,8 @@ public class HomeController(IUserStore userStore, IWebHostEnvironment environmen
                 .Select(file => new MenuListItemViewModel
                 {
                     Path = $"/images/menu-history/{file.Name}",
-                    UploadedAtUtc = file.CreationTimeUtc
+                    UploadedAtUtc = file.CreationTimeUtc,
+                    IsSelected = string.Equals($"/images/menu-history/{file.Name}", selectedMenuPath, StringComparison.OrdinalIgnoreCase)
                 }));
         }
 
@@ -174,15 +210,48 @@ public class HomeController(IUserStore userStore, IWebHostEnvironment environmen
                 menus.Add(new MenuListItemViewModel
                 {
                     Path = publicLegacyMenuPath,
-                    UploadedAtUtc = legacyFile.CreationTimeUtc
+                    UploadedAtUtc = legacyFile.CreationTimeUtc,
+                    IsSelected = string.Equals(publicLegacyMenuPath, selectedMenuPath, StringComparison.OrdinalIgnoreCase)
                 });
             }
         }
 
-        return menus
+        var orderedMenus = menus
             .OrderByDescending(menu => menu.UploadedAtUtc)
             .ToList()
             .AsReadOnly();
+
+        if (orderedMenus.Count > 0 && orderedMenus.All(menu => !menu.IsSelected))
+        {
+            orderedMenus[0].IsSelected = true;
+        }
+
+        return orderedMenus;
+    }
+
+    private string GetSelectedMenuPathFile()
+    {
+        var appDataFolder = Path.Combine(_environment.ContentRootPath, "App_Data");
+        Directory.CreateDirectory(appDataFolder);
+        return Path.Combine(appDataFolder, "selected-menu.txt");
+    }
+
+    private string? ReadSelectedMenuPath()
+    {
+        var selectedMenuFile = GetSelectedMenuPathFile();
+        if (!System.IO.File.Exists(selectedMenuFile))
+        {
+            return null;
+        }
+
+        var selectedPath = System.IO.File.ReadAllText(selectedMenuFile).Trim();
+        return string.IsNullOrWhiteSpace(selectedPath) ? null : selectedPath;
+    }
+
+    private void WriteSelectedMenuPath(string menuPath)
+    {
+        var selectedMenuFile = GetSelectedMenuPathFile();
+        System.IO.File.WriteAllText(selectedMenuFile, menuPath);
     }
 
 }

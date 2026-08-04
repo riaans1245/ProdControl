@@ -8,28 +8,34 @@
     <div class="card shadow-sm border-0">
         <div class="card-body p-4">
             <h1 class="h3 mb-1">Suggestion</h1>
-            @* <p class="text-muted mb-3">Role ID: @Model.SuggestId</p> *@
-
-            <form asp-action="Delete" method="post">
-                @Html.AntiForgeryToken()
-                <input asp-for="SuggestId" type="hidden" />
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-                <div class="mb-4">
-                    <label class="form-label">Name :</label>
-                    <span class="nav-link text-black px-3">@Model.MyName</span>
-                </div>
             
-             <div class="mb-4">
-                    <label class="form-label">Suggestion :</label>
-                    <span class="nav-link text-black px-3">@Model.Suggestion</span>
-                </div>
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        
+                            <form asp-action="Delete" method="post">
+                                @Html.AntiForgeryToken()
+                                <input asp-for="SuggestId" type="hidden" />
+                                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                 <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                                <div class="mb-4">
+                                    <label class="form-label">Name :</label>
+                                    <span class="form-control">@Model.MyName</span>
+                                </div>
+                            
+                                <div class="mb-4">
+                                    <label class="form-label">Suggestion :</label>
+                                    <span class="form-control" rows="5">@Model.Suggestion</span>
+                                </div>
+
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                                </div>
+                            </form>
+                        
+                    </div>
                 </div>
-            </form>
+        
         </div>
     </div>
 </div>

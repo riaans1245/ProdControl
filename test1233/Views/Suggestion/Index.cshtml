@@ -55,7 +55,12 @@
                     {
                         <tr>
                             <td>@suggestion.MyName</td>
-                            <td>@suggestion.Suggestion</td>
+                            @* <td>@suggestion.Suggestion</td> *@
+                            <td>
+                                @(suggestion.Suggestion?.Length > 40 
+                                    ? suggestion.Suggestion.Substring(0, 40) + "..." 
+                                    : suggestion.Suggestion)
+                            </td>
                             <td class="text-end">
                                 <a asp-action="Select" asp-route-id="@suggestion.SuggestId" class="btn btn-sm btn-outline-secondary">Select</a>
                                 <a asp-action="Delete" asp-route-id="@suggestion.SuggestId" class="btn btn-sm btn-outline-danger">Delete</a>

@@ -32,10 +32,26 @@ public class SuggestionController(IUserStore userStore) : Controller
 
          _userStore.SuggestionCreate(new AppSuggestion
          {
-            MyName = model.MyName.Trim(),
+            MyName = model.MyName,
             Suggestion = model.Suggestion.Trim()
          });
 
          return RedirectToAction(nameof(Index));
+    }
+
+    public IActionResult Select(int id)
+    {
+        var suggest = _userStore.GetSuggestById(id);
+        if (suggest is null)
+        {
+            return NotFound();
+        }
+
+        return View(new SuggestionFormViewModel
+        {
+            SuggestId = suggest.SuggestId,
+            Suggestion = suggest.Suggestion,
+            MyName = suggest.MyName
+        });
     }
 }

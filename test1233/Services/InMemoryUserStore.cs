@@ -698,6 +698,15 @@ public void SuggestionCreate(AppSuggestion suggest)
         }
     }
 
+     public AppSuggestion? GetSuggestById(int id)
+    {
+        lock (_lock)
+        {
+            var suggest = _suggest.FirstOrDefault(item => item.SuggestId == id);
+            return suggest is null ? null : new AppSuggestion { SuggestId = suggest.SuggestId, Suggestion = suggest.Suggestion, MyName = suggest.MyName};
+        }
+    }
+
     public void CreateRole(AppRole role)
     {
         lock (_lock)

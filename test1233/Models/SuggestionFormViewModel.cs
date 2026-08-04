@@ -14,5 +14,5 @@ public class SuggestionFormViewModel
     [Required]
     [StringLength(100)]
     [Display(Name = "My Name")]
-    public string MyName { get; set; } = string.Empty;
+    public string? MyName { get; set; } = string.Empty;
 }

@@ -26,7 +26,7 @@ public interface IUserStore
     IReadOnlyCollection<AppUser> GetAllUsersList();
 
     IReadOnlyCollection<AppTokens> GetAllTokens();
-    
+
     IReadOnlyCollection<AppSuggestion> GetAllSuggestions();
 
     IReadOnlyCollection<AppNotification> GetAllNotifications();
@@ -98,6 +98,8 @@ public interface IUserStore
     IReadOnlyCollection<AppRole> GetAllRoles();
 
     AppRole? GetRoleById(int id);
+
+    AppSuggestion? GetSuggestById(int id);
 
     void CreateRole(AppRole role);
 

@@ -1,5 +1,9 @@
 @model IReadOnlyCollection<test1233.Models.AppSuggestion>
+@inject test1233.Services.IUserStore UserStore
 
+@{
+    var isUser = User.IsInRole("Users");
+}
 @{
     ViewData["Title"] = "Suggestion";
 }
@@ -13,9 +17,11 @@
         <a asp-action="Create" class="btn text-white" style="background-color: #080808; color: #123246;">Add Suggestion</a>
     </div>
 
-    <div class="card shadow-sm border-0">
+     <div class="card shadow-sm border-0">
         <div class="card-body">
             <div class="table-responsive">
+             @if (User.Identity?.Name == null || isUser)
+            {
                 <table class="table table-striped align-middle mb-0">
                     <thead>
                         <tr>
@@ -33,8 +39,33 @@
                     }
                     </tbody>
                 </table>
+            }
+            else
+            { 
+                <table class="table table-striped align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Suggestion From</th>
+                            <th>Suggestion</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var suggestion in Model)
+                    {
+                        <tr>
+                            <td>@suggestion.MyName</td>
+                            <td>@suggestion.Suggestion</td>
+                            <td class="text-end">
+                                <a asp-action="Select" asp-route-id="@suggestion.SuggestId" class="btn btn-sm btn-outline-secondary">Select</a>
+                                <a asp-action="Delete" asp-route-id="@suggestion.SuggestId" class="btn btn-sm btn-outline-danger">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+             }
             </div>
-
         </div>
     </div>
 </div>

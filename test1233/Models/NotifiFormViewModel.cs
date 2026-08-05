@@ -16,5 +16,7 @@ public class NotifiFormViewModel
     [Display(Name = "User")]
     public int UserId { get; set; }
 
+    public bool AllUsers{get; set;}
+
     public IReadOnlyCollection<SelectListItem> AvailableUsers { get; set; } = Array.Empty<SelectListItem>();
 }

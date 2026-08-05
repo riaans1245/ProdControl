@@ -568,7 +568,7 @@ public void SuggestionCreate(AppSuggestion suggest)
     {
         lock (_lock)
         {
-             var nextId = _notifi.Count == 0 ? 1 : _notifi.Max(item => item.NotificationId) + 1;
+               var nextId = _notifi.Count == 0 ? 1 : _notifi.Max(item => item.NotificationId) + 1;
             _notifi.Add(new AppNotification
             {
                  NotificationId = nextId,

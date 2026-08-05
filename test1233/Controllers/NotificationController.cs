@@ -32,27 +32,58 @@ public class NotificationController(IUserStore userStore) : Controller
             return View(model);
         }
 
+        if (model.AllUsers)
+        {
+            var users = _userStore.GetAllUsers();
+            if (users.Count == 0)
+            {
+                ModelState.AddModelError(nameof(model.AllUsers), "There are no users available to notify.");
+                model.AvailableUsers = GetUserSelectList();
+                return View(model);
+            }
+
+            foreach (var appUser in users)
+            {
+                _userStore.CreateNotification(new AppNotification
+                {
+                    Notification = model.Notification.Trim(),
+                    UserId = appUser.Id,
+                    UserName = appUser.Username
+                });
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
         var user = _userStore.GetUserById(model.UserId);
          if (user is null)
          {
-             ModelState.AddModelError(nameof(model.UserId), "Please choose a valid category.");
+             ModelState.AddModelError(nameof(model.UserId), "Please choose a valid user.");
          }
 
          if (!ModelState.IsValid)
          {
              model.AvailableUsers = GetUserSelectList();
              return View(model);
-         }
+        }
 
-         _userStore.CreateNotification(new AppNotification
-         {
-              Notification = model.Notification.Trim(),
+        _userStore.CreateNotification(new AppNotification
+        {
+
+            
+            Notification = model.Notification.Trim(),
               UserId = user!.Id,
               UserName = user.Username
          });
 
         return RedirectToAction(nameof(Index));
     }
+
+    private object If(bool v)
+    {
+        throw new NotImplementedException();
+    }
+
 
     public IActionResult Edit(int id)
     {

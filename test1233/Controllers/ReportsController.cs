@@ -53,6 +53,16 @@ public class ReportsController(IUserStore userStore) : Controller
         return View(_userStore.GetAllNotifications());
     }
 
+     public IActionResult Suggestion()
+    {
+        return View(_userStore.GetAllSuggestions());
+    }
+
+     public IActionResult Sales()
+    {
+        return View(_userStore.GetAllUserOrders());
+    }
+
     public IActionResult ExportRoles()
     {
         using var workbook = new XLWorkbook();

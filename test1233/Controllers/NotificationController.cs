@@ -70,7 +70,7 @@ public class NotificationController(IUserStore userStore) : Controller
         _userStore.CreateNotification(new AppNotification
         {
 
-            
+
             Notification = model.Notification.Trim(),
               UserId = user!.Id,
               UserName = user.Username
@@ -78,12 +78,6 @@ public class NotificationController(IUserStore userStore) : Controller
 
         return RedirectToAction(nameof(Index));
     }
-
-    private object If(bool v)
-    {
-        throw new NotImplementedException();
-    }
-
 
     public IActionResult Edit(int id)
     {

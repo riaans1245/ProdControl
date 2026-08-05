@@ -6,13 +6,14 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="h3 mb-1">My Orders</h1>
-            <p class="text-muted mb-0">View the orders saved from the cart after checkout.</p>
+            <p class="text-muted mb-0">Review the items ready for payment, then continue to the payment receipt page.</p>
         </div>
     </div>
 
     <div class="card shadow-sm border-0">
         <div class="card-body">
-            <div id="empty-order-history" class="text-muted">No saved orders yet. Place an order from the cart to see it here.</div>
+            <div id="empty-order-history" class="text-muted">No items are waiting in your order list yet.</div>
+
             <div id="order-history-table-wrapper" class="table-responsive d-none">
                 <table class="table table-striped align-middle mb-0">
                     <thead>
@@ -30,6 +31,16 @@
                 </table>
             </div>
         </div>
+        <div class="card-footer bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <div class="small text-muted">Items waiting for payment</div>
+                <div class="fw-semibold">
+                    <span id="pending-order-count">0</span> item(s),
+                    <span id="pending-order-total">$0.00</span>
+                </div>
+            </div>
+            <a asp-action="UserOrderPlace" id="place-order-link" class="btn btn-success disabled" aria-disabled="true">Place Order</a>
+        </div>
     </div>
 </div>
 
@@ -38,9 +49,13 @@
         (() => {
             const currentUsername = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(User.Identity?.Name ?? string.Empty));
             const orderHistoryStorageKey = `easy-eats-order-history:${currentUsername || "anonymous"}`;
+
             const emptyOrderHistory = document.getElementById("empty-order-history");
             const orderHistoryTableWrapper = document.getElementById("order-history-table-wrapper");
             const orderHistoryTableBody = document.getElementById("order-history-table-body");
+            const pendingOrderCount = document.getElementById("pending-order-count");
+            const pendingOrderTotal = document.getElementById("pending-order-total");
+            const placeOrderLink = document.getElementById("place-order-link");
 
             const formatCurrency = (value) =>
                 new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value);
@@ -69,11 +84,34 @@
                 }
             };
 
+            const getPendingSummary = (orders) => {
+                return orders.reduce((summary, order) => {
+                    const items = Array.isArray(order.items) ? order.items : [];
+
+                    for (const item of items) {
+                        const quantity = Number(item.quantity) || 0;
+                        const price = Number(item.price) || 0;
+                        summary.totalItems += quantity;
+                        summary.totalValue += quantity * price;
+                    }
+
+                    return summary;
+                }, { totalItems: 0, totalValue: 0 });
+            };
+
             const renderOrderHistory = () => {
                 const orderHistory = readOrderHistory();
-                orderHistoryTableBody.innerHTML = "";
+                const summary = getPendingSummary(orderHistory);
 
-                if (orderHistory.length === 0) {
+                orderHistoryTableBody.innerHTML = "";
+                pendingOrderCount.textContent = summary.totalItems.toString();
+                pendingOrderTotal.textContent = formatCurrency(summary.totalValue);
+
+                const hasOrders = orderHistory.length > 0;
+                placeOrderLink.classList.toggle("disabled", !hasOrders);
+                placeOrderLink.setAttribute("aria-disabled", hasOrders ? "false" : "true");
+
+                if (!hasOrders) {
                     emptyOrderHistory.classList.remove("d-none");
                     orderHistoryTableWrapper.classList.add("d-none");
                     return;
@@ -86,20 +124,28 @@
                     const items = Array.isArray(order.items) ? order.items : [];
 
                     for (const item of items) {
+                        const quantity = Number(item.quantity) || 0;
+                        const price = Number(item.price) || 0;
                         const row = document.createElement("tr");
                         row.innerHTML = `
                             <td>${order.orderId ?? ""}</td>
                             <td>${formatPlacedDate(order.placedAtUtc)}</td>
                             <td>${item.name ?? ""}</td>
                             <td>${item.categoryName ?? ""}</td>
-                            <td>${Number(item.quantity) || 0}</td>
-                            <td>${formatCurrency(Number(item.price) || 0)}</td>
-                            <td>${formatCurrency((Number(item.quantity) || 0) * (Number(item.price) || 0))}</td>`;
+                            <td>${quantity}</td>
+                            <td>${formatCurrency(price)}</td>
+                            <td>${formatCurrency(quantity * price)}</td>`;
 
                         orderHistoryTableBody.appendChild(row);
                     }
                 }
             };
+
+            placeOrderLink.addEventListener("click", (event) => {
+                if (placeOrderLink.getAttribute("aria-disabled") === "true") {
+                    event.preventDefault();
+                }
+            });
 
             renderOrderHistory();
             window.addEventListener("storage", renderOrderHistory);

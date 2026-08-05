@@ -97,6 +97,17 @@ public class UserNavigationController(IUserStore userStore) : Controller
         return View();
     }
 
+    public IActionResult UserOrderPlace()
+    {
+        var currentUser = GetCurrentUser();
+        if (currentUser is null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        return View();
+    }
+
     public IActionResult Products()
     {
         return View(_userStore.GetAllProducts());

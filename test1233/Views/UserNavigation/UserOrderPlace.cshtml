@@ -3,6 +3,10 @@
 }
 
 <div class="container py-4">
+    <form id="confirm-payment-form" method="post" class="d-none">
+        @Html.AntiForgeryToken()
+    </form>
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="h3 mb-1">Place Order</h1>
@@ -104,6 +108,7 @@
             const currentUsername = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(User.Identity?.Name ?? string.Empty));
             const orderHistoryStorageKey = `easy-eats-order-history:${currentUsername || "anonymous"}`;
             const latestReceiptStorageKey = `easy-eats-latest-receipt:${currentUsername || "anonymous"}`;
+            const confirmPaymentForm = document.getElementById("confirm-payment-form");
 
             const emptyPaymentState = document.getElementById("empty-payment-state");
             const paymentSummary = document.getElementById("payment-summary");
@@ -119,6 +124,7 @@
             const receiptItemsBody = document.getElementById("receipt-items-body");
             const receiptTotalItems = document.getElementById("receipt-total-items");
             const receiptTotalValue = document.getElementById("receipt-total-value");
+            const antiForgeryToken = confirmPaymentForm.querySelector("input[name='__RequestVerificationToken']")?.value ?? "";
 
             const formatCurrency = (value) =>
                 new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value);
@@ -260,19 +266,47 @@
                 };
             };
 
-            confirmPaymentButton.addEventListener("click", () => {
+            const callConfirmPaymentApi = async (receipt) => {
+                const response = await fetch('@Url.Action("ConfirmPayment", "UserNavigation")', {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "RequestVerificationToken": antiForgeryToken
+                    },
+                    body: JSON.stringify(receipt)
+                });
+
+                const result = await response.json();
+                if (!response.ok || !result?.success) {
+                    throw new Error(result?.message ?? "Payment confirmation failed.");
+                }
+
+                return result;
+            };
+
+            confirmPaymentButton.addEventListener("click", async () => {
                 const orderHistory = readOrderHistory();
                 if (orderHistory.length === 0) {
                     return;
                 }
 
+                confirmPaymentButton.disabled = true;
                 const receipt = buildReceiptFromOrders(orderHistory);
-                saveLatestReceipt(receipt);
-                localStorage.removeItem(orderHistoryStorageKey);
 
-                renderReceipt();
-                renderPaymentSummary();
-                window.dispatchEvent(new Event("order-history-updated"));
+                try {
+                    await callConfirmPaymentApi(receipt);
+                    saveLatestReceipt(receipt);
+                    localStorage.removeItem(orderHistoryStorageKey);
+
+                    renderReceipt();
+                    renderPaymentSummary();
+                    window.dispatchEvent(new Event("order-history-updated"));
+                } catch (error) {
+                    const message = error instanceof Error ? error.message : "Payment confirmation failed.";
+                    alert(message);
+                } finally {
+                    renderPaymentSummary();
+                }
             });
 
             renderPaymentSummary();

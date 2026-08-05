@@ -108,6 +108,36 @@ public class UserNavigationController(IUserStore userStore) : Controller
         return View();
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult ConfirmPayment([FromBody] OrderPaymentRequest request)
+    {
+        var currentUser = GetCurrentUser();
+        if (currentUser is null)
+        {
+            return Unauthorized(new { success = false, message = "You must be signed in to confirm payment." });
+        }
+
+        if (request is null || request.Items.Count == 0)
+        {
+            return BadRequest(new { success = false, message = "No order items were sent for payment." });
+        }
+
+        var normalizedTotalItems = request.Items.Sum(item => Math.Max(0, item.Quantity));
+        var normalizedTotalValue = request.Items.Sum(item => Math.Max(0, item.Quantity) * Math.Max(0m, item.Price));
+
+        return Json(new
+        {
+            success = true,
+            message = "Payment recorded successfully.",
+            paidBy = currentUser.Username,
+            receiptNumber = request.ReceiptNumber,
+            totalItems = normalizedTotalItems,
+            totalValue = normalizedTotalValue,
+            paidAtUtc = request.PaidAtUtc
+        });
+    }
+
     public IActionResult Products()
     {
         return View(_userStore.GetAllProducts());

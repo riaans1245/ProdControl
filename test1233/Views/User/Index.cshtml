@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Users";
+    var currentSearch = ViewData["CurrentSearch"] as string ?? string.Empty;
 }
 
 <div class="container py-4">
@@ -13,42 +14,68 @@
         <a asp-action="Create" class="btn text-white" style="background-color: #080808; color: #123246;">Add User</a>
     </div>
 
+    <form asp-action="Index" method="get" class="row g-2 align-items-end mb-4">
+        <div class="col-sm-8 col-md-6 col-lg-4">
+            <label for="searchString" class="form-label">Search users</label>
+            <input id="searchString"
+                   name="searchString"
+                   value="@currentSearch"
+                   class="form-control"
+                   placeholder="Search by name, surname, username, or email" />
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-dark">Search</button>
+        </div>
+        <div class="col-auto">
+            <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
+        </div>
+    </form>
+
     <div class="card shadow-sm border-0">
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-striped align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Surname</th>
-                            <th>Email address</th>
-                            <th>Cell no</th>
-                            <th>User name</th>
-                            <th>Password</th>
-                            <th>Role</th>
-                            <th class="text-end">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    @foreach (var user in Model)
-                    {
-                        <tr>
-                            <td>@user.Name</td>
-                            <td>@user.Surname</td>
-                            <td>@user.EmailAddress</td>
-                            <td>@user.CellNo</td>
-                            <td>@user.Username</td>
-                            <td>@user.Password</td>
-                            <td>@($"{user.RoleId} - {user.Role}")</td>
-                            <td class="text-end">
-                                <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                <a asp-action="Delete" asp-route-id="@user.Id" class="btn btn-sm btn-outline-danger">Delete</a>
-                            </td>
-                        </tr>
-                    }
-                    </tbody>
-                </table>
-            </div>
+            @if (Model.Count == 0)
+            {
+                <div class="text-muted">
+                    No users found@(string.IsNullOrWhiteSpace(currentSearch) ? "." : $" for \"{currentSearch}\".").
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Surname</th>
+                                <th>Email address</th>
+                                <th>Cell no</th>
+                                <th>User name</th>
+                                <th>Password</th>
+                                <th>Role</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td>@user.Name</td>
+                                <td>@user.Surname</td>
+                                <td>@user.EmailAddress</td>
+                                <td>@user.CellNo</td>
+                                <td>@user.Username</td>
+                                <td>@user.Password</td>
+                                <td>@($"{user.RoleId} - {user.Role}")</td>
+                                <td class="text-end">
+                                    <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    <a asp-action="Delete" asp-route-id="@user.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
         </div>
     </div>
 </div>

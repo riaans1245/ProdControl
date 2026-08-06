@@ -11,9 +11,24 @@ public class UserController(IUserStore userStore) : Controller
 {
     private readonly IUserStore _userStore = userStore;
 
-    public IActionResult Index()
+    public IActionResult Index(string searchString)
     {
-        return View(_userStore.GetAllUsers());
+        ViewData["CurrentSearch"] = searchString;
+
+        var users = from u in _userStore.GetAllUsers()
+                    select u;
+
+        if (!string.IsNullOrWhiteSpace(searchString))
+        {
+            var normalizedSearch = searchString.Trim();
+            users = users.Where(u =>
+                u.Name.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
+                u.Surname.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
+                u.Username.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
+                u.EmailAddress.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase));
+        }
+
+        return View(users.ToList().AsReadOnly());
     }
 
     public IActionResult Create()

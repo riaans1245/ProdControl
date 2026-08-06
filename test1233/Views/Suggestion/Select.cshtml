@@ -17,7 +17,7 @@
                                 <input asp-for="SuggestId" type="hidden" />
                                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                                <div class="mb-4">
+                                @* <div class="mb-4">
                                     <label class="form-label">Name :</label>
                                     <span class="form-control">@Model.MyName</span>
                                 </div>
@@ -25,10 +25,18 @@
                                 <div class="mb-4">
                                     <label class="form-label">Suggestion :</label>
                                     <span class="form-control" rows="5">@Model.Suggestion</span>
-                                </div>
+                                </div> *@
+                            
+                                <dl class="row mb-4">
+                                    <dt class="col-sm-3">User name</dt>
+                                    <dd class="col-sm-9">@Model.MyName</dd>
+
+                                    <dt class="col-sm-3">Suggestion</dt>
+                                    <dd class="col-sm-9" rows="5">@Model.Suggestion</dd>
+                                </dl>
 
                                 <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');">Delete</button>
                                     <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
                                 </div>
                             </form>

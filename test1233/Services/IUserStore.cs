@@ -27,11 +27,15 @@ public interface IUserStore
 
     IReadOnlyCollection<AppTokens> GetAllTokens();
 
+    IReadOnlyCollection<AppUsedToken> GetAllUsedTokens();
+
     IReadOnlyCollection<AppSuggestion> GetAllSuggestions();
 
     IReadOnlyCollection<AppNotification> GetAllNotifications();
 
     void CreateToken(AppTokens tokens);
+
+    void RecordUsedToken(AppUsedToken usedToken);
 
     void CreateNotification(AppNotification notification);
 

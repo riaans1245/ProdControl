@@ -1,0 +1,85 @@
+@{
+    ViewData["Title"] = "Used Tokens";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">Used Tokens</h1>
+            <p class="text-muted mb-0">Tokens sent to the administrator from the user API.</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary">Back to Tokens</a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div id="used-token-status" class="text-muted mb-3">Loading used tokens from the API...</div>
+            <div class="table-responsive">
+                <table class="table table-striped align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>User ID</th>
+                            <th>Token</th>
+                            <th>Sent</th>
+                        </tr>
+                    </thead>
+                    <tbody id="used-token-body">
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (() => {
+            const status = document.getElementById("used-token-status");
+            const body = document.getElementById("used-token-body");
+            const apiUrl = '@Url.Content("~/api/tokens/used")';
+
+            const formatDate = (value) => {
+                const parsed = new Date(value);
+                return Number.isNaN(parsed.getTime()) ? value : parsed.toLocaleString();
+            };
+
+            const renderRows = (items) => {
+                if (!items.length) {
+                    body.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No used tokens have been sent yet.</td></tr>';
+                    status.textContent = 'No used tokens are available yet.';
+                    return;
+                }
+
+                body.innerHTML = items.map(item => `
+                    <tr>
+                        <td>${item.username}</td>
+                        <td>${item.userId}</td>
+                        <td>${item.token}</td>
+                        <td>${formatDate(item.sentAtUtc)}</td>
+                    </tr>
+                `).join("");
+
+                status.textContent = `Loaded ${items.length} used token record${items.length === 1 ? "" : "s"} from the API.`;
+            };
+
+            const renderError = () => {
+                body.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Unable to load used tokens.</td></tr>';
+                status.textContent = 'The administrator API request failed.';
+            };
+
+            fetch(apiUrl, {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json"
+                }
+            })
+                .then(response => response.ok ? response.json() : Promise.reject(response))
+                .then(renderRows)
+                .catch(renderError);
+        })();
+    </script>
+}

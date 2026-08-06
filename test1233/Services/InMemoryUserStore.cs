@@ -55,6 +55,11 @@ public class InMemoryUserStore : IUserStore
 
     ];
 
+    private readonly List<AppUsedToken> _usedTokens =
+    [
+
+    ];
+
     private readonly List<ContactUs> _contactUs =
     [
 
@@ -171,6 +176,17 @@ public class InMemoryUserStore : IUserStore
         lock (_lock)
         {
             return _tokens.ToList().AsReadOnly();
+        }
+    }
+
+    public IReadOnlyCollection<AppUsedToken> GetAllUsedTokens()
+    {
+        lock (_lock)
+        {
+            return _usedTokens
+                .OrderByDescending(token => token.SentAtUtc)
+                .ToList()
+                .AsReadOnly();
         }
     }
 
@@ -545,6 +561,23 @@ lock (_lock)
                 Token = tokens.Token,
                 UserId = tokens.UserId,
                 Username = tokens.Username
+            });
+        }
+    }
+
+    public void RecordUsedToken(AppUsedToken usedToken)
+    {
+        lock (_lock)
+        {
+            var nextId = _usedTokens.Count == 0 ? 1 : _usedTokens.Max(item => item.Id) + 1;
+            _usedTokens.Add(new AppUsedToken
+            {
+                Id = nextId,
+                TokenId = usedToken.TokenId,
+                Token = usedToken.Token,
+                UserId = usedToken.UserId,
+                Username = usedToken.Username,
+                SentAtUtc = usedToken.SentAtUtc
             });
         }
     }

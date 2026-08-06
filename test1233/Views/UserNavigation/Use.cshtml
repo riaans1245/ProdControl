@@ -1,31 +1,65 @@
 @model test1233.Models.AppTokens
 
 @{
-    ViewData["Title"] = "Token";
+    ViewData["Title"] = "Use Token";
 }
 
-<div class="container py-4" style="max-width: 620px;">
+<div class="container py-4" style="max-width: 720px;">
     <div class="card shadow-sm border-0">
         <div class="card-body p-4">
-            <h1 class="h3 mb-3">Notification</h1>
-            <p class="text-muted">Are you sure you want to access this token?</p>
+            <h1 class="h3 mb-3">Send Token</h1>
+            <p class="text-muted">Send this token to the administrator through the API.</p>
 
             <dl class="row mb-4">
-                <dt class="col-sm-3">TokenId</dt>
-                <dd class="col-sm-9">@Model.TokenId</dd>
+                <dt class="col-sm-3">Username</dt>
+                <dd class="col-sm-9">@Model.Username</dd>
+
+                <dt class="col-sm-3">User ID</dt>
+                <dd class="col-sm-9">@Model.UserId</dd>
 
                 <dt class="col-sm-3">Token</dt>
                 <dd class="col-sm-9">@Model.Token</dd>
             </dl>
 
-            @*<form asp-action="UserNotificationDelete" method="post">
-                @Html.AntiForgeryToken()
-                <input type="hidden" asp-for="NotificationId" />
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                    <a asp-action="UserNotificationsList" class="btn btn-outline-secondary">Cancel</a>
-                </div>
-            </form> *@
+            <div class="d-flex gap-2">
+                <button type="button" id="send-token-button" class="btn btn-danger">Use Token</button>
+                <a asp-action="UserTokenList" class="btn btn-outline-secondary">Cancel</a>
+            </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        (() => {
+            const sendButton = document.getElementById("send-token-button");
+            if (!sendButton) {
+                return;
+            }
+
+            const apiUrl = '@Url.Content($"~/api/tokens/use/{Model.TokenId}")';
+
+            sendButton.addEventListener("click", async () => {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: "POST",
+                        headers: {
+                            "Accept": "application/json"
+                        }
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok || !result.success) {
+                        throw new Error(result.message || "Unable to send token to the administrator.");
+                    }
+
+                    alert(result.message);
+                    window.location.href = '@Url.Action("UserTokenList", "UserNavigation")';
+                } catch (error) {
+                    alert(error.message || "Unable to send token to the administrator.");
+                }
+            });
+        })();
+    </script>
+}

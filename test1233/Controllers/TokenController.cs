@@ -14,6 +14,11 @@ public class TokenController(IUserStore userStore) : Controller
         return View(_userStore.GetAllTokens());
     }
 
+    public IActionResult Used()
+    {
+        return View(_userStore.GetAllUsedTokens());
+    }
+
     public IActionResult Create()
     {
         return View(new TokenFormViewModel

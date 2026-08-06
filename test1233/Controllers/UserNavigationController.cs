@@ -8,9 +8,10 @@ using test1233.Services;
 namespace test1233.Controllers;
 
 
-public class UserNavigationController(IUserStore userStore) : Controller
+public class UserNavigationController(IUserStore userStore, ITokenApiClient tokenApiClient) : Controller
 {
     private readonly IUserStore _userStore = userStore;
+    private readonly ITokenApiClient _tokenApiClient = tokenApiClient;
 
 
     public IActionResult Index()
@@ -180,5 +181,46 @@ public class UserNavigationController(IUserStore userStore) : Controller
          }
 
         return View(tokens);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Use(UseTokenApiRequest request, CancellationToken cancellationToken)
+    {
+        var currentUser = GetCurrentUser();
+        if (currentUser is null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var token = _userStore.GetTokenById(request.TokenId);
+        if (token is null || token.UserId != currentUser.Id)
+        {
+            return NotFound();
+        }
+
+        request.UserId = token.UserId;
+        request.Username = token.Username;
+        request.Token = token.Token;
+
+        var apiResponse = await _tokenApiClient.SendUsedTokenAsync(
+            GetBaseUrl(),
+            Request.Headers.Cookie.ToString(),
+            request,
+            cancellationToken);
+
+        TempData["TokenApiMessage"] = apiResponse.Message;
+
+        if (!apiResponse.Success)
+        {
+            return View(token);
+        }
+
+        return RedirectToAction(nameof(UserTokenList));
+    }
+
+    private string GetBaseUrl()
+    {
+        return $"{Request.Scheme}://{Request.Host}";
     }
 }

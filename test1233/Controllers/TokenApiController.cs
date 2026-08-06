@@ -27,8 +27,8 @@ public class TokenApiController(IUserStore userStore) : ControllerBase
         return Ok(tokens);
     }
 
-    [HttpPost("use/{tokenId:int}")]
-    public IActionResult UseToken(int tokenId)
+    [HttpPost("use")]
+    public IActionResult UseToken([FromBody] UseTokenApiRequest request)
     {
         var currentUser = GetCurrentUser();
         if (currentUser is null)
@@ -36,10 +36,22 @@ public class TokenApiController(IUserStore userStore) : ControllerBase
             return Unauthorized(new { success = false, message = "You must be signed in to send token data." });
         }
 
-        var token = _userStore.GetTokenById(tokenId);
+        if (request is null)
+        {
+            return BadRequest(new { success = false, message = "A JSON request body is required." });
+        }
+
+        var token = _userStore.GetTokenById(request.TokenId);
         if (token is null || token.UserId != currentUser.Id)
         {
             return NotFound(new { success = false, message = "Token not found." });
+        }
+
+        if (token.UserId != request.UserId ||
+            !string.Equals(token.Username, request.Username, StringComparison.Ordinal) ||
+            !string.Equals(token.Token, request.Token, StringComparison.Ordinal))
+        {
+            return BadRequest(new { success = false, message = "The JSON token payload does not match the stored token." });
         }
 
         _userStore.RecordUsedToken(new AppUsedToken

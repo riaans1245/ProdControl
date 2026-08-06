@@ -5,6 +5,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpClient();
+builder.Services.AddHttpContextAccessor();
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -13,6 +15,7 @@ builder.Services
         options.AccessDeniedPath = "/Account/AccessDenied";
     });
 builder.Services.AddSingleton<IUserStore, InMemoryUserStore>();
+builder.Services.AddScoped<ITokenApiClient, TokenApiClient>();
 
 var app = builder.Build();
 

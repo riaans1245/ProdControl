@@ -1,3 +1,5 @@
+@model IReadOnlyCollection<test1233.Models.AppUsedToken>
+
 @{
     ViewData["Title"] = "Used Tokens";
 }
@@ -13,73 +15,36 @@
 
     <div class="card shadow-sm border-0">
         <div class="card-body">
-            <div id="used-token-status" class="text-muted mb-3">Loading used tokens from the API...</div>
-            <div class="table-responsive">
-                <table class="table table-striped align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th>Username</th>
-                            <th>User ID</th>
-                            <th>Token</th>
-                            <th>Sent</th>
-                        </tr>
-                    </thead>
-                    <tbody id="used-token-body">
-                        <tr>
-                            <td colspan="4" class="text-center text-muted">Loading...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            @if (Model.Count == 0)
+            {
+                <div class="text-muted">No used tokens have been sent yet.</div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>User ID</th>
+                                <th>Token</th>
+                                <th>Sent</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var token in Model)
+                        {
+                            <tr>
+                                <td>@token.Username</td>
+                                <td>@token.UserId</td>
+                                <td>@token.Token</td>
+                                <td>@token.SentAtUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        (() => {
-            const status = document.getElementById("used-token-status");
-            const body = document.getElementById("used-token-body");
-            const apiUrl = '@Url.Content("~/api/tokens/used")';
-
-            const formatDate = (value) => {
-                const parsed = new Date(value);
-                return Number.isNaN(parsed.getTime()) ? value : parsed.toLocaleString();
-            };
-
-            const renderRows = (items) => {
-                if (!items.length) {
-                    body.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No used tokens have been sent yet.</td></tr>';
-                    status.textContent = 'No used tokens are available yet.';
-                    return;
-                }
-
-                body.innerHTML = items.map(item => `
-                    <tr>
-                        <td>${item.username}</td>
-                        <td>${item.userId}</td>
-                        <td>${item.token}</td>
-                        <td>${formatDate(item.sentAtUtc)}</td>
-                    </tr>
-                `).join("");
-
-                status.textContent = `Loaded ${items.length} used token record${items.length === 1 ? "" : "s"} from the API.`;
-            };
-
-            const renderError = () => {
-                body.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Unable to load used tokens.</td></tr>';
-                status.textContent = 'The administrator API request failed.';
-            };
-
-            fetch(apiUrl, {
-                method: "GET",
-                headers: {
-                    "Accept": "application/json"
-                }
-            })
-                .then(response => response.ok ? response.json() : Promise.reject(response))
-                .then(renderRows)
-                .catch(renderError);
-        })();
-    </script>
-}

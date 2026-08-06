@@ -5,18 +5,24 @@ using test1233.Services;
 
 namespace test1233.Controllers;
 
-public class TokenController(IUserStore userStore) : Controller
+public class TokenController(IUserStore userStore, ITokenApiClient tokenApiClient) : Controller
 {
     private readonly IUserStore _userStore = userStore;
+    private readonly ITokenApiClient _tokenApiClient = tokenApiClient;
 
     public IActionResult Index()
     {
         return View(_userStore.GetAllTokens());
     }
 
-    public IActionResult Used()
+    public async Task<IActionResult> Used(CancellationToken cancellationToken)
     {
-        return View(_userStore.GetAllUsedTokens());
+        var usedTokens = await _tokenApiClient.GetUsedTokensAsync(
+            GetBaseUrl(),
+            Request.Headers.Cookie.ToString(),
+            cancellationToken);
+
+        return View(usedTokens);
     }
 
     public IActionResult Create()
@@ -155,5 +161,10 @@ public class TokenController(IUserStore userStore) : Controller
         return _userStore.GetAllUsers()
             .Select(user => new SelectListItem(user.Username, user.Id.ToString()))
             .ToList();
+    }
+
+    private string GetBaseUrl()
+    {
+        return $"{Request.Scheme}://{Request.Host}";
     }
 }

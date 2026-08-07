@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Roles";
+    var currentSearch = ViewData["CurrentSearch"] as string ?? string.Empty;
 }
 
 <div class="container py-4">
@@ -13,36 +14,89 @@
         <a asp-action="Create" class="btn text-white" style="background-color: #080808; color: #123246;">Add Role</a>
     </div>
 
+    <form asp-action="Index" method="get" class="row g-2 align-items-end mb-4">
+        <div class="col-sm-8 col-md-6 col-lg-4">
+            <label for="searchString" class="form-label">Search roles</label>
+            <input id="searchString"
+                   name="searchString"
+                   value="@currentSearch"
+                   class="form-control"
+                   placeholder="Search by Role name." />
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-dark">Search</button>
+        </div>
+        <div class="col-auto">
+            <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
+        </div>
+    </form>
+
     <div class="card shadow-sm border-0">
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-striped align-middle mb-0">
-                    <thead>
-                        <tr>
-                            @* <th>Id</th> *@
-                            <th>Name</th>
-                            <th>Code</th>
-                            <th>Users</th>
-                            <th class="text-end">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    @foreach (var role in Model.Roles)
-                    {
-                        <tr>
-                            @* <td>@role.Id</td> *@
-                            <td>@role.Name</td>
-                            <td>@role.IdentityCode</td>
-                            <td>@Model.UserCountsByRoleId.GetValueOrDefault(role.Id)</td>
-                            <td class="text-end">
-                                <a asp-action="Edit" asp-route-id="@role.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                <a asp-action="Delete" asp-route-id="@role.Id" class="btn btn-sm btn-outline-danger">Delete</a>
-                            </td>
-                        </tr>
-                    }
-                    </tbody>
-                </table>
-            </div>
+            @if (Model.Roles.Count == 0)
+            {
+                <div class="text-muted">
+                    No roles found@(string.IsNullOrWhiteSpace(currentSearch) ? "." : $" for \"{currentSearch}\".").
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Code</th>
+                                <th>Users</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var role in Model.Roles)
+                        {
+                            <tr>
+                                <td>@role.Name</td>
+                                <td>@role.IdentityCode</td>
+                                <td>@Model.UserCountsByRoleId.GetValueOrDefault(role.Id)</td>
+                                <td class="text-end">
+                                    <a asp-action="Edit" asp-route-id="@role.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    <a asp-action="Delete" asp-route-id="@role.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <span class="text-muted small">Page @Model.PageNumber of @Model.TotalPages</span>
+                    <nav aria-label="Role pagination">
+                        <ul class="pagination mb-0">
+                            <li class="page-item @(Model.HasPreviousPage ? string.Empty : "disabled")">
+                                <a class="page-link"
+                                   asp-action="Index"
+                                   asp-route-page="@(Model.PageNumber - 1)"
+                                   asp-route-searchString="@currentSearch">Previous</a>
+                            </li>
+                            @for (var pageNumber = 1; pageNumber <= Model.TotalPages; pageNumber++)
+                            {
+                                <li class="page-item @(pageNumber == Model.PageNumber ? "active" : string.Empty)">
+                                    <a class="page-link"
+                                       asp-action="Index"
+                                       asp-route-page="@pageNumber"
+                                       asp-route-searchString="@currentSearch">@pageNumber</a>
+                                </li>
+                            }
+                            <li class="page-item @(Model.HasNextPage ? string.Empty : "disabled")">
+                                <a class="page-link"
+                                   asp-action="Index"
+                                   asp-route-page="@(Model.PageNumber + 1)"
+                                   asp-route-searchString="@currentSearch">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            }
         </div>
     </div>
 </div>

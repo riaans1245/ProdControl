@@ -9,14 +9,28 @@ namespace test1233.Controllers;
 public class CategoryController(IUserStore userStore) : Controller
 {
     private readonly IUserStore _userStore = userStore;
-    private const int PageSize = 5;
 
-    public IActionResult Index(int page = 1)
+private const int PageSize = 10;
+
+   public IActionResult Index(string searchString, int page = 1)
     {
-        var categories = _userStore.GetAllCategories();
-        var totalItems = categories.Count;
-        var pageNumber = Math.Max(1, page);
-        var items = categories
+        ViewData["CurrentSearch"] = searchString;
+
+        var categories = from u in _userStore.GetAllCategories()
+                    select u;
+
+        if (!string.IsNullOrWhiteSpace(searchString))
+        {
+            var normalizedSearch = searchString.Trim();
+            categories = categories.Where(u =>
+                u.Name.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase));
+        }
+
+        var filteredcategories = categories.ToList();
+        var totalItems = filteredcategories.Count;
+        var totalPages = totalItems == 0 ? 1 : (int)Math.Ceiling(totalItems / (double)PageSize);
+        var pageNumber = Math.Min(Math.Max(1, page), totalPages);
+        var items = filteredcategories
             .Skip((pageNumber - 1) * PageSize)
             .Take(PageSize)
             .ToList()
@@ -30,6 +44,8 @@ public class CategoryController(IUserStore userStore) : Controller
             TotalItems = totalItems
         });
     }
+
+
 
     public IActionResult Create()
     {

@@ -6,10 +6,40 @@ namespace test1233.Controllers;
 public class SuggestionController(IUserStore userStore) : Controller
 {
     private readonly IUserStore _userStore = userStore;
+    private const int PageSize = 10;
 
-    public IActionResult Index()
+    public IActionResult Index(string searchString, int page = 1)
     {
-         return View(_userStore.GetAllSuggestions());
+         ViewData["CurrentSearch"] = searchString;
+
+         var suggestions = from suggestion in _userStore.GetAllSuggestions()
+                           select suggestion;
+
+         if (!string.IsNullOrWhiteSpace(searchString))
+         {
+             var normalizedSearch = searchString.Trim();
+             suggestions = suggestions.Where(suggestion =>
+                 (suggestion.MyName ?? string.Empty).Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
+                 suggestion.Suggestion.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase));
+         }
+
+         var filteredSuggestions = suggestions.ToList();
+         var totalItems = filteredSuggestions.Count;
+         var totalPages = totalItems == 0 ? 1 : (int)Math.Ceiling(totalItems / (double)PageSize);
+         var pageNumber = Math.Min(Math.Max(1, page), totalPages);
+         var items = filteredSuggestions
+             .Skip((pageNumber - 1) * PageSize)
+             .Take(PageSize)
+             .ToList()
+             .AsReadOnly();
+
+         return View(new PagedListViewModel<AppSuggestion>
+         {
+             Items = items,
+             PageNumber = pageNumber,
+             PageSize = PageSize,
+             TotalItems = totalItems
+         });
     }
 
     public IActionResult Create()

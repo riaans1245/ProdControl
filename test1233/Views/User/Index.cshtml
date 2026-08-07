@@ -1,4 +1,4 @@
-@model IReadOnlyCollection<test1233.Models.AppUser>
+@model test1233.Models.PagedListViewModel<test1233.Models.AppUser>
 
 @{
     ViewData["Title"] = "Users";
@@ -33,7 +33,7 @@
 
     <div class="card shadow-sm border-0">
         <div class="card-body">
-            @if (Model.Count == 0)
+            @if (Model.Items.Count == 0)
             {
                 <div class="text-muted">
                     No users found@(string.IsNullOrWhiteSpace(currentSearch) ? "." : $" for \"{currentSearch}\".").
@@ -56,7 +56,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                        @foreach (var user in Model)
+                        @foreach (var user in Model.Items)
                         {
                             <tr>
                                 <td>@user.Name</td>
@@ -74,6 +74,35 @@
                         }
                         </tbody>
                     </table>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <span class="text-muted small">Page @Model.PageNumber of @Model.TotalPages</span>
+                    <nav aria-label="User pagination">
+                        <ul class="pagination mb-0">
+                            <li class="page-item @(Model.HasPreviousPage ? string.Empty : "disabled")">
+                                <a class="page-link"
+                                   asp-action="Index"
+                                   asp-route-page="@(Model.PageNumber - 1)"
+                                   asp-route-searchString="@currentSearch">Previous</a>
+                            </li>
+                            @for (var pageNumber = 1; pageNumber <= Model.TotalPages; pageNumber++)
+                            {
+                                <li class="page-item @(pageNumber == Model.PageNumber ? "active" : string.Empty)">
+                                    <a class="page-link"
+                                       asp-action="Index"
+                                       asp-route-page="@pageNumber"
+                                       asp-route-searchString="@currentSearch">@pageNumber</a>
+                                </li>
+                            }
+                            <li class="page-item @(Model.HasNextPage ? string.Empty : "disabled")">
+                                <a class="page-link"
+                                   asp-action="Index"
+                                   asp-route-page="@(Model.PageNumber + 1)"
+                                   asp-route-searchString="@currentSearch">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             }
         </div>

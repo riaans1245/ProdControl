@@ -12,12 +12,26 @@ public class ProductController(IUserStore userStore) : Controller
     private readonly IUserStore _userStore = userStore;
     private const int PageSize = 10;
 
-    public IActionResult Index(int page = 1)
+    public IActionResult Index(string searchString, int page = 1)
     {
-        var products = _userStore.GetAllProducts();
-        var totalItems = products.Count;
-        var pageNumber = Math.Max(1, page);
-        var items = products
+        ViewData["CurrentSearch"] = searchString;
+
+        var product = from u in _userStore.GetAllProducts()
+                    select u;
+
+        if (!string.IsNullOrWhiteSpace(searchString))
+        {
+            var normalizedSearch = searchString.Trim();
+            product = product.Where(u =>
+                u.Name.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
+                u.CategoryName.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase));
+        }
+
+        var filteredUsers = product.ToList();
+        var totalItems = filteredUsers.Count;
+        var totalPages = totalItems == 0 ? 1 : (int)Math.Ceiling(totalItems / (double)PageSize);
+        var pageNumber = Math.Min(Math.Max(1, page), totalPages);
+        var items = filteredUsers
             .Skip((pageNumber - 1) * PageSize)
             .Take(PageSize)
             .ToList()
@@ -31,6 +45,7 @@ public class ProductController(IUserStore userStore) : Controller
             TotalItems = totalItems
         });
     }
+
 
     public IActionResult Create()
     {

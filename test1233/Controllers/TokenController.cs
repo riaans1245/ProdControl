@@ -9,10 +9,41 @@ public class TokenController(IUserStore userStore, ITokenApiClient tokenApiClien
 {
     private readonly IUserStore _userStore = userStore;
     private readonly ITokenApiClient _tokenApiClient = tokenApiClient;
+    private const int PageSize = 10;
 
-    public IActionResult Index()
+    public IActionResult Index(string searchString, int page = 1)
     {
-        return View(_userStore.GetAllTokens());
+        ViewData["CurrentSearch"] = searchString;
+
+        var tokens = from token in _userStore.GetAllTokens()
+                     select token;
+
+        if (!string.IsNullOrWhiteSpace(searchString))
+        {
+            var normalizedSearch = searchString.Trim();
+            tokens = tokens.Where(token =>
+                token.Token.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
+                token.Username.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
+                token.UserId.ToString().Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase));
+        }
+
+        var filteredTokens = tokens.ToList();
+        var totalItems = filteredTokens.Count;
+        var totalPages = totalItems == 0 ? 1 : (int)Math.Ceiling(totalItems / (double)PageSize);
+        var pageNumber = Math.Min(Math.Max(1, page), totalPages);
+        var items = filteredTokens
+            .Skip((pageNumber - 1) * PageSize)
+            .Take(PageSize)
+            .ToList()
+            .AsReadOnly();
+
+        return View(new PagedListViewModel<AppTokens>
+        {
+            Items = items,
+            PageNumber = pageNumber,
+            PageSize = PageSize,
+            TotalItems = totalItems
+        });
     }
 
     public async Task<IActionResult> Used(CancellationToken cancellationToken)

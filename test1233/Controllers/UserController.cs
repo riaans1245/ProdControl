@@ -10,8 +10,9 @@ namespace test1233.Controllers;
 public class UserController(IUserStore userStore) : Controller
 {
     private readonly IUserStore _userStore = userStore;
+    private const int PageSize = 10;
 
-    public IActionResult Index(string searchString)
+    public IActionResult Index(string searchString, int page = 1)
     {
         ViewData["CurrentSearch"] = searchString;
 
@@ -28,7 +29,23 @@ public class UserController(IUserStore userStore) : Controller
                 u.EmailAddress.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase));
         }
 
-        return View(users.ToList().AsReadOnly());
+        var filteredUsers = users.ToList();
+        var totalItems = filteredUsers.Count;
+        var totalPages = totalItems == 0 ? 1 : (int)Math.Ceiling(totalItems / (double)PageSize);
+        var pageNumber = Math.Min(Math.Max(1, page), totalPages);
+        var items = filteredUsers
+            .Skip((pageNumber - 1) * PageSize)
+            .Take(PageSize)
+            .ToList()
+            .AsReadOnly();
+
+        return View(new PagedListViewModel<AppUser>
+        {
+            Items = items,
+            PageNumber = pageNumber,
+            PageSize = PageSize,
+            TotalItems = totalItems
+        });
     }
 
     public IActionResult Create()

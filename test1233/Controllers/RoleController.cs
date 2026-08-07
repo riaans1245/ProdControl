@@ -5,20 +5,44 @@ using test1233.Services;
 
 namespace test1233.Controllers;
 
-//[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Admin")]
 public class RoleController(IUserStore userStore) : Controller
 {
     private readonly IUserStore _userStore = userStore;
+    private const int PageSize = 10;
 
-    public IActionResult Index()
+    public IActionResult Index(string searchString, int page = 1)
     {
-        var roles = _userStore.GetAllRoles();
-        var userCounts = roles.ToDictionary(role => role.Id, role => _userStore.GetUserCountForRole(role.Id));
+        ViewData["CurrentSearch"] = searchString;
+
+        var roles = from role in _userStore.GetAllRoles()
+                    select role;
+
+        if (!string.IsNullOrWhiteSpace(searchString))
+        {
+            var normalizedSearch = searchString.Trim();
+            roles = roles.Where(role =>
+                role.Name.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase));
+        }
+
+        var filteredRoles = roles.ToList();
+        var totalItems = filteredRoles.Count;
+        var totalPages = totalItems == 0 ? 1 : (int)Math.Ceiling(totalItems / (double)PageSize);
+        var pageNumber = Math.Min(Math.Max(1, page), totalPages);
+        var items = filteredRoles
+            .Skip((pageNumber - 1) * PageSize)
+            .Take(PageSize)
+            .ToList()
+            .AsReadOnly();
+        var userCounts = items.ToDictionary(role => role.Id, role => _userStore.GetUserCountForRole(role.Id));
 
         return View(new RoleIndexViewModel
         {
-            Roles = roles,
-            UserCountsByRoleId = userCounts
+            Roles = items,
+            UserCountsByRoleId = userCounts,
+            PageNumber = pageNumber,
+            PageSize = PageSize,
+            TotalItems = totalItems
         });
     }
 

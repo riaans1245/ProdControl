@@ -8,10 +8,39 @@ namespace test1233.Controllers;
 public class NotificationController(IUserStore userStore) : Controller
 {
     private readonly IUserStore _userStore = userStore;
+    private const int PageSize = 10;
 
-    public IActionResult Index()
+    public IActionResult Index(string searchString, int page = 1)
     {
-        return View(_userStore.GetAllNotifications());
+        ViewData["CurrentSearch"] = searchString;
+
+        var notifications = from notification in _userStore.GetAllNotifications()
+                            select notification;
+
+        if (!string.IsNullOrWhiteSpace(searchString))
+        {
+            var normalizedSearch = searchString.Trim();
+            notifications = notifications.Where(notification =>
+                notification.UserName.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase));
+        }
+
+        var filteredNotifications = notifications.ToList();
+        var totalItems = filteredNotifications.Count;
+        var totalPages = totalItems == 0 ? 1 : (int)Math.Ceiling(totalItems / (double)PageSize);
+        var pageNumber = Math.Min(Math.Max(1, page), totalPages);
+        var items = filteredNotifications
+            .Skip((pageNumber - 1) * PageSize)
+            .Take(PageSize)
+            .ToList()
+            .AsReadOnly();
+
+        return View(new PagedListViewModel<AppNotification>
+        {
+            Items = items,
+            PageNumber = pageNumber,
+            PageSize = PageSize,
+            TotalItems = totalItems
+        });
     }
 
     public IActionResult Create()

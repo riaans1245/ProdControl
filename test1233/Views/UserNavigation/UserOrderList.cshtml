@@ -10,6 +10,21 @@
         </div>
     </div>
 
+    <form id="order-search-form" class="row g-2 align-items-end mb-4">
+        <div class="col-sm-8 col-md-6 col-lg-4">
+            <label for="order-search-input" class="form-label">Search my orders</label>
+            <input id="order-search-input"
+                   class="form-control"
+                   placeholder="Search by Item, or Category" />
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-dark">Search</button>
+        </div>
+        <div class="col-auto">
+            <button type="button" id="order-search-clear" class="btn btn-outline-secondary">Clear</button>
+        </div>
+    </form>
+
     <div class="card shadow-sm border-0">
         <div class="card-body">
             <div id="empty-order-history" class="text-muted">No items are waiting in your order list yet.</div>
@@ -29,6 +44,13 @@
                     </thead>
                     <tbody id="order-history-table-body"></tbody>
                 </table>
+            </div>
+
+            <div id="order-history-pagination" class="d-flex justify-content-between align-items-center mt-4 d-none">
+                <span id="order-history-page-status" class="text-muted small"></span>
+                <nav aria-label="Order pagination">
+                    <ul class="pagination mb-0" id="order-history-page-list"></ul>
+                </nav>
             </div>
         </div>
         <div class="card-footer bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
@@ -56,6 +78,15 @@
             const pendingOrderCount = document.getElementById("pending-order-count");
             const pendingOrderTotal = document.getElementById("pending-order-total");
             const placeOrderLink = document.getElementById("place-order-link");
+            const orderSearchForm = document.getElementById("order-search-form");
+            const orderSearchInput = document.getElementById("order-search-input");
+            const orderSearchClear = document.getElementById("order-search-clear");
+            const orderHistoryPagination = document.getElementById("order-history-pagination");
+            const orderHistoryPageStatus = document.getElementById("order-history-page-status");
+            const orderHistoryPageList = document.getElementById("order-history-page-list");
+            const pageSize = 10;
+            let currentPage = 1;
+            let currentSearch = "";
 
             const formatCurrency = (value) =>
                 new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value);
@@ -99,9 +130,91 @@
                 }, { totalItems: 0, totalValue: 0 });
             };
 
+            const flattenOrders = (orders) => {
+                const rows = [];
+
+                for (const order of orders) {
+                    const items = Array.isArray(order.items) ? order.items : [];
+
+                    for (const item of items) {
+                        const quantity = Number(item.quantity) || 0;
+                        const price = Number(item.price) || 0;
+                        rows.push({
+                            orderId: order.orderId ?? "",
+                            placedAtUtc: order.placedAtUtc,
+                            name: item.name ?? "",
+                            categoryName: item.categoryName ?? "",
+                            quantity,
+                            price
+                        });
+                    }
+                }
+
+                return rows;
+            };
+
+            const filterRows = (rows, searchTerm) => {
+                if (!searchTerm) {
+                    return rows;
+                }
+
+                return rows.filter(row =>
+                    String(row.orderId).toLowerCase().includes(searchTerm) ||
+                    row.name.toLowerCase().includes(searchTerm) ||
+                    row.categoryName.toLowerCase().includes(searchTerm));
+            };
+
+            const renderPagination = (totalItems, pageNumber) => {
+                const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+
+                if (totalItems === 0) {
+                    orderHistoryPagination.classList.add("d-none");
+                    orderHistoryPageList.innerHTML = "";
+                    orderHistoryPageStatus.textContent = "";
+                    return totalPages;
+                }
+
+                orderHistoryPagination.classList.remove("d-none");
+                orderHistoryPageStatus.textContent = `Page ${pageNumber} of ${totalPages}`;
+                orderHistoryPageList.innerHTML = "";
+
+                const createPageItem = (label, targetPage, isDisabled, isActive = false) => {
+                    const item = document.createElement("li");
+                    item.className = `page-item${isDisabled ? " disabled" : ""}${isActive ? " active" : ""}`;
+
+                    const link = document.createElement("a");
+                    link.className = "page-link";
+                    link.href = "#";
+                    link.textContent = label;
+                    link.addEventListener("click", (event) => {
+                        event.preventDefault();
+                        if (isDisabled || targetPage === currentPage) {
+                            return;
+                        }
+
+                        currentPage = targetPage;
+                        renderOrderHistory();
+                    });
+
+                    item.appendChild(link);
+                    orderHistoryPageList.appendChild(item);
+                };
+
+                createPageItem("Previous", pageNumber - 1, pageNumber <= 1);
+
+                for (let page = 1; page <= totalPages; page += 1) {
+                    createPageItem(page.toString(), page, false, page === pageNumber);
+                }
+
+                createPageItem("Next", pageNumber + 1, pageNumber >= totalPages);
+                return totalPages;
+            };
+
             const renderOrderHistory = () => {
                 const orderHistory = readOrderHistory();
                 const summary = getPendingSummary(orderHistory);
+                const allRows = flattenOrders(orderHistory);
+                const filteredRows = filterRows(allRows, currentSearch);
 
                 orderHistoryTableBody.innerHTML = "";
                 pendingOrderCount.textContent = summary.totalItems.toString();
@@ -114,30 +227,39 @@
                 if (!hasOrders) {
                     emptyOrderHistory.classList.remove("d-none");
                     orderHistoryTableWrapper.classList.add("d-none");
+                    orderHistoryPagination.classList.add("d-none");
                     return;
                 }
 
+                if (filteredRows.length === 0) {
+                    emptyOrderHistory.textContent = `No order items found for "${orderSearchInput.value.trim()}".`;
+                    emptyOrderHistory.classList.remove("d-none");
+                    orderHistoryTableWrapper.classList.add("d-none");
+                    orderHistoryPagination.classList.add("d-none");
+                    return;
+                }
+
+                const totalPages = renderPagination(filteredRows.length, currentPage);
+                currentPage = Math.min(Math.max(1, currentPage), totalPages);
+
+                const pageRows = filteredRows.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
                 emptyOrderHistory.classList.add("d-none");
+                emptyOrderHistory.textContent = "No items are waiting in your order list yet.";
                 orderHistoryTableWrapper.classList.remove("d-none");
 
-                for (const order of orderHistory) {
-                    const items = Array.isArray(order.items) ? order.items : [];
+                for (const rowData of pageRows) {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${rowData.orderId}</td>
+                        <td>${formatPlacedDate(rowData.placedAtUtc)}</td>
+                        <td>${rowData.name}</td>
+                        <td>${rowData.categoryName}</td>
+                        <td>${rowData.quantity}</td>
+                        <td>${formatCurrency(rowData.price)}</td>
+                        <td>${formatCurrency(rowData.quantity * rowData.price)}</td>`;
 
-                    for (const item of items) {
-                        const quantity = Number(item.quantity) || 0;
-                        const price = Number(item.price) || 0;
-                        const row = document.createElement("tr");
-                        row.innerHTML = `
-                            <td>${order.orderId ?? ""}</td>
-                            <td>${formatPlacedDate(order.placedAtUtc)}</td>
-                            <td>${item.name ?? ""}</td>
-                            <td>${item.categoryName ?? ""}</td>
-                            <td>${quantity}</td>
-                            <td>${formatCurrency(price)}</td>
-                            <td>${formatCurrency(quantity * price)}</td>`;
-
-                        orderHistoryTableBody.appendChild(row);
-                    }
+                    orderHistoryTableBody.appendChild(row);
                 }
             };
 
@@ -145,6 +267,20 @@
                 if (placeOrderLink.getAttribute("aria-disabled") === "true") {
                     event.preventDefault();
                 }
+            });
+
+            orderSearchForm.addEventListener("submit", (event) => {
+                event.preventDefault();
+                currentSearch = orderSearchInput.value.trim().toLowerCase();
+                currentPage = 1;
+                renderOrderHistory();
+            });
+
+            orderSearchClear.addEventListener("click", () => {
+                orderSearchInput.value = "";
+                currentSearch = "";
+                currentPage = 1;
+                renderOrderHistory();
             });
 
             renderOrderHistory();

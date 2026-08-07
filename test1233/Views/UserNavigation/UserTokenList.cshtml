@@ -1,7 +1,8 @@
-@model IReadOnlyCollection<test1233.Models.AppTokens>
+@model test1233.Models.PagedListViewModel<test1233.Models.AppTokens>
 
 @{
     ViewData["Title"] = "My Tokens";
+    var currentSearch = ViewData["CurrentSearch"] as string ?? string.Empty;
 }
 
 <div class="container py-4">
@@ -20,11 +21,30 @@
         </div>
     </div>
 
+    <form asp-action="UserTokenList" method="get" class="row g-2 align-items-end mb-4">
+        <div class="col-sm-8 col-md-6 col-lg-4">
+            <label for="searchString" class="form-label">Search my tokens</label>
+            <input id="searchString"
+                   name="searchString"
+                   value="@currentSearch"
+                   class="form-control"
+                   placeholder="Search by Token" />
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-dark">Search</button>
+        </div>
+        <div class="col-auto">
+            <a asp-action="UserTokenList" class="btn btn-outline-secondary">Clear</a>
+        </div>
+    </form>
+
     <div class="card shadow-sm border-0">
         <div class="card-body">
-            @if (Model.Count == 0)
+            @if (Model.Items.Count == 0)
             {
-                <div class="text-muted">No tokens are currently assigned to your account.</div>
+                <div class="text-muted">
+                    No tokens found@(string.IsNullOrWhiteSpace(currentSearch) ? " for your account." : $" for \"{currentSearch}\".").
+                </div>
             }
             else
             {
@@ -34,11 +54,11 @@
                             <tr>
                                 <th>Token</th>
                                 <th>User</th>
-                                <th class="text-end">Actions</th>
-                            </tr>
+                            <th class="text-end">Actions</th>
+                        </tr>
                         </thead>
                         <tbody>
-                        @foreach (var tokens in Model)
+                        @foreach (var tokens in Model.Items)
                         {
                             <tr>
                                 <td>@tokens.Token</td>
@@ -50,6 +70,35 @@
                         }
                         </tbody>
                     </table>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <span class="text-muted small">Page @Model.PageNumber of @Model.TotalPages</span>
+                    <nav aria-label="My token pagination">
+                        <ul class="pagination mb-0">
+                            <li class="page-item @(Model.HasPreviousPage ? string.Empty : "disabled")">
+                                <a class="page-link"
+                                   asp-action="UserTokenList"
+                                   asp-route-page="@(Model.PageNumber - 1)"
+                                   asp-route-searchString="@currentSearch">Previous</a>
+                            </li>
+                            @for (var pageNumber = 1; pageNumber <= Model.TotalPages; pageNumber++)
+                            {
+                                <li class="page-item @(pageNumber == Model.PageNumber ? "active" : string.Empty)">
+                                    <a class="page-link"
+                                       asp-action="UserTokenList"
+                                       asp-route-page="@pageNumber"
+                                       asp-route-searchString="@currentSearch">@pageNumber</a>
+                                </li>
+                            }
+                            <li class="page-item @(Model.HasNextPage ? string.Empty : "disabled")">
+                                <a class="page-link"
+                                   asp-action="UserTokenList"
+                                   asp-route-page="@(Model.PageNumber + 1)"
+                                   asp-route-searchString="@currentSearch">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             }
         </div>

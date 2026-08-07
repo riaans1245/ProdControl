@@ -12,6 +12,7 @@ public class UserNavigationController(IUserStore userStore, ITokenApiClient toke
 {
     private readonly IUserStore _userStore = userStore;
     private readonly ITokenApiClient _tokenApiClient = tokenApiClient;
+    private const int PageSize = 10;
 
 
     public IActionResult Index()
@@ -19,23 +20,46 @@ public class UserNavigationController(IUserStore userStore, ITokenApiClient toke
         return View();
     }
 
-    public IActionResult UserTokenList()
+    public IActionResult UserTokenList(string searchString, int page = 1)
     {
         var currentUser = GetCurrentUser();
         if (currentUser is null)
         {
             return RedirectToAction("Login", "Account");
         }
+
+        ViewData["CurrentSearch"] = searchString;
 
         var tokens = _userStore.GetAllTokens()
-            .Where(token => token.UserId == currentUser.Id)
+            .Where(token => token.UserId == currentUser.Id);
+
+        if (!string.IsNullOrWhiteSpace(searchString))
+        {
+            var normalizedSearch = searchString.Trim();
+            tokens = tokens.Where(token =>
+                token.Token.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase));
+        }
+
+        var filteredTokens = tokens.ToList();
+        var totalItems = filteredTokens.Count;
+        var totalPages = totalItems == 0 ? 1 : (int)Math.Ceiling(totalItems / (double)PageSize);
+        var pageNumber = Math.Min(Math.Max(1, page), totalPages);
+        var items = filteredTokens
+            .Skip((pageNumber - 1) * PageSize)
+            .Take(PageSize)
             .ToList()
             .AsReadOnly();
 
-        return View(tokens);
+        return View(new PagedListViewModel<AppTokens>
+        {
+            Items = items,
+            PageNumber = pageNumber,
+            PageSize = PageSize,
+            TotalItems = totalItems
+        });
     }
 
-    public IActionResult UserNotificationsList()
+    public IActionResult UserNotificationsList(string searchString, int page = 1)
     {
         var currentUser = GetCurrentUser();
         if (currentUser is null)
@@ -43,12 +67,36 @@ public class UserNavigationController(IUserStore userStore, ITokenApiClient toke
             return RedirectToAction("Login", "Account");
         }
 
+        ViewData["CurrentSearch"] = searchString;
+
         var notifications = _userStore.GetAllNotifications()
-            .Where(notification => notification.UserId == currentUser.Id)
+            .Where(notification => notification.UserId == currentUser.Id);
+
+        if (!string.IsNullOrWhiteSpace(searchString))
+        {
+            var normalizedSearch = searchString.Trim();
+            notifications = notifications.Where(notification =>
+                notification.Notification.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
+                notification.UserName.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase));
+        }
+
+        var filteredNotifications = notifications.ToList();
+        var totalItems = filteredNotifications.Count;
+        var totalPages = totalItems == 0 ? 1 : (int)Math.Ceiling(totalItems / (double)PageSize);
+        var pageNumber = Math.Min(Math.Max(1, page), totalPages);
+        var items = filteredNotifications
+            .Skip((pageNumber - 1) * PageSize)
+            .Take(PageSize)
             .ToList()
             .AsReadOnly();
 
-        return View(notifications);
+        return View(new PagedListViewModel<AppNotification>
+        {
+            Items = items,
+            PageNumber = pageNumber,
+            PageSize = PageSize,
+            TotalItems = totalItems
+        });
     }
 
     public IActionResult UserNotificationDelete(int id)

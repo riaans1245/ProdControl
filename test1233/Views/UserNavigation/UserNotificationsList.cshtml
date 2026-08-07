@@ -20,7 +20,7 @@
                    name="searchString"
                    value="@currentSearch"
                    class="form-control"
-                   placeholder="Search by Notification, or Username" />
+                   placeholder="Search by Notification" />
         </div>
         <div class="col-auto">
             <button type="submit" class="btn btn-dark">Search</button>
@@ -45,7 +45,7 @@
                         <thead>
                             <tr>
                                 <th>Notification</th>
-                                <th>User</th>
+                                @* <th>User</th> *@
                             <th class="text-end">Actions</th>
                         </tr>
                         </thead>
@@ -54,7 +54,7 @@
                         {
                             <tr>
                                 <td>@notifications.Notification</td>
-                                <td>@notifications.UserName</td>
+                                @* <td>@notifications.UserName</td> *@
                                 <td class="text-end">
                                 <a asp-action="UserNotificationDelete" asp-route-id="@notifications.NotificationId" class="btn btn-sm btn-outline-danger">Delete</a>
                             </td>

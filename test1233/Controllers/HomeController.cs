@@ -19,13 +19,119 @@ public class HomeController(IUserStore userStore, IWebHostEnvironment environmen
     [Authorize]
     public IActionResult Ordering()
     {
+         var currentUser = GetCurrentUser();
+         if (currentUser is null)
+         {
+             return RedirectToAction("Login", "Account");
+         }
+
          var products = _userStore.GetAllProducts()
              .OrderBy(product => product.CategoryName)
              .ThenBy(product => product.Name)
              .ToList()
              .AsReadOnly();
 
-         return View(products);
+         var cartItems = _userStore.GetCartItemsForUser(currentUser.Id);
+
+         return View(new OrderingViewModel
+         {
+             Products = products,
+             CartItems = cartItems
+         });
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult AddToCart(int productId, int quantity)
+    {
+        var currentUser = GetCurrentUser();
+        if (currentUser is null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var product = _userStore.GetProductById(productId);
+        if (product is null)
+        {
+            TempData["OrderingMessage"] = "The selected product could not be found.";
+            return RedirectToAction(nameof(Ordering));
+        }
+
+        if (quantity < 1)
+        {
+            TempData["OrderingMessage"] = "Please enter a quantity of 1 or more.";
+            return RedirectToAction(nameof(Ordering));
+        }
+
+        _userStore.AddOrUpdateCartItem(new AppCartItem
+        {
+            UserId = currentUser.Id,
+            ProductId = product.Id,
+            Name = product.Name,
+            CategoryName = product.CategoryName,
+            Price = product.Price,
+            Quantity = quantity
+        });
+
+        TempData["OrderingMessage"] = $"{product.Name} was added to your cart.";
+        return RedirectToAction(nameof(Ordering));
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult RemoveFromCart(int productId)
+    {
+        var currentUser = GetCurrentUser();
+        if (currentUser is null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        _userStore.RemoveCartItem(currentUser.Id, productId);
+        TempData["OrderingMessage"] = "Item removed from your cart.";
+        return RedirectToAction(nameof(Ordering));
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult ClearCart()
+    {
+        var currentUser = GetCurrentUser();
+        if (currentUser is null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        _userStore.ClearCart(currentUser.Id);
+        TempData["OrderingMessage"] = "Cart cleared.";
+        return RedirectToAction(nameof(Ordering));
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult CheckoutOrder()
+    {
+        var currentUser = GetCurrentUser();
+        if (currentUser is null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var cartItems = _userStore.GetCartItemsForUser(currentUser.Id);
+        if (cartItems.Count == 0)
+        {
+            TempData["OrderingMessage"] = "Add at least one product before checking out.";
+            return RedirectToAction(nameof(Ordering));
+        }
+
+        _userStore.CreatePendingOrder(currentUser.Id, currentUser.Username, cartItems, DateTime.UtcNow);
+        TempData["OrderListMessage"] = "Your order was saved and is ready for payment.";
+
+        return RedirectToAction("UserOrderList", "UserNavigation");
     }
 
     public IActionResult Privacy()
@@ -252,6 +358,18 @@ public class HomeController(IUserStore userStore, IWebHostEnvironment environmen
     {
         var selectedMenuFile = GetSelectedMenuPathFile();
         System.IO.File.WriteAllText(selectedMenuFile, menuPath);
+    }
+
+    private AppUser? GetCurrentUser()
+    {
+        var username = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(username))
+        {
+            return null;
+        }
+
+        return _userStore.GetAllUsers()
+            .FirstOrDefault(user => string.Equals(user.Username, username, StringComparison.OrdinalIgnoreCase));
     }
 
 }

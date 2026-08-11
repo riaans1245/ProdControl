@@ -43,6 +43,9 @@
         var currentUserNotificationCount = currentUserId.HasValue
             ? UserStore.GetAllNotifications().Count(notification => notification.UserId == currentUserId.Value)
             : 0;
+        var currentUserCartCount = currentUserId.HasValue
+            ? UserStore.GetCartItemsForUser(currentUserId.Value).Sum(item => item.Quantity)
+            : 0;
     }
     <!-- Top Navigation Bar --> 
     <nav class="navbar navbar-expand-md navbar-dark border-bottom shadow-sm py-3 user-topbar"> 
@@ -82,9 +85,9 @@
                     { 
                         <li class="nav-item">
                             <a class="nav-link text-white px-3 nav-cart-link" asp-controller="Home" asp-action="Ordering" aria-label="View cart">
-                                <span class="nav-cart-icon-wrapper">
-                                    <span class="nav-cart-image" aria-hidden="true"></span>
-                                    <span id="nav-cart-count" class="nav-cart-count-badge">0</span>
+                                    <span class="nav-cart-icon-wrapper">
+                                        <span class="nav-cart-image" aria-hidden="true"></span>
+                                    <span id="nav-cart-count" class="nav-cart-count-badge">@currentUserCartCount</span>
                                 </span>
                             </a>
                         </li>
@@ -253,38 +256,6 @@
             syncButtonState();
         })();
 
-    </script>
-    <script>
-        (() => {
-            const currentUsername = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(User.Identity?.Name ?? string.Empty));
-            const cartStorageKey = `easy-eats-cart:${currentUsername || "anonymous"}`;
-            const cartCount = document.getElementById("nav-cart-count");
-
-            if (!cartCount) {
-                return;
-            }
-
-            const readCart = () => {
-                try {
-                    const rawCart = localStorage.getItem(cartStorageKey);
-                    const parsedCart = rawCart ? JSON.parse(rawCart) : [];
-                    return Array.isArray(parsedCart) ? parsedCart : [];
-                } catch {
-                    return [];
-                }
-            };
-
-            const syncCartSummary = () => {
-                const cart = readCart();
-                const totalItems = cart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
-
-                cartCount.textContent = totalItems.toString();
-            };
-
-            window.addEventListener("storage", syncCartSummary);
-            window.addEventListener("cart-updated", syncCartSummary);
-            syncCartSummary();
-        })();
     </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

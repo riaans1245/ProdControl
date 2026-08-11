@@ -1,4 +1,4 @@
-@model IReadOnlyCollection<test1233.Models.AppProduct>
+@model test1233.Models.OrderingViewModel
 
 @{
     ViewData["Title"] = "Ordering";
@@ -8,15 +8,22 @@
     <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 mb-4">
         <div>
             <h1 class="h3 mb-1">Ordering</h1>
-            <p class="text-muted mb-0">Choose products, set quantities, and build a live cart before checkout.</p>
+            <p class="text-muted mb-0">Choose products, set quantities, and build your cart with server-side C# actions.</p>
         </div>
         <div class="text-muted small">Signed in as <strong>@User.Identity?.Name</strong></div>
     </div>
 
+    @if (TempData["OrderingMessage"] is string orderingMessage && !string.IsNullOrWhiteSpace(orderingMessage))
+    {
+        <div class="alert alert-info shadow-sm" role="alert">
+            @orderingMessage
+        </div>
+    }
+
     <div class="row g-4">
         <div class="col-lg-8">
             <div class="row g-3">
-                @foreach (var product in Model)
+                @foreach (var product in Model.Products)
                 {
                     <div class="col-md-6">
                         <div class="card h-100 shadow-sm border-0">
@@ -29,24 +36,20 @@
                                     <div class="fw-bold text-success">@product.Price.ToString("C")</div>
                                 </div>
 
-                                <div class="mt-auto d-flex flex-wrap align-items-end gap-2">
+                                <form asp-action="AddToCart" method="post" class="mt-auto d-flex flex-wrap align-items-end gap-2">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="productId" value="@product.Id" />
                                     <div class="flex-grow-1">
                                         <label class="form-label small mb-1" for="qty-@product.Id">Quantity</label>
                                         <input id="qty-@product.Id"
                                                class="form-control"
                                                type="number"
+                                               name="quantity"
                                                min="1"
                                                value="1" />
                                     </div>
-                                    <button type="button"
-                                            class="btn btn-dark add-to-cart-btn"
-                                            data-product-id="@product.Id"
-                                            data-product-name="@product.Name"
-                                            data-category-name="@product.CategoryName"
-                                            data-product-price="@product.Price">
-                                        Add to cart
-                                    </button>
-                                </div>
+                                    <button type="submit" class="btn btn-dark">Add to cart</button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -59,238 +62,64 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h2 class="h5 mb-0">Cart</h2>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" id="clear-cart-btn">Clear</button>
+                        <form asp-action="ClearCart" method="post" class="m-0">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-outline-secondary" @(Model.CartItems.Count == 0 ? "disabled" : null)>Clear</button>
+                        </form>
                     </div>
 
-                    <div id="empty-cart-state" class="text-muted">Your cart is empty. Add products to begin an order.</div>
-                    <div id="cart-items" class="d-grid gap-3"></div>
+                    @if (Model.CartItems.Count == 0)
+                    {
+                        <div class="text-muted">Your cart is empty. Add products to begin an order.</div>
+                    }
+                    else
+                    {
+                        <div class="d-grid gap-3">
+                            @foreach (var item in Model.CartItems)
+                            {
+                                <div class="border rounded-3 p-3 bg-light">
+                                    <div class="d-flex justify-content-between gap-3">
+                                        <div>
+                                            <div class="fw-semibold">@item.Name</div>
+                                            <div class="small text-muted">@item.CategoryName</div>
+                                            <div class="small text-muted">@item.Quantity x @item.Price.ToString("C")</div>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="fw-semibold">@((item.Quantity * item.Price).ToString("C"))</div>
+                                            <form asp-action="RemoveFromCart" method="post" class="mt-2">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="productId" value="@item.ProductId" />
+                                                <button type="submit" class="btn btn-sm btn-link text-danger p-0">Remove</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
 
                     <hr />
 
                     <div class="d-flex justify-content-between mb-2">
                         <span>Total items</span>
-                        <strong id="cart-item-count">0</strong>
+                        <strong>@Model.CartItemCount</strong>
                     </div>
                     <div class="d-flex justify-content-between">
                         <span>Total value</span>
-                        <strong id="cart-total-value">$0.00</strong>
+                        <strong>@Model.CartTotalValue.ToString("C")</strong>
                     </div>
 
-                    <button type="button" class="btn btn-success w-100 mt-4" id="checkout-btn">Checkout Order</button>
+                    <form asp-action="CheckoutOrder" method="post" class="mt-4">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-success w-100" @(Model.CartItems.Count == 0 ? "disabled" : null)>Checkout Order</button>
+                    </form>
                     <a asp-controller="UserNavigation"
                        asp-action="UserOrderList"
-                       class="btn btn-outline-dark w-100 mt-2 d-none"
-                       id="view-orders-btn">
+                       class="btn btn-outline-dark w-100 mt-2">
                         View order list
                     </a>
-                    <p id="checkout-message" class="small text-muted mt-3 mb-0"></p>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        (() => {
-            const currentUsername = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(User.Identity?.Name ?? string.Empty));
-            const buildUserStorageKey = (baseKey) => `${baseKey}:${currentUsername || "anonymous"}`;
-            const cartStorageKey = buildUserStorageKey("easy-eats-cart");
-            const orderHistoryStorageKey = buildUserStorageKey("easy-eats-order-history");
-            const cart = new Map();
-            const cartItems = document.getElementById("cart-items");
-            const emptyCartState = document.getElementById("empty-cart-state");
-            const cartItemCount = document.getElementById("cart-item-count");
-            const cartTotalValue = document.getElementById("cart-total-value");
-            const checkoutMessage = document.getElementById("checkout-message");
-            const clearCartButton = document.getElementById("clear-cart-btn");
-            const checkoutButton = document.getElementById("checkout-btn");
-            const viewOrdersButton = document.getElementById("view-orders-btn");
-
-            const formatCurrency = (value) =>
-                new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value);
-
-            const persistCart = () => {
-                localStorage.setItem(cartStorageKey, JSON.stringify(Array.from(cart.values())));
-                window.dispatchEvent(new Event("cart-updated"));
-            };
-
-            const readOrderHistory = () => {
-                try {
-                    const rawHistory = localStorage.getItem(orderHistoryStorageKey);
-                    const parsedHistory = rawHistory ? JSON.parse(rawHistory) : [];
-                    return Array.isArray(parsedHistory) ? parsedHistory : [];
-                } catch {
-                    localStorage.removeItem(orderHistoryStorageKey);
-                    return [];
-                }
-            };
-
-            const syncViewOrdersButton = () => {
-                const hasOrderHistory = readOrderHistory().length > 0;
-                viewOrdersButton.classList.toggle("d-none", !hasOrderHistory);
-            };
-
-            const loadCart = () => {
-                try {
-                    const rawCart = localStorage.getItem(cartStorageKey);
-                    const parsedCart = rawCart ? JSON.parse(rawCart) : [];
-
-                    if (!Array.isArray(parsedCart)) {
-                        return;
-                    }
-
-                    for (const item of parsedCart) {
-                        if (!item || !item.id) {
-                            continue;
-                        }
-
-                        cart.set(String(item.id), {
-                            id: String(item.id),
-                            name: item.name ?? "",
-                            categoryName: item.categoryName ?? "",
-                            price: Number(item.price) || 0,
-                            quantity: Number(item.quantity) || 0
-                        });
-                    }
-                } catch {
-                    localStorage.removeItem(cartStorageKey);
-                }
-            };
-
-            const renderCart = () => {
-                cartItems.innerHTML = "";
-
-                if (cart.size === 0) {
-                    emptyCartState.classList.remove("d-none");
-                    cartItemCount.textContent = "0";
-                    cartTotalValue.textContent = formatCurrency(0);
-                    syncViewOrdersButton();
-                    return;
-                }
-
-                emptyCartState.classList.add("d-none");
-
-                let totalItems = 0;
-                let totalValue = 0;
-
-                for (const item of cart.values()) {
-                    totalItems += item.quantity;
-                    totalValue += item.quantity * item.price;
-
-                    const line = document.createElement("div");
-                    line.className = "border rounded-3 p-3 bg-light";
-                    line.innerHTML = `
-                        <div class="d-flex justify-content-between gap-3">
-                            <div>
-                                <div class="fw-semibold">${item.name}</div>
-                                <div class="small text-muted">${item.categoryName}</div>
-                                <div class="small text-muted">${item.quantity} x ${formatCurrency(item.price)}</div>
-                            </div>
-                            <div class="text-end">
-                                <div class="fw-semibold">${formatCurrency(item.quantity * item.price)}</div>
-                                <button type="button" class="btn btn-sm btn-link text-danger remove-cart-item-btn p-0 mt-2" data-product-id="${item.id}">
-                                    Remove
-                                </button>
-                            </div>
-                        </div>`;
-
-                    cartItems.appendChild(line);
-                }
-
-                cartItemCount.textContent = totalItems.toString();
-                cartTotalValue.textContent = formatCurrency(totalValue);
-                syncViewOrdersButton();
-
-                document.querySelectorAll(".remove-cart-item-btn").forEach((button) => {
-                    button.addEventListener("click", () => {
-                        cart.delete(button.dataset.productId);
-                        checkoutMessage.textContent = "";
-                        persistCart();
-                        renderCart();
-                    });
-                });
-            };
-
-            const saveOrderHistory = () => {
-                const items = Array.from(cart.values()).map((item) => ({
-                    id: item.id,
-                    name: item.name,
-                    categoryName: item.categoryName,
-                    price: item.price,
-                    quantity: item.quantity
-                }));
-
-                const history = readOrderHistory();
-                const nextOrderId = history.reduce((maxOrderId, order) => {
-                    const currentOrderId = Number(order.orderId) || 0;
-                    return Math.max(maxOrderId, currentOrderId);
-                }, 0) + 1;
-
-                const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-                const totalValue = items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
-
-                history.unshift({
-                    orderId: nextOrderId,
-                    placedAtUtc: new Date().toISOString(),
-                    totalItems,
-                    totalValue,
-                    items
-                });
-
-                localStorage.setItem(orderHistoryStorageKey, JSON.stringify(history));
-                window.dispatchEvent(new Event("order-history-updated"));
-            };
-
-            document.querySelectorAll(".add-to-cart-btn").forEach((button) => {
-                button.addEventListener("click", () => {
-                    const productId = button.dataset.productId;
-                    const quantityInput = document.getElementById(`qty-${productId}`);
-                    const quantity = Number.parseInt(quantityInput.value, 10);
-
-                    if (!Number.isInteger(quantity) || quantity < 1) {
-                        quantityInput.focus();
-                        checkoutMessage.textContent = "Please enter a valid quantity of 1 or more.";
-                        return;
-                    }
-
-                    cart.set(productId, {
-                        id: productId,
-                        name: button.dataset.productName,
-                        categoryName: button.dataset.categoryName,
-                        price: Number.parseFloat(button.dataset.productPrice),
-                        quantity
-                    });
-
-                    checkoutMessage.textContent = `${button.dataset.productName} was added to your cart.`;
-                    persistCart();
-                    renderCart();
-                });
-            });
-
-            clearCartButton.addEventListener("click", () => {
-                cart.clear();
-                checkoutMessage.textContent = "Cart cleared.";
-                persistCart();
-                renderCart();
-            });
-
-            checkoutButton.addEventListener("click", () => {
-                if (cart.size === 0) {
-                    checkoutMessage.textContent = "Add at least one product before placing an order.";
-                    return;
-                }
-
-                saveOrderHistory();
-                cart.clear();
-                persistCart();
-                checkoutMessage.textContent = "Payment complete. Your order was saved and your cart has been cleared.";
-                renderCart();
-            });
-
-            loadCart();
-            syncViewOrdersButton();
-            renderCart();
-        })();
-    </script>
-}

@@ -1,12 +1,10 @@
+@model test1233.Models.UserOrderPlaceViewModel
+
 @{
     ViewData["Title"] = "Place Order";
 }
 
 <div class="container py-4">
-    <form id="confirm-payment-form" method="post" class="d-none">
-        @Html.AntiForgeryToken()
-    </form>
-
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="h3 mb-1">Place Order</h1>
@@ -14,31 +12,43 @@
         </div>
     </div>
 
+    @if (TempData["OrderPlaceMessage"] is string orderPlaceMessage && !string.IsNullOrWhiteSpace(orderPlaceMessage))
+    {
+        <div class="alert alert-info shadow-sm" role="alert">
+            @orderPlaceMessage
+        </div>
+    }
+
     <div class="row g-4">
         <div class="col-xl-5">
             <div class="card shadow-sm border-0">
                 <div class="card-body">
                     <p class="text-uppercase small fw-semibold mb-2 public-section-kicker">Payment Summary</p>
                     <h2 class="h4 mb-3">Ready to pay</h2>
-                    <div id="empty-payment-state" class="text-muted">There are no order items ready for payment.</div>
 
-                    <div id="payment-summary" class="d-none">
+                    @if (Model.PendingOrders.Count == 0)
+                    {
+                        <div class="text-muted">There are no order items ready for payment.</div>
+                    }
+                    else
+                    {
                         <div class="border rounded-4 p-3 mb-3 bg-light">
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Total items</span>
-                                <strong id="payment-total-items">0</strong>
+                                <strong>@Model.TotalItems</strong>
                             </div>
                             <div class="d-flex justify-content-between">
                                 <span>Total due</span>
-                                <strong id="payment-total-value">$0.00</strong>
+                                <strong>@Model.TotalValue.ToString("C")</strong>
                             </div>
                         </div>
 
-                        <div class="d-grid gap-2">
-                            <button type="button" id="confirm-payment-btn" class="btn btn-success">Confirm Payment</button>
+                        <form asp-action="ConfirmPayment" method="post" class="d-grid gap-2">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-success">Confirm Payment</button>
                             <a asp-action="UserOrderList" class="btn btn-outline-secondary">Back to Orders</a>
-                        </div>
-                    </div>
+                        </form>
+                    }
                 </div>
             </div>
         </div>
@@ -50,25 +60,28 @@
                         <div>
                             <p class="text-uppercase small fw-semibold mb-2 public-section-kicker">Receipt</p>
                             <h2 class="h4 mb-1">Easy Eats Payment Slip</h2>
-                            <p class="text-muted mb-0">Your mock receipt will appear here after payment is confirmed.</p>
+                            <p class="text-muted mb-0">Your latest server-generated receipt appears here after payment is confirmed.</p>
                         </div>
                     </div>
 
-                    <div id="empty-receipt-state" class="text-muted">No receipt has been generated yet.</div>
-
-                    <div id="receipt-content" class="d-none">
+                    @if (Model.LatestReceipt is null || Model.LatestReceipt.Items.Count == 0)
+                    {
+                        <div class="text-muted">No receipt has been generated yet.</div>
+                    }
+                    else
+                    {
                         <div class="border rounded-4 p-3 mb-3 bg-light">
                             <div class="d-flex justify-content-between small mb-2">
                                 <span class="text-muted">Receipt #</span>
-                                <strong id="receipt-number"></strong>
+                                <strong>@Model.LatestReceipt.ReceiptNumber</strong>
                             </div>
                             <div class="d-flex justify-content-between small mb-2">
                                 <span class="text-muted">Paid</span>
-                                <strong id="receipt-date"></strong>
+                                <strong>@Model.LatestReceipt.PaidAtUtc.ToLocalTime().ToString("dd MMM yyyy h:mm tt")</strong>
                             </div>
                             <div class="d-flex justify-content-between small">
                                 <span class="text-muted">Orders Included</span>
-                                <strong id="receipt-order-ids"></strong>
+                                <strong>@string.Join(", ", Model.LatestReceipt.OrderIds)</strong>
                             </div>
                         </div>
 
@@ -81,240 +94,35 @@
                                         <th class="text-end">Total</th>
                                     </tr>
                                 </thead>
-                                <tbody id="receipt-items-body"></tbody>
+                                <tbody>
+                                    @foreach (var item in Model.LatestReceipt.Items)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="fw-semibold">@item.Name</div>
+                                                <div class="small text-muted">@item.CategoryName</div>
+                                            </td>
+                                            <td class="text-end">@item.Quantity</td>
+                                            <td class="text-end">@((item.Quantity * item.Price).ToString("C"))</td>
+                                        </tr>
+                                    }
+                                </tbody>
                             </table>
                         </div>
 
                         <div class="border-top pt-3">
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Total items</span>
-                                <strong id="receipt-total-items"></strong>
+                                <strong>@Model.LatestReceipt.Items.Sum(item => item.Quantity)</strong>
                             </div>
                             <div class="d-flex justify-content-between">
                                 <span>Total paid</span>
-                                <strong id="receipt-total-value"></strong>
+                                <strong>@Model.LatestReceipt.Items.Sum(item => item.Quantity * item.Price).ToString("C")</strong>
                             </div>
                         </div>
-                    </div>
+                    }
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        (() => {
-            const currentUsername = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(User.Identity?.Name ?? string.Empty));
-            const orderHistoryStorageKey = `easy-eats-order-history:${currentUsername || "anonymous"}`;
-            const latestReceiptStorageKey = `easy-eats-latest-receipt:${currentUsername || "anonymous"}`;
-            const confirmPaymentForm = document.getElementById("confirm-payment-form");
-
-            const emptyPaymentState = document.getElementById("empty-payment-state");
-            const paymentSummary = document.getElementById("payment-summary");
-            const paymentTotalItems = document.getElementById("payment-total-items");
-            const paymentTotalValue = document.getElementById("payment-total-value");
-            const confirmPaymentButton = document.getElementById("confirm-payment-btn");
-
-            const emptyReceiptState = document.getElementById("empty-receipt-state");
-            const receiptContent = document.getElementById("receipt-content");
-            const receiptNumber = document.getElementById("receipt-number");
-            const receiptDate = document.getElementById("receipt-date");
-            const receiptOrderIds = document.getElementById("receipt-order-ids");
-            const receiptItemsBody = document.getElementById("receipt-items-body");
-            const receiptTotalItems = document.getElementById("receipt-total-items");
-            const receiptTotalValue = document.getElementById("receipt-total-value");
-            const antiForgeryToken = confirmPaymentForm.querySelector("input[name='__RequestVerificationToken']")?.value ?? "";
-
-            const formatCurrency = (value) =>
-                new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value);
-
-            const formatPlacedDate = (value) => {
-                const parsedDate = new Date(value);
-                return Number.isNaN(parsedDate.getTime())
-                    ? "Unknown"
-                    : parsedDate.toLocaleString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                        hour: "numeric",
-                        minute: "2-digit"
-                    });
-            };
-
-            const readOrderHistory = () => {
-                try {
-                    const rawHistory = localStorage.getItem(orderHistoryStorageKey);
-                    const parsedHistory = rawHistory ? JSON.parse(rawHistory) : [];
-                    return Array.isArray(parsedHistory) ? parsedHistory : [];
-                } catch {
-                    localStorage.removeItem(orderHistoryStorageKey);
-                    return [];
-                }
-            };
-
-            const readLatestReceipt = () => {
-                try {
-                    const rawValue = localStorage.getItem(latestReceiptStorageKey);
-                    return rawValue ? JSON.parse(rawValue) : null;
-                } catch {
-                    localStorage.removeItem(latestReceiptStorageKey);
-                    return null;
-                }
-            };
-
-            const saveLatestReceipt = (receipt) => {
-                localStorage.setItem(latestReceiptStorageKey, JSON.stringify(receipt));
-            };
-
-            const getPendingSummary = (orders) => {
-                return orders.reduce((summary, order) => {
-                    const items = Array.isArray(order.items) ? order.items : [];
-
-                    for (const item of items) {
-                        const quantity = Number(item.quantity) || 0;
-                        const price = Number(item.price) || 0;
-                        summary.totalItems += quantity;
-                        summary.totalValue += quantity * price;
-                    }
-
-                    return summary;
-                }, { totalItems: 0, totalValue: 0 });
-            };
-
-            const renderPaymentSummary = () => {
-                const orderHistory = readOrderHistory();
-                const summary = getPendingSummary(orderHistory);
-                const hasOrders = orderHistory.length > 0;
-
-                paymentTotalItems.textContent = summary.totalItems.toString();
-                paymentTotalValue.textContent = formatCurrency(summary.totalValue);
-                confirmPaymentButton.disabled = !hasOrders;
-
-                emptyPaymentState.classList.toggle("d-none", hasOrders);
-                paymentSummary.classList.toggle("d-none", !hasOrders);
-            };
-
-            const renderReceipt = () => {
-                const receipt = readLatestReceipt();
-                receiptItemsBody.innerHTML = "";
-
-                if (!receipt || !Array.isArray(receipt.items) || receipt.items.length === 0) {
-                    emptyReceiptState.classList.remove("d-none");
-                    receiptContent.classList.add("d-none");
-                    return;
-                }
-
-                emptyReceiptState.classList.add("d-none");
-                receiptContent.classList.remove("d-none");
-
-                receiptNumber.textContent = receipt.receiptNumber ?? "";
-                receiptDate.textContent = formatPlacedDate(receipt.paidAtUtc);
-                receiptOrderIds.textContent = Array.isArray(receipt.orderIds) && receipt.orderIds.length > 0
-                    ? receipt.orderIds.join(", ")
-                    : "-";
-                receiptTotalItems.textContent = String(Number(receipt.totalItems) || 0);
-                receiptTotalValue.textContent = formatCurrency(Number(receipt.totalValue) || 0);
-
-                for (const item of receipt.items) {
-                    const quantity = Number(item.quantity) || 0;
-                    const price = Number(item.price) || 0;
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
-                        <td>
-                            <div class="fw-semibold">${item.name ?? ""}</div>
-                            <div class="small text-muted">${item.categoryName ?? ""}</div>
-                        </td>
-                        <td class="text-end">${quantity}</td>
-                        <td class="text-end">${formatCurrency(quantity * price)}</td>`;
-
-                    receiptItemsBody.appendChild(row);
-                }
-            };
-
-            const buildReceiptFromOrders = (orders) => {
-                const allItems = [];
-                const orderIds = [];
-
-                for (const order of orders) {
-                    if (order?.orderId != null) {
-                        orderIds.push(order.orderId);
-                    }
-
-                    const items = Array.isArray(order.items) ? order.items : [];
-                    for (const item of items) {
-                        allItems.push({
-                            name: item.name ?? "",
-                            categoryName: item.categoryName ?? "",
-                            quantity: Number(item.quantity) || 0,
-                            price: Number(item.price) || 0
-                        });
-                    }
-                }
-
-                const totalItems = allItems.reduce((sum, item) => sum + item.quantity, 0);
-                const totalValue = allItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
-                const receiptStamp = Date.now();
-
-                return {
-                    receiptNumber: `EE-${receiptStamp}`,
-                    paidAtUtc: new Date(receiptStamp).toISOString(),
-                    orderIds,
-                    totalItems,
-                    totalValue,
-                    items: allItems
-                };
-            };
-
-            const callConfirmPaymentApi = async (receipt) => {
-                const response = await fetch('@Url.Action("ConfirmPayment", "UserNavigation")', {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "RequestVerificationToken": antiForgeryToken
-                    },
-                    body: JSON.stringify(receipt)
-                });
-
-                const result = await response.json();
-                if (!response.ok || !result?.success) {
-                    throw new Error(result?.message ?? "Payment confirmation failed.");
-                }
-
-                return result;
-            };
-
-            confirmPaymentButton.addEventListener("click", async () => {
-                const orderHistory = readOrderHistory();
-                if (orderHistory.length === 0) {
-                    return;
-                }
-
-                confirmPaymentButton.disabled = true;
-                const receipt = buildReceiptFromOrders(orderHistory);
-
-                try {
-                    await callConfirmPaymentApi(receipt);
-                    saveLatestReceipt(receipt);
-                    localStorage.removeItem(orderHistoryStorageKey);
-
-                    renderReceipt();
-                    renderPaymentSummary();
-                    window.dispatchEvent(new Event("order-history-updated"));
-                } catch (error) {
-                    const message = error instanceof Error ? error.message : "Payment confirmation failed.";
-                    alert(message);
-                } finally {
-                    renderPaymentSummary();
-                }
-            });
-
-            renderPaymentSummary();
-            renderReceipt();
-            window.addEventListener("storage", () => {
-                renderPaymentSummary();
-                renderReceipt();
-            });
-        })();
-    </script>
-}

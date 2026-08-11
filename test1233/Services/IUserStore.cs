@@ -27,13 +27,29 @@ public interface IUserStore
 
     IReadOnlyCollection<AppTokens> GetAllTokens();
 
+    IReadOnlyCollection<AppCartItem> GetCartItemsForUser(int userId);
+
     IReadOnlyCollection<AppUsedToken> GetAllUsedTokens();
+
+    IReadOnlyCollection<AppOrder> GetPendingOrdersForUser(int userId);
+
+    AppReceipt? GetLatestReceiptForUser(int userId);
 
     IReadOnlyCollection<AppSuggestion> GetAllSuggestions();
 
     IReadOnlyCollection<AppNotification> GetAllNotifications();
 
     void CreateToken(AppTokens tokens);
+
+    void AddOrUpdateCartItem(AppCartItem cartItem);
+
+    bool RemoveCartItem(int userId, int productId);
+
+    void ClearCart(int userId);
+
+    AppOrder CreatePendingOrder(int userId, string username, IReadOnlyCollection<AppCartItem> items, DateTime placedAtUtc);
+
+    AppReceipt? ConfirmPendingOrdersPayment(int userId, string username, DateTime paidAtUtc);
 
     void RecordUsedToken(AppUsedToken usedToken);
 

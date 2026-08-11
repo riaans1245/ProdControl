@@ -157,38 +157,6 @@
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        (() => {
-            const currentUsername = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(User.Identity?.Name ?? string.Empty));
-            const cartStorageKey = `easy-eats-cart:${currentUsername || "anonymous"}`;
-            const cartCount = document.getElementById("nav-cart-count");
-
-            if (!cartCount) {
-                return;
-            }
-
-            const readCart = () => {
-                try {
-                    const rawCart = localStorage.getItem(cartStorageKey);
-                    const parsedCart = rawCart ? JSON.parse(rawCart) : [];
-                    return Array.isArray(parsedCart) ? parsedCart : [];
-                } catch {
-                    return [];
-                }
-            };
-
-            const syncCartSummary = () => {
-                const cart = readCart();
-                const totalItems = cart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
-
-                cartCount.textContent = totalItems.toString();
-            };
-
-            window.addEventListener("storage", syncCartSummary);
-            window.addEventListener("cart-updated", syncCartSummary);
-            syncCartSummary();
-        })();
-    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

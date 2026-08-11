@@ -55,7 +55,22 @@ public class InMemoryUserStore : IUserStore
 
     ];
 
+    private readonly List<AppCartItem> _cartItems =
+    [
+
+    ];
+
     private readonly List<AppUsedToken> _usedTokens =
+    [
+
+    ];
+
+    private readonly List<AppOrder> _orders =
+    [
+
+    ];
+
+    private readonly List<AppReceipt> _receipts =
     [
 
     ];
@@ -179,6 +194,27 @@ public class InMemoryUserStore : IUserStore
         }
     }
 
+    public IReadOnlyCollection<AppCartItem> GetCartItemsForUser(int userId)
+    {
+        lock (_lock)
+        {
+            return _cartItems
+                .Where(item => item.UserId == userId)
+                .OrderBy(item => item.Name)
+                .Select(item => new AppCartItem
+                {
+                    UserId = item.UserId,
+                    ProductId = item.ProductId,
+                    Name = item.Name,
+                    CategoryName = item.CategoryName,
+                    Price = item.Price,
+                    Quantity = item.Quantity
+                })
+                .ToList()
+                .AsReadOnly();
+        }
+    }
+
     public IReadOnlyCollection<AppUsedToken> GetAllUsedTokens()
     {
         lock (_lock)
@@ -187,6 +223,32 @@ public class InMemoryUserStore : IUserStore
                 .OrderByDescending(token => token.SentAtUtc)
                 .ToList()
                 .AsReadOnly();
+        }
+    }
+
+    public IReadOnlyCollection<AppOrder> GetPendingOrdersForUser(int userId)
+    {
+        lock (_lock)
+        {
+            return _orders
+                .Where(order => order.UserId == userId && !order.IsPaid)
+                .OrderByDescending(order => order.PlacedAtUtc)
+                .Select(CloneOrder)
+                .ToList()
+                .AsReadOnly();
+        }
+    }
+
+    public AppReceipt? GetLatestReceiptForUser(int userId)
+    {
+        lock (_lock)
+        {
+            var receipt = _receipts
+                .Where(item => item.UserId == userId)
+                .OrderByDescending(item => item.PaidAtUtc)
+                .FirstOrDefault();
+
+            return receipt is null ? null : CloneReceipt(receipt);
         }
     }
 
@@ -565,6 +627,133 @@ lock (_lock)
         }
     }
 
+    public void AddOrUpdateCartItem(AppCartItem cartItem)
+    {
+        lock (_lock)
+        {
+            var existingItem = _cartItems.FirstOrDefault(item =>
+                item.UserId == cartItem.UserId &&
+                item.ProductId == cartItem.ProductId);
+
+            if (existingItem is null)
+            {
+                _cartItems.Add(new AppCartItem
+                {
+                    UserId = cartItem.UserId,
+                    ProductId = cartItem.ProductId,
+                    Name = cartItem.Name,
+                    CategoryName = cartItem.CategoryName,
+                    Price = cartItem.Price,
+                    Quantity = cartItem.Quantity
+                });
+
+                return;
+            }
+
+            existingItem.Name = cartItem.Name;
+            existingItem.CategoryName = cartItem.CategoryName;
+            existingItem.Price = cartItem.Price;
+            existingItem.Quantity = cartItem.Quantity;
+        }
+    }
+
+    public bool RemoveCartItem(int userId, int productId)
+    {
+        lock (_lock)
+        {
+            var cartItem = _cartItems.FirstOrDefault(item => item.UserId == userId && item.ProductId == productId);
+            if (cartItem is null)
+            {
+                return false;
+            }
+
+            _cartItems.Remove(cartItem);
+            return true;
+        }
+    }
+
+    public void ClearCart(int userId)
+    {
+        lock (_lock)
+        {
+            _cartItems.RemoveAll(item => item.UserId == userId);
+        }
+    }
+
+    public AppOrder CreatePendingOrder(int userId, string username, IReadOnlyCollection<AppCartItem> items, DateTime placedAtUtc)
+    {
+        lock (_lock)
+        {
+            var nextOrderId = _orders.Count == 0 ? 1 : _orders.Max(item => item.OrderId) + 1;
+            var order = new AppOrder
+            {
+                OrderId = nextOrderId,
+                UserId = userId,
+                Username = username,
+                PlacedAtUtc = placedAtUtc,
+                IsPaid = false,
+                Items = items
+                    .Select(item => new AppOrderItem
+                    {
+                        ProductId = item.ProductId,
+                        Name = item.Name,
+                        CategoryName = item.CategoryName,
+                        Price = item.Price,
+                        Quantity = item.Quantity
+                    })
+                    .ToList()
+            };
+
+            _orders.Add(order);
+            _cartItems.RemoveAll(item => item.UserId == userId);
+
+            return CloneOrder(order);
+        }
+    }
+
+    public AppReceipt? ConfirmPendingOrdersPayment(int userId, string username, DateTime paidAtUtc)
+    {
+        lock (_lock)
+        {
+            var pendingOrders = _orders
+                .Where(order => order.UserId == userId && !order.IsPaid)
+                .OrderBy(order => order.OrderId)
+                .ToList();
+
+            if (pendingOrders.Count == 0)
+            {
+                return null;
+            }
+
+            foreach (var order in pendingOrders)
+            {
+                order.IsPaid = true;
+            }
+
+            var receipt = new AppReceipt
+            {
+                UserId = userId,
+                Username = username,
+                ReceiptNumber = $"EE-{paidAtUtc:yyyyMMddHHmmss}",
+                PaidAtUtc = paidAtUtc,
+                OrderIds = pendingOrders.Select(order => order.OrderId).ToList(),
+                Items = pendingOrders
+                    .SelectMany(order => order.Items)
+                    .Select(item => new AppReceiptItem
+                    {
+                        Name = item.Name,
+                        CategoryName = item.CategoryName,
+                        Price = item.Price,
+                        Quantity = item.Quantity
+                    })
+                    .ToList()
+            };
+
+            _receipts.Add(receipt);
+            return CloneReceipt(receipt);
+        }
+    }
+
     public void RecordUsedToken(AppUsedToken usedToken)
     {
         lock (_lock)
@@ -855,4 +1044,46 @@ public void SuggestionCreate(AppSuggestion suggest)
         }
     }
 
+    private static AppOrder CloneOrder(AppOrder order)
+    {
+        return new AppOrder
+        {
+            OrderId = order.OrderId,
+            UserId = order.UserId,
+            Username = order.Username,
+            PlacedAtUtc = order.PlacedAtUtc,
+            IsPaid = order.IsPaid,
+            Items = order.Items
+                .Select(item => new AppOrderItem
+                {
+                    ProductId = item.ProductId,
+                    Name = item.Name,
+                    CategoryName = item.CategoryName,
+                    Price = item.Price,
+                    Quantity = item.Quantity
+                })
+                .ToList()
+        };
+    }
+
+    private static AppReceipt CloneReceipt(AppReceipt receipt)
+    {
+        return new AppReceipt
+        {
+            UserId = receipt.UserId,
+            Username = receipt.Username,
+            ReceiptNumber = receipt.ReceiptNumber,
+            PaidAtUtc = receipt.PaidAtUtc,
+            OrderIds = receipt.OrderIds.ToList(),
+            Items = receipt.Items
+                .Select(item => new AppReceiptItem
+                {
+                    Name = item.Name,
+                    CategoryName = item.CategoryName,
+                    Price = item.Price,
+                    Quantity = item.Quantity
+                })
+                .ToList()
+        };
+    }
 }

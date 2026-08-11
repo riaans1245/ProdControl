@@ -1,3 +1,5 @@
+@model test1233.Models.UserOrderListViewModel
+
 @{
     ViewData["Title"] = "My Orders";
 }
@@ -10,282 +12,116 @@
         </div>
     </div>
 
-    <form id="order-search-form" class="row g-2 align-items-end mb-4">
+    @if (TempData["OrderListMessage"] is string orderListMessage && !string.IsNullOrWhiteSpace(orderListMessage))
+    {
+        <div class="alert alert-success shadow-sm" role="alert">
+            @orderListMessage
+        </div>
+    }
+
+    <form method="get" class="row g-2 align-items-end mb-4">
         <div class="col-sm-8 col-md-6 col-lg-4">
-            <label for="order-search-input" class="form-label">Search my orders</label>
-            <input id="order-search-input"
+            <label for="searchString" class="form-label">Search my orders</label>
+            <input id="searchString"
+                   name="searchString"
+                   value="@Model.SearchString"
                    class="form-control"
-                   placeholder="Search by Item, or Category" />
+                   placeholder="Search by Item, Order #, or Category" />
         </div>
         <div class="col-auto">
             <button type="submit" class="btn btn-dark">Search</button>
         </div>
         <div class="col-auto">
-            <button type="button" id="order-search-clear" class="btn btn-outline-secondary">Clear</button>
+            <a asp-action="UserOrderList" class="btn btn-outline-secondary">Clear</a>
         </div>
     </form>
 
     <div class="card shadow-sm border-0">
         <div class="card-body">
-            <div id="empty-order-history" class="text-muted">No items are waiting in your order list yet.</div>
+            @if (Model.Orders.Items.Count == 0)
+            {
+                <div class="text-muted">
+                    @(string.IsNullOrWhiteSpace(Model.SearchString)
+                        ? "No items are waiting in your order list yet."
+                        : $"No order items found for \"{Model.SearchString}\".")
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Order #</th>
+                                <th>Placed</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var row in Model.Orders.Items)
+                            {
+                                <tr>
+                                    <td>@row.OrderId</td>
+                                    <td>@row.PlacedAtUtc.ToLocalTime().ToString("dd MMM yyyy h:mm tt")</td>
+                                    <td>@row.Name</td>
+                                    <td>@row.CategoryName</td>
+                                    <td>@row.Quantity</td>
+                                    <td>@row.Price.ToString("C")</td>
+                                    <td>@row.LineTotal.ToString("C")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
 
-            <div id="order-history-table-wrapper" class="table-responsive d-none">
-                <table class="table table-striped align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th>Order #</th>
-                            <th>Placed</th>
-                            <th>Name</th>
-                            <th>Category</th>
-                            <th>Quantity</th>
-                            <th>Unit Price</th>
-                            <th>Price</th>
-                        </tr>
-                    </thead>
-                    <tbody id="order-history-table-body"></tbody>
-                </table>
-            </div>
-
-            <div id="order-history-pagination" class="d-flex justify-content-between align-items-center mt-4 d-none">
-                <span id="order-history-page-status" class="text-muted small"></span>
-                <nav aria-label="Order pagination">
-                    <ul class="pagination mb-0" id="order-history-page-list"></ul>
-                </nav>
-            </div>
+                @if (Model.Orders.TotalPages > 1)
+                {
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <span class="text-muted small">Page @Model.Orders.PageNumber of @Model.Orders.TotalPages</span>
+                        <nav aria-label="Order pagination">
+                            <ul class="pagination mb-0">
+                                <li class="page-item @(Model.Orders.HasPreviousPage ? null : "disabled")">
+                                    <a class="page-link"
+                                       asp-action="UserOrderList"
+                                       asp-route-searchString="@Model.SearchString"
+                                       asp-route-page="@(Model.Orders.PageNumber - 1)">Previous</a>
+                                </li>
+                                @for (var pageNumber = 1; pageNumber <= Model.Orders.TotalPages; pageNumber++)
+                                {
+                                    <li class="page-item @(pageNumber == Model.Orders.PageNumber ? "active" : null)">
+                                        <a class="page-link"
+                                           asp-action="UserOrderList"
+                                           asp-route-searchString="@Model.SearchString"
+                                           asp-route-page="@pageNumber">@pageNumber</a>
+                                    </li>
+                                }
+                                <li class="page-item @(Model.Orders.HasNextPage ? null : "disabled")">
+                                    <a class="page-link"
+                                       asp-action="UserOrderList"
+                                       asp-route-searchString="@Model.SearchString"
+                                       asp-route-page="@(Model.Orders.PageNumber + 1)">Next</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                }
+            }
         </div>
         <div class="card-footer bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
             <div>
                 <div class="small text-muted">Items waiting for payment</div>
                 <div class="fw-semibold">
-                    <span id="pending-order-count">0</span> item(s),
-                    <span id="pending-order-total">$0.00</span>
+                    <span>@Model.PendingOrderCount</span> item(s),
+                    <span>@Model.PendingOrderTotal.ToString("C")</span>
                 </div>
             </div>
-            <a asp-action="UserOrderPlace" id="place-order-link" class="btn btn-success disabled" aria-disabled="true">Place Order</a>
+            <a asp-action="UserOrderPlace"
+               class="btn btn-success @(Model.HasOrders ? null : "disabled")"
+               aria-disabled="@(Model.HasOrders ? "false" : "true")">Place Order</a>
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        (() => {
-            const currentUsername = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(User.Identity?.Name ?? string.Empty));
-            const orderHistoryStorageKey = `easy-eats-order-history:${currentUsername || "anonymous"}`;
-
-            const emptyOrderHistory = document.getElementById("empty-order-history");
-            const orderHistoryTableWrapper = document.getElementById("order-history-table-wrapper");
-            const orderHistoryTableBody = document.getElementById("order-history-table-body");
-            const pendingOrderCount = document.getElementById("pending-order-count");
-            const pendingOrderTotal = document.getElementById("pending-order-total");
-            const placeOrderLink = document.getElementById("place-order-link");
-            const orderSearchForm = document.getElementById("order-search-form");
-            const orderSearchInput = document.getElementById("order-search-input");
-            const orderSearchClear = document.getElementById("order-search-clear");
-            const orderHistoryPagination = document.getElementById("order-history-pagination");
-            const orderHistoryPageStatus = document.getElementById("order-history-page-status");
-            const orderHistoryPageList = document.getElementById("order-history-page-list");
-            const pageSize = 10;
-            let currentPage = 1;
-            let currentSearch = "";
-
-            const formatCurrency = (value) =>
-                new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value);
-
-            const formatPlacedDate = (value) => {
-                const parsedDate = new Date(value);
-                return Number.isNaN(parsedDate.getTime())
-                    ? "Unknown"
-                    : parsedDate.toLocaleString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                        hour: "numeric",
-                        minute: "2-digit"
-                    });
-            };
-
-            const readOrderHistory = () => {
-                try {
-                    const rawHistory = localStorage.getItem(orderHistoryStorageKey);
-                    const parsedHistory = rawHistory ? JSON.parse(rawHistory) : [];
-                    return Array.isArray(parsedHistory) ? parsedHistory : [];
-                } catch {
-                    localStorage.removeItem(orderHistoryStorageKey);
-                    return [];
-                }
-            };
-
-            const getPendingSummary = (orders) => {
-                return orders.reduce((summary, order) => {
-                    const items = Array.isArray(order.items) ? order.items : [];
-
-                    for (const item of items) {
-                        const quantity = Number(item.quantity) || 0;
-                        const price = Number(item.price) || 0;
-                        summary.totalItems += quantity;
-                        summary.totalValue += quantity * price;
-                    }
-
-                    return summary;
-                }, { totalItems: 0, totalValue: 0 });
-            };
-
-            const flattenOrders = (orders) => {
-                const rows = [];
-
-                for (const order of orders) {
-                    const items = Array.isArray(order.items) ? order.items : [];
-
-                    for (const item of items) {
-                        const quantity = Number(item.quantity) || 0;
-                        const price = Number(item.price) || 0;
-                        rows.push({
-                            orderId: order.orderId ?? "",
-                            placedAtUtc: order.placedAtUtc,
-                            name: item.name ?? "",
-                            categoryName: item.categoryName ?? "",
-                            quantity,
-                            price
-                        });
-                    }
-                }
-
-                return rows;
-            };
-
-            const filterRows = (rows, searchTerm) => {
-                if (!searchTerm) {
-                    return rows;
-                }
-
-                return rows.filter(row =>
-                    String(row.orderId).toLowerCase().includes(searchTerm) ||
-                    row.name.toLowerCase().includes(searchTerm) ||
-                    row.categoryName.toLowerCase().includes(searchTerm));
-            };
-
-            const renderPagination = (totalItems, pageNumber) => {
-                const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
-
-                if (totalItems === 0) {
-                    orderHistoryPagination.classList.add("d-none");
-                    orderHistoryPageList.innerHTML = "";
-                    orderHistoryPageStatus.textContent = "";
-                    return totalPages;
-                }
-
-                orderHistoryPagination.classList.remove("d-none");
-                orderHistoryPageStatus.textContent = `Page ${pageNumber} of ${totalPages}`;
-                orderHistoryPageList.innerHTML = "";
-
-                const createPageItem = (label, targetPage, isDisabled, isActive = false) => {
-                    const item = document.createElement("li");
-                    item.className = `page-item${isDisabled ? " disabled" : ""}${isActive ? " active" : ""}`;
-
-                    const link = document.createElement("a");
-                    link.className = "page-link";
-                    link.href = "#";
-                    link.textContent = label;
-                    link.addEventListener("click", (event) => {
-                        event.preventDefault();
-                        if (isDisabled || targetPage === currentPage) {
-                            return;
-                        }
-
-                        currentPage = targetPage;
-                        renderOrderHistory();
-                    });
-
-                    item.appendChild(link);
-                    orderHistoryPageList.appendChild(item);
-                };
-
-                createPageItem("Previous", pageNumber - 1, pageNumber <= 1);
-
-                for (let page = 1; page <= totalPages; page += 1) {
-                    createPageItem(page.toString(), page, false, page === pageNumber);
-                }
-
-                createPageItem("Next", pageNumber + 1, pageNumber >= totalPages);
-                return totalPages;
-            };
-
-            const renderOrderHistory = () => {
-                const orderHistory = readOrderHistory();
-                const summary = getPendingSummary(orderHistory);
-                const allRows = flattenOrders(orderHistory);
-                const filteredRows = filterRows(allRows, currentSearch);
-
-                orderHistoryTableBody.innerHTML = "";
-                pendingOrderCount.textContent = summary.totalItems.toString();
-                pendingOrderTotal.textContent = formatCurrency(summary.totalValue);
-
-                const hasOrders = orderHistory.length > 0;
-                placeOrderLink.classList.toggle("disabled", !hasOrders);
-                placeOrderLink.setAttribute("aria-disabled", hasOrders ? "false" : "true");
-
-                if (!hasOrders) {
-                    emptyOrderHistory.classList.remove("d-none");
-                    orderHistoryTableWrapper.classList.add("d-none");
-                    orderHistoryPagination.classList.add("d-none");
-                    return;
-                }
-
-                if (filteredRows.length === 0) {
-                    emptyOrderHistory.textContent = `No order items found for "${orderSearchInput.value.trim()}".`;
-                    emptyOrderHistory.classList.remove("d-none");
-                    orderHistoryTableWrapper.classList.add("d-none");
-                    orderHistoryPagination.classList.add("d-none");
-                    return;
-                }
-
-                const totalPages = renderPagination(filteredRows.length, currentPage);
-                currentPage = Math.min(Math.max(1, currentPage), totalPages);
-
-                const pageRows = filteredRows.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-
-                emptyOrderHistory.classList.add("d-none");
-                emptyOrderHistory.textContent = "No items are waiting in your order list yet.";
-                orderHistoryTableWrapper.classList.remove("d-none");
-
-                for (const rowData of pageRows) {
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
-                        <td>${rowData.orderId}</td>
-                        <td>${formatPlacedDate(rowData.placedAtUtc)}</td>
-                        <td>${rowData.name}</td>
-                        <td>${rowData.categoryName}</td>
-                        <td>${rowData.quantity}</td>
-                        <td>${formatCurrency(rowData.price)}</td>
-                        <td>${formatCurrency(rowData.quantity * rowData.price)}</td>`;
-
-                    orderHistoryTableBody.appendChild(row);
-                }
-            };
-
-            placeOrderLink.addEventListener("click", (event) => {
-                if (placeOrderLink.getAttribute("aria-disabled") === "true") {
-                    event.preventDefault();
-                }
-            });
-
-            orderSearchForm.addEventListener("submit", (event) => {
-                event.preventDefault();
-                currentSearch = orderSearchInput.value.trim().toLowerCase();
-                currentPage = 1;
-                renderOrderHistory();
-            });
-
-            orderSearchClear.addEventListener("click", () => {
-                orderSearchInput.value = "";
-                currentSearch = "";
-                currentPage = 1;
-                renderOrderHistory();
-            });
-
-            renderOrderHistory();
-            window.addEventListener("storage", renderOrderHistory);
-            window.addEventListener("order-history-updated", renderOrderHistory);
-        })();
-    </script>
-}

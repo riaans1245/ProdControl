@@ -136,14 +136,66 @@ public class UserNavigationController(IUserStore userStore, ITokenApiClient toke
         return RedirectToAction(nameof(UserNotificationsList));
     }
 
-    public IActionResult UserOrderList()
+    public IActionResult UserOrderList(string searchString, int page = 1)
     {
         var currentUser = GetCurrentUser();
         if (currentUser is null)
         {
             return RedirectToAction("Login", "Account");
         }
-        return View();
+
+        var pendingOrders = _userStore.GetPendingOrdersForUser(currentUser.Id);
+        var rows = pendingOrders
+            .SelectMany(order => order.Items.Select(item => new UserOrderRowViewModel
+            {
+                OrderId = order.OrderId,
+                PlacedAtUtc = order.PlacedAtUtc,
+                Name = item.Name,
+                CategoryName = item.CategoryName,
+                Quantity = item.Quantity,
+                Price = item.Price
+            }));
+
+        if (!string.IsNullOrWhiteSpace(searchString))
+        {
+            var normalizedSearch = searchString.Trim();
+            rows = rows.Where(row =>
+                row.OrderId.ToString().Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
+                row.Name.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
+                row.CategoryName.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase));
+        }
+
+        var filteredRows = rows.ToList();
+        var totalItems = filteredRows.Count;
+        var totalPages = totalItems == 0 ? 1 : (int)Math.Ceiling(totalItems / (double)PageSize);
+        var pageNumber = Math.Min(Math.Max(1, page), totalPages);
+        var items = filteredRows
+            .Skip((pageNumber - 1) * PageSize)
+            .Take(PageSize)
+            .ToList()
+            .AsReadOnly();
+
+        var pendingOrderCount = pendingOrders
+            .SelectMany(order => order.Items)
+            .Sum(item => item.Quantity);
+
+        var pendingOrderTotal = pendingOrders
+            .SelectMany(order => order.Items)
+            .Sum(item => item.Quantity * item.Price);
+
+        return View(new UserOrderListViewModel
+        {
+            Orders = new PagedListViewModel<UserOrderRowViewModel>
+            {
+                Items = items,
+                PageNumber = pageNumber,
+                PageSize = PageSize,
+                TotalItems = totalItems
+            },
+            SearchString = searchString ?? string.Empty,
+            PendingOrderCount = pendingOrderCount,
+            PendingOrderTotal = pendingOrderTotal
+        });
     }
 
     public IActionResult UserOrderPlace()
@@ -154,36 +206,31 @@ public class UserNavigationController(IUserStore userStore, ITokenApiClient toke
             return RedirectToAction("Login", "Account");
         }
 
-        return View();
+        return View(BuildUserOrderPlaceViewModel(currentUser));
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult ConfirmPayment([FromBody] OrderPaymentRequest request)
+    public IActionResult ConfirmPayment()
     {
         var currentUser = GetCurrentUser();
         if (currentUser is null)
         {
-            return Unauthorized(new { success = false, message = "You must be signed in to confirm payment." });
+            return RedirectToAction("Login", "Account");
         }
 
-        if (request is null || request.Items.Count == 0)
+        var receipt = _userStore.ConfirmPendingOrdersPayment(currentUser.Id, currentUser.Username, DateTime.UtcNow);
+        if (receipt is null)
         {
-            return BadRequest(new { success = false, message = "No order items were sent for payment." });
+            TempData["OrderPlaceMessage"] = "There are no order items ready for payment.";
+            return RedirectToAction(nameof(UserOrderPlace));
         }
 
-        var normalizedTotalItems = request.Items.Sum(item => Math.Max(0, item.Quantity));
-        var normalizedTotalValue = request.Items.Sum(item => Math.Max(0, item.Quantity) * Math.Max(0m, item.Price));
-
-        return Json(new
+        TempData["OrderPlaceMessage"] = $"Payment recorded successfully. Receipt {receipt.ReceiptNumber} was generated.";
+        return View("UserOrderPlace", new UserOrderPlaceViewModel
         {
-            success = true,
-            message = "Payment recorded successfully.",
-            paidBy = currentUser.Username,
-            receiptNumber = request.ReceiptNumber,
-            totalItems = normalizedTotalItems,
-            totalValue = normalizedTotalValue,
-            paidAtUtc = request.PaidAtUtc
+            PendingOrders = _userStore.GetPendingOrdersForUser(currentUser.Id),
+            LatestReceipt = receipt
         });
     }
 
@@ -270,5 +317,14 @@ public class UserNavigationController(IUserStore userStore, ITokenApiClient toke
     private string GetBaseUrl()
     {
         return $"{Request.Scheme}://{Request.Host}";
+    }
+
+    private UserOrderPlaceViewModel BuildUserOrderPlaceViewModel(AppUser currentUser)
+    {
+        return new UserOrderPlaceViewModel
+        {
+            PendingOrders = _userStore.GetPendingOrdersForUser(currentUser.Id),
+            LatestReceipt = _userStore.GetLatestReceiptForUser(currentUser.Id)
+        };
     }
 }

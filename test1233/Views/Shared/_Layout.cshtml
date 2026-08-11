@@ -1,4 +1,5 @@
 ﻿@inject test1233.Services.IUserStore UserStore
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,7 +25,6 @@
     <nav class="navbar navbar-expand-md navbar-dark border-bottom shadow-sm py-3 admin-topbar"> 
         <div class="container-fluid"> 
             <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">Easy Eats Admin</a> 
-            <span class="navbar-text text-white me-3">@ViewBag.WelcomeMessage</span>
             @if (hasUsedTokens)
             {
                 <a asp-controller="Token"
@@ -36,7 +36,7 @@
             {
                 <a asp-controller="Token"
                    asp-action="Used"
-                   class="btn btn-outline-secondary">No Used Tokens</a>
+                   class="btn btn-outline-secondary">No Tokens</a>
             }
            
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"> 

@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@inject test1233.Services.IUserStore UserStore
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -16,12 +17,26 @@
 <body class="admin-shell d-flex flex-column min-vh-100 m-0">
     @{
         var isAdmin = User.IsInRole("Admin");
+        var hasUsedTokens = UserStore.GetAllUsedTokens().Any();
     }
     <!-- Top Navigation Bar --> 
     <nav class="navbar navbar-expand-md navbar-dark border-bottom shadow-sm py-3 admin-topbar"> 
         <div class="container-fluid"> 
             <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">Easy Eats Admin</a> 
-            <a asp-controller="Token" asp-action="Used" class="btn btn-outline-secondary">View Used Tokens</a>
+            @if (hasUsedTokens)
+            {
+                <a asp-controller="Token"
+                   asp-action="Used"
+                   class="btn fw-semibold"
+                   style="background-color: #d8f3dc; border-color: #b7e4c7; color: #1f4d2f;">Available Tokens</a>
+            }
+            else
+            {
+                <a asp-controller="Token"
+                   asp-action="Used"
+                   class="btn btn-outline-secondary">No Used Tokens</a>
+            }
+           
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"> 
                 <span class="navbar-toggler-icon">
 

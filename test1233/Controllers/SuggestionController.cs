@@ -3,7 +3,7 @@ using test1233.Models;
 using test1233.Services;
 
 namespace test1233.Controllers;
-public class SuggestionController(IUserStore userStore) : Controller
+public class SuggestionController(IUserStore userStore) : AppController(userStore)
 {
     private readonly IUserStore _userStore = userStore;
     private const int PageSize = 10;

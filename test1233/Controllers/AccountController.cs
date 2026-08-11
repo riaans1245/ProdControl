@@ -9,7 +9,7 @@ using test1233.Services;
 
 namespace test1233.Controllers;
 
-public class AccountController(IUserStore userStore) : Controller
+public class AccountController(IUserStore userStore) : AppController(userStore)
 {
     private readonly IUserStore _userStore = userStore;
 

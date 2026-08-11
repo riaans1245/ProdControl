@@ -5,7 +5,7 @@ using test1233.Services;
 
 namespace test1233.Controllers;
 
-public class NotificationController(IUserStore userStore) : Controller
+public class NotificationController(IUserStore userStore) : AppController(userStore)
 {
     private readonly IUserStore _userStore = userStore;
     private const int PageSize = 10;

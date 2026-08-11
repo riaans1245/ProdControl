@@ -7,7 +7,7 @@ using test1233.Services;
 namespace test1233.Controllers;
 
 [Authorize(Roles = "Admin")]
-public class ProductController(IUserStore userStore) : Controller
+public class ProductController(IUserStore userStore) : AppController(userStore)
 {
     private readonly IUserStore _userStore = userStore;
     private const int PageSize = 10;

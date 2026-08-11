@@ -8,7 +8,7 @@ using test1233.Services;
 namespace test1233.Controllers;
 
 [Authorize(Roles = "Admin")]
-public class ReportsController(IUserStore userStore) : Controller
+public class ReportsController(IUserStore userStore) : AppController(userStore)
 {
     private readonly IUserStore _userStore = userStore;
 

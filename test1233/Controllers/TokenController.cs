@@ -5,7 +5,7 @@ using test1233.Services;
 
 namespace test1233.Controllers;
 
-public class TokenController(IUserStore userStore, ITokenApiClient tokenApiClient) : Controller
+public class TokenController(IUserStore userStore, ITokenApiClient tokenApiClient) : AppController(userStore)
 {
     private readonly IUserStore _userStore = userStore;
     private readonly ITokenApiClient _tokenApiClient = tokenApiClient;

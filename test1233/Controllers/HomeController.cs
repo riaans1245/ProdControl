@@ -6,7 +6,7 @@ using test1233.Services;
 
 namespace test1233.Controllers;
 
-public class HomeController(IUserStore userStore, IWebHostEnvironment environment) : Controller
+public class HomeController(IUserStore userStore, IWebHostEnvironment environment) : AppController(userStore)
 {
     private readonly IUserStore _userStore = userStore;
     private readonly IWebHostEnvironment _environment = environment;

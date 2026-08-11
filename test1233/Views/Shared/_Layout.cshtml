@@ -17,12 +17,14 @@
 <body class="admin-shell d-flex flex-column min-vh-100 m-0">
     @{
         var isAdmin = User.IsInRole("Admin");
-        var hasUsedTokens = UserStore.GetAllUsedTokens().Any();
+        var hasUsedTokens = (bool?)ViewBag.HasUsedTokens == true;
     }
+    
     <!-- Top Navigation Bar --> 
     <nav class="navbar navbar-expand-md navbar-dark border-bottom shadow-sm py-3 admin-topbar"> 
         <div class="container-fluid"> 
             <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">Easy Eats Admin</a> 
+            <span class="navbar-text text-white me-3">@ViewBag.WelcomeMessage</span>
             @if (hasUsedTokens)
             {
                 <a asp-controller="Token"

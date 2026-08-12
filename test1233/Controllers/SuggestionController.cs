@@ -10,7 +10,13 @@ public class SuggestionController(IUserStore userStore) : AppController(userStor
 
     public IActionResult Index(string searchString, int page = 1)
     {
-         ViewData["CurrentSearch"] = searchString;
+        var currentUser = GetCurrentUser();
+        if (currentUser is null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+        
+        ViewData["CurrentSearch"] = searchString;
 
          var suggestions = from suggestion in _userStore.GetAllSuggestions()
                            select suggestion;
@@ -107,5 +113,17 @@ public class SuggestionController(IUserStore userStore) : AppController(userStor
 
         _userStore.DeleteSuggestion(suggestId);
         return RedirectToAction(nameof(Index));
+    }
+
+     private AppUser? GetCurrentUser()
+    {
+        var username = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(username))
+        {
+            return null;
+        }
+
+        return _userStore.GetAllUsers()
+            .FirstOrDefault(user => string.Equals(user.Username, username, StringComparison.OrdinalIgnoreCase));
     }
 }

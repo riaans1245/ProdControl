@@ -1,9 +1,9 @@
 using System.Security.Claims;
+using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Encodings.Web;
 using test1233.Models;
 using test1233.Services;
 
@@ -109,10 +109,11 @@ public class AccountController(IUserStore userStore) : AppController(userStore)
             RoleId = defaultRole.Id,
             Role = defaultRole.Name
         };
-
+        //newly created user
         _userStore.CreateUser(user);
+        //Gets loged in straight away 
         await SignInUserAsync(user, false);
-
+        //redirect back to Index page on the Home controller
         return RedirectToAction("Index", "Home");
     }
 

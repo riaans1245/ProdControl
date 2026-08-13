@@ -46,13 +46,12 @@
                 </div>
                 @if (Model.RoleId == 1)
                 {
-                <div class="mb-3">
-                    <label asp-for="RoleId" class="form-label"></label>
-                    <select asp-for="RoleId" asp-items="Model.AvailableRoles" class="form-select"></select>
-                    <span asp-validation-for="RoleId" class="text-danger"></span>
-                </div>
+                    <div class="mb-3">
+                        <label asp-for="RoleId" class="form-label"></label>
+                        <select asp-for="RoleId" asp-items="Model.AvailableRoles" class="form-select"></select>
+                        <span asp-validation-for="RoleId" class="text-danger"></span>
+                    </div>
                 }
-                
                 <div class="mb-3">
                     <label asp-for="Password" class="form-label"></label>
                     <input asp-for="Password" class="form-control" />

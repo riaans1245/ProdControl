@@ -1,0 +1,730 @@
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@{
+    Layout = User.IsInRole("Admin") ? "_Layout" : "_LayoutUsers";
+    var antiForgeryToken = Antiforgery.GetAndStoreTokens(Context).RequestToken ?? string.Empty;
+    var initialState = new
+    {
+        isAuthenticated = User.Identity?.IsAuthenticated == true,
+        isAdmin = User.IsInRole("Admin"),
+        username = User.Identity?.Name ?? string.Empty,
+        loginUrl = Url.Action("DashboardLogin", "Riaan"),
+        dashboardDataUrl = Url.Action("DashboardData", "Riaan"),
+        returnUrl = Url.Action("Index", "Riaan"),
+        antiForgeryToken,
+        loginError = ViewData["DashboardLoginError"] as string ?? string.Empty
+    };
+}
+
+<div class="eats-dashboard-page">
+    <div id="eats-dashboard-root"></div>
+</div>
+
+@section Scripts {
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@@babel/standalone/babel.min.js"></script>
+    <script>
+        window.eatsDashboardInitialState = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(initialState));
+    </script>
+    <script type="text/babel">
+        const { useEffect, useMemo, useState } = React;
+        const initialState = window.eatsDashboardInitialState;
+
+        function formatDate(value) {
+            if (!value) {
+                return "-";
+            }
+
+            const parsedDate = new Date(value);
+            if (Number.isNaN(parsedDate.getTime())) {
+                return String(value);
+            }
+
+            return parsedDate.toLocaleString("en-NZ", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                hour: "numeric",
+                minute: "2-digit"
+            });
+        }
+
+        function LoginScreen() {
+            return (
+                <div className="dashboard-shell">
+                    <section className="dashboard-login-hero">
+                        <div className="dashboard-login-copy">
+                            <p className="dashboard-kicker">Token Monitor</p>
+                            <h1>Eats Dashboard</h1>
+                            <p>
+                                Log in with your existing administrator password to view token API activity when users send tokens.
+                            </p>
+                            <div className="dashboard-note">
+                                This uses the same admin credentials and authentication cookie already configured in the project.
+                            </div>
+                        </div>
+
+                        <div className="dashboard-login-card">
+                            <p className="dashboard-card-kicker">Administrator Login</p>
+                            <h2>Sign in to continue</h2>
+                            {initialState.loginError ? <div className="dashboard-error">{initialState.loginError}</div> : null}
+                            <form action={initialState.loginUrl} method="post" className="dashboard-login-form">
+                                <input type="hidden" name="__RequestVerificationToken" value={initialState.antiForgeryToken} />
+                                <input type="hidden" name="returnUrl" value={initialState.returnUrl} />
+                                <input type="hidden" name="RequestMagicLink" value="false" />
+
+                                <div className="dashboard-field">
+                                    <label htmlFor="dashboard-username">User name</label>
+                                    <input id="dashboard-username" name="Username" type="text" required />
+                                </div>
+                                <div className="dashboard-field">
+                                    <label htmlFor="dashboard-password">Password</label>
+                                    <input id="dashboard-password" name="Password" type="password" required />
+                                </div>
+                                <label className="dashboard-check">
+                                    <input name="RememberMe" type="checkbox" value="true" />
+                                    <span>Remember me</span>
+                                </label>
+                                <input name="RememberMe" type="hidden" value="false" />
+                                <button type="submit" className="dashboard-login-btn">Login to Eats Dashboard</button>
+                            </form>
+                        </div>
+                    </section>
+                </div>
+            );
+        }
+
+        function AccessDeniedScreen() {
+            return (
+                <div className="dashboard-shell">
+                    <section className="dashboard-panel">
+                        <p className="dashboard-kicker">Access Required</p>
+                        <h1>Eats Dashboard</h1>
+                        <p>You are signed in, but only administrators can view token API activity here.</p>
+                    </section>
+                </div>
+            );
+        }
+
+        function DashboardApp() {
+            const [data, setData] = useState(null);
+            const [loading, setLoading] = useState(true);
+            const [error, setError] = useState("");
+            const [query, setQuery] = useState("");
+            const [dateFrom, setDateFrom] = useState("");
+            const [dateTo, setDateTo] = useState("");
+
+            useEffect(() => {
+                let cancelled = false;
+
+                async function load() {
+                    try {
+                        const response = await fetch(initialState.dashboardDataUrl, {
+                            headers: { "Accept": "application/json" }
+                        });
+
+                        if (!response.ok) {
+                            throw new Error("The token dashboard could not be loaded.");
+                        }
+
+                        const payload = await response.json();
+                        if (!cancelled) {
+                            setData(payload);
+                        }
+                    } catch (loadError) {
+                        if (!cancelled) {
+                            setError(loadError instanceof Error ? loadError.message : "The token dashboard could not be loaded.");
+                        }
+                    } finally {
+                        if (!cancelled) {
+                            setLoading(false);
+                        }
+                    }
+                }
+
+                load();
+                return () => {
+                    cancelled = true;
+                };
+            }, []);
+
+            const filteredUsedTokens = useMemo(() => {
+                if (!data) {
+                    return [];
+                }
+
+                const search = query.trim().toLowerCase();
+                const fromBoundary = dateFrom ? new Date(`${dateFrom}T00:00:00`) : null;
+                const toBoundary = dateTo ? new Date(`${dateTo}T23:59:59.999`) : null;
+
+                return (data.usedTokens ?? []).filter((row) => {
+                    const rowDate = row.sentAtUtc ? new Date(row.sentAtUtc) : null;
+                    const matchesSearch = !search || Object.values(row).some((value) =>
+                        String(value ?? "").toLowerCase().includes(search)
+                    );
+
+                    const matchesFrom = !fromBoundary || (rowDate && rowDate >= fromBoundary);
+                    const matchesTo = !toBoundary || (rowDate && rowDate <= toBoundary);
+
+                    return matchesSearch && matchesFrom && matchesTo;
+                });
+            }, [data, query, dateFrom, dateTo]);
+
+            if (loading) {
+                return (
+                    <div className="dashboard-shell">
+                        <section className="dashboard-panel">
+                            <p className="dashboard-kicker">Loading</p>
+                            <h1>Eats Dashboard</h1>
+                            <p>Loading token activity from the API.</p>
+                        </section>
+                    </div>
+                );
+            }
+
+            if (error) {
+                return (
+                    <div className="dashboard-shell">
+                        <section className="dashboard-panel">
+                            <p className="dashboard-kicker">Error</p>
+                            <h1>Eats Dashboard</h1>
+                            <p>{error}</p>
+                        </section>
+                    </div>
+                );
+            }
+
+            const usedTokens = data?.usedTokens ?? [];
+            const issuedTokens = data?.issuedTokens ?? [];
+            const latestToken = filteredUsedTokens[0] ?? data?.latestUsedToken;
+
+            return (
+                <div className="dashboard-shell">
+                    <section className="dashboard-header">
+                        <div>
+                            <p className="dashboard-kicker">React Token Activity</p>
+                            <h1>Eats Dashboard</h1>
+                            <p>
+                                Monitor token API sends only. This dashboard shows who sent a token, which token was sent,
+                                and the related token identifiers and timestamps.
+                            </p>
+                        </div>
+                        <div className="dashboard-meta">
+                            <div><strong>Admin:</strong> {data.currentUser}</div>
+                            <div><strong>Updated:</strong> {formatDate(data.generatedAtUtc)}</div>
+                            <div><strong>API:</strong> {data.activityEndpoint}</div>
+                        </div>
+                    </section>
+
+                    <section className="dashboard-summary-grid">
+                        <article className="dashboard-summary-card summary-blue">
+                            <p>Issued Tokens</p>
+                            <strong>{data.summary.issuedTokenCount}</strong>
+                        </article>
+                        <article className="dashboard-summary-card summary-green">
+                            <p>Used Tokens</p>
+                            <strong>{data.summary.usedTokenCount}</strong>
+                        </article>
+                        <article className="dashboard-summary-card summary-amber">
+                            <p>Users Who Sent</p>
+                            <strong>{data.summary.uniqueUsersWithSentTokens}</strong>
+                        </article>
+                        <article className="dashboard-summary-card summary-rose">
+                            <p>Latest Sent</p>
+                            <strong>{formatDate(data.summary.latestTokenSentAtUtc)}</strong>
+                        </article>
+                    </section>
+
+                    <section className="dashboard-grid">
+                        <article className="dashboard-panel">
+                            <p className="dashboard-kicker">Latest Activity</p>
+                            <h2>Token sends in selected date range</h2>
+                            {latestToken ? (
+                                <div className="dashboard-activity-list">
+                                    {filteredUsedTokens.slice(0, 6).map((token) => (
+                                        <div className="dashboard-activity-item" key={token.id}>
+                                            <div className="dashboard-activity-main">
+                                                <strong>{token.username}</strong>
+                                                <span>Token: {token.token}</span>
+                                            </div>
+                                            <div className="dashboard-activity-meta">
+                                                <span>User Id: {token.userId}</span>
+                                                <span>Token Id: {token.tokenId}</span>
+                                                <span>{formatDate(token.sentAtUtc)}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="dashboard-empty">No token activity matches the current search and date range.</p>
+                            )}
+                        </article>
+
+                        <article className="dashboard-panel">
+                            <div className="dashboard-panel-head">
+                                <div>
+                                    <p className="dashboard-kicker">Filters</p>
+                                    <h2>Filter used token activity</h2>
+                                </div>
+                            </div>
+                            <input
+                                className="dashboard-search"
+                                type="search"
+                                value={query}
+                                onChange={(event) => setQuery(event.target.value)}
+                                placeholder="Search by user, token, id, or date"
+                            />
+                            <div className="dashboard-date-grid">
+                                <div className="dashboard-field-inline">
+                                    <label htmlFor="dashboard-date-from">Date From</label>
+                                    <input
+                                        id="dashboard-date-from"
+                                        type="date"
+                                        value={dateFrom}
+                                        onChange={(event) => setDateFrom(event.target.value)}
+                                    />
+                                </div>
+                                <div className="dashboard-field-inline">
+                                    <label htmlFor="dashboard-date-to">Date To</label>
+                                    <input
+                                        id="dashboard-date-to"
+                                        type="date"
+                                        value={dateTo}
+                                        onChange={(event) => setDateTo(event.target.value)}
+                                    />
+                                </div>
+                            </div>
+                            <p className="dashboard-help">This table only shows tokens that were actually sent through the API.</p>
+                        </article>
+                    </section>
+
+                    <section className="dashboard-panel">
+                        <div className="dashboard-panel-head">
+                            <div>
+                                <p className="dashboard-kicker">API Activity</p>
+                                <h2>Used token records</h2>
+                            </div>
+                            <span className="dashboard-pill">{filteredUsedTokens.length} records</span>
+                        </div>
+                        {filteredUsedTokens.length === 0 ? (
+                            <div className="dashboard-empty">No matching token activity was found.</div>
+                        ) : (
+                            <div className="dashboard-table-wrap">
+                                <table className="dashboard-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Record Id</th>
+                                            <th>User</th>
+                                            <th>User Id</th>
+                                            <th>Token</th>
+                                            <th>Token Id</th>
+                                            <th>Sent At</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {filteredUsedTokens.map((row) => (
+                                            <tr key={row.id}>
+                                                <td>{row.id}</td>
+                                                <td>{row.username}</td>
+                                                <td>{row.userId}</td>
+                                                <td>{row.token}</td>
+                                                <td>{row.tokenId}</td>
+                                                <td>{formatDate(row.sentAtUtc)}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </section>
+
+                    <section className="dashboard-panel">
+                        <div className="dashboard-panel-head">
+                            <div>
+                                <p className="dashboard-kicker">Reference</p>
+                                <h2>Issued token list</h2>
+                            </div>
+                            <span className="dashboard-pill">{issuedTokens.length} tokens</span>
+                        </div>
+                        {issuedTokens.length === 0 ? (
+                            <div className="dashboard-empty">No issued tokens are stored yet.</div>
+                        ) : (
+                            <div className="dashboard-table-wrap">
+                                <table className="dashboard-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Token Id</th>
+                                            <th>User</th>
+                                            <th>User Id</th>
+                                            <th>Token</th>
+                                            <th>Sent Through API</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {issuedTokens.map((row) => (
+                                            <tr key={row.tokenId}>
+                                                <td>{row.tokenId}</td>
+                                                <td>{row.username}</td>
+                                                <td>{row.userId}</td>
+                                                <td>{row.token}</td>
+                                                <td>{row.hasBeenSent ? "Yes" : "No"}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </section>
+                </div>
+            );
+        }
+
+        function App() {
+            if (!initialState.isAuthenticated) {
+                return <LoginScreen />;
+            }
+
+            if (!initialState.isAdmin) {
+                return <AccessDeniedScreen />;
+            }
+
+            return <DashboardApp />;
+        }
+
+        ReactDOM.createRoot(document.getElementById("eats-dashboard-root")).render(<App />);
+    </script>
+    <style>
+        .eats-dashboard-page {
+            min-height: 100%;
+        }
+
+        .dashboard-shell {
+            display: grid;
+            gap: 1.35rem;
+            color: #143149;
+        }
+
+        .dashboard-login-hero,
+        .dashboard-header,
+        .dashboard-panel {
+            border: 1px solid rgba(129, 154, 177, 0.28);
+            border-radius: 1.6rem;
+            padding: 1.75rem;
+            background:
+                radial-gradient(circle at top right, rgba(245, 184, 115, 0.2), transparent 24%),
+                linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(238, 245, 249, 0.96) 100%);
+            box-shadow: 0 18px 38px rgba(15, 33, 49, 0.08);
+        }
+
+        .dashboard-login-hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1.1fr) minmax(320px, 420px);
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .dashboard-kicker,
+        .dashboard-card-kicker {
+            margin: 0 0 0.45rem;
+            color: #8a5a2e;
+            font-size: 0.76rem;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        .dashboard-login-copy h1,
+        .dashboard-header h1,
+        .dashboard-panel h1 {
+            margin: 0 0 0.75rem;
+            font-size: clamp(2rem, 3vw, 3rem);
+            line-height: 1.04;
+            color: #113149;
+        }
+
+        .dashboard-login-copy p,
+        .dashboard-header p,
+        .dashboard-panel p,
+        .dashboard-help {
+            margin: 0;
+            color: #566f85;
+            line-height: 1.65;
+        }
+
+        .dashboard-note,
+        .dashboard-meta {
+            margin-top: 1rem;
+            padding: 0.95rem 1rem;
+            border-radius: 1rem;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(145, 168, 189, 0.32);
+            color: #28445b;
+        }
+
+        .dashboard-login-card {
+            padding: 1.5rem;
+            border-radius: 1.4rem;
+            background: linear-gradient(160deg, #10283b 0%, #1d4a63 100%);
+            color: #f5fbff;
+        }
+
+        .dashboard-login-card h2 {
+            margin: 0 0 1rem;
+            color: #ffffff;
+            font-size: 1.55rem;
+        }
+
+        .dashboard-login-form {
+            display: grid;
+            gap: 0.9rem;
+        }
+
+        .dashboard-error {
+            margin-bottom: 1rem;
+            padding: 0.8rem 0.9rem;
+            border-radius: 0.9rem;
+            background: rgba(187, 70, 70, 0.2);
+            border: 1px solid rgba(248, 174, 174, 0.32);
+            color: #ffe2e2;
+        }
+
+        .dashboard-field label {
+            display: block;
+            margin-bottom: 0.35rem;
+            color: #d9e9f3;
+            font-weight: 600;
+        }
+
+        .dashboard-field input,
+        .dashboard-search {
+            width: 100%;
+            border: 1px solid rgba(169, 189, 206, 0.4);
+            border-radius: 0.9rem;
+            padding: 0.9rem 1rem;
+            background: rgba(255, 255, 255, 0.94);
+            color: #143149;
+        }
+
+        .dashboard-check {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            color: #deebf3;
+        }
+
+        .dashboard-login-btn {
+            border: 0;
+            border-radius: 999px;
+            padding: 0.95rem 1.15rem;
+            background: linear-gradient(135deg, #efbc73 0%, #d67f41 100%);
+            color: #20262d;
+            font-weight: 800;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .dashboard-grid,
+        .dashboard-summary-grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+
+        .dashboard-summary-card {
+            min-height: 132px;
+            border-radius: 1.35rem;
+            padding: 1.15rem;
+            color: #f7fbff;
+            box-shadow: 0 16px 34px rgba(18, 34, 50, 0.12);
+        }
+
+        .dashboard-summary-card p {
+            margin: 0 0 0.7rem;
+            color: rgba(243, 249, 255, 0.86);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-size: 0.76rem;
+        }
+
+        .dashboard-summary-card strong {
+            font-size: 1.85rem;
+            line-height: 1.15;
+        }
+
+        .summary-blue { background: linear-gradient(135deg, #17334a 0%, #2d6781 100%); }
+        .summary-green { background: linear-gradient(135deg, #193d34 0%, #3b8363 100%); }
+        .summary-amber { background: linear-gradient(135deg, #5a3a16 0%, #b37938 100%); }
+        .summary-rose { background: linear-gradient(135deg, #5a2f4c 0%, #956286 100%); }
+
+        .dashboard-panel-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .dashboard-panel h2 {
+            margin: 0;
+            color: #123149;
+            font-size: 1.2rem;
+        }
+
+        .dashboard-activity-list {
+            display: grid;
+            gap: 0.85rem;
+        }
+
+        .dashboard-activity-item {
+            display: grid;
+            gap: 0.45rem;
+            padding: 0.9rem 1rem;
+            border: 1px solid rgba(210, 220, 228, 0.95);
+            border-radius: 1rem;
+            background: rgba(247, 250, 252, 0.82);
+        }
+
+        .dashboard-activity-main {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+            color: #173149;
+        }
+
+        .dashboard-activity-main strong {
+            font-size: 1rem;
+        }
+
+        .dashboard-activity-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            color: #61778a;
+            font-size: 0.92rem;
+        }
+
+        .dashboard-date-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.85rem;
+            margin-top: 0.9rem;
+        }
+
+        .dashboard-field-inline label {
+            display: block;
+            margin-bottom: 0.35rem;
+            color: #5f7588;
+            font-weight: 600;
+        }
+
+        .dashboard-field-inline input {
+            width: 100%;
+            border: 1px solid rgba(169, 189, 206, 0.4);
+            border-radius: 0.9rem;
+            padding: 0.9rem 1rem;
+            background: rgba(255, 255, 255, 0.94);
+            color: #143149;
+        }
+
+        .dashboard-detail-list {
+            display: grid;
+            gap: 0.8rem;
+            margin: 0;
+        }
+
+        .dashboard-detail-list div {
+            display: grid;
+            gap: 0.18rem;
+            padding-bottom: 0.7rem;
+            border-bottom: 1px solid rgba(216, 225, 233, 0.95);
+        }
+
+        .dashboard-detail-list dt {
+            color: #6d8091;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .dashboard-detail-list dd {
+            margin: 0;
+            color: #153149;
+            font-weight: 700;
+        }
+
+        .dashboard-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            padding: 0.34rem 0.72rem;
+            background: #e9f2f8;
+            color: #33546d;
+            font-size: 0.74rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .dashboard-empty {
+            padding: 1rem;
+            border-radius: 1rem;
+            background: #f5f8fb;
+            color: #64798b;
+        }
+
+        .dashboard-table-wrap {
+            overflow: auto;
+            margin-top: 0.75rem;
+        }
+
+        .dashboard-table {
+            width: 100%;
+            min-width: 700px;
+            border-collapse: collapse;
+        }
+
+        .dashboard-table th,
+        .dashboard-table td {
+            padding: 0.8rem 0.7rem;
+            border-bottom: 1px solid rgba(215, 223, 231, 0.95);
+            text-align: left;
+        }
+
+        .dashboard-table thead th {
+            color: #476177;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .dashboard-table tbody tr:nth-child(odd) {
+            background: rgba(246, 249, 251, 0.75);
+        }
+
+        @@media (max-width: 992px) {
+            .dashboard-login-hero,
+            .dashboard-header {
+                grid-template-columns: 1fr;
+                flex-direction: column;
+                align-items: start;
+            }
+
+            .dashboard-login-card,
+            .dashboard-meta,
+            .dashboard-date-grid {
+                width: 100%;
+            }
+
+            .dashboard-date-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+}

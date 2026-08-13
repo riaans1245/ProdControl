@@ -50,7 +50,11 @@ public class UserController(IUserStore userStore) : AppController(userStore)
 
     public IActionResult Create()
     {
-        return View(new UserCreateViewModel());
+        return View(new UserCreateViewModel
+        {
+            RoleId = 2,
+            AvailableRoles = GetRoleSelectList()
+        });
     }
 
     [HttpPost]
@@ -59,6 +63,7 @@ public class UserController(IUserStore userStore) : AppController(userStore)
     {
         if (!ModelState.IsValid)
         {
+            model.AvailableRoles = GetRoleSelectList();
             return View(model);
         }
 
@@ -74,13 +79,15 @@ public class UserController(IUserStore userStore) : AppController(userStore)
 
         if (!ModelState.IsValid)
         {
+            model.AvailableRoles = GetRoleSelectList();
             return View(model);
         }
 
-        var defaultRole = _userStore.GetRoleById(2);
-        if (defaultRole is null)
+        var selectedRole = _userStore.GetRoleById(model.RoleId);
+        if (selectedRole is null)
         {
-            ModelState.AddModelError(string.Empty, "The default Users role could not be found.");
+            ModelState.AddModelError(nameof(model.RoleId), "Please choose a valid role.");
+            model.AvailableRoles = GetRoleSelectList();
             return View(model);
         }
 
@@ -92,8 +99,8 @@ public class UserController(IUserStore userStore) : AppController(userStore)
             EmailAddress = model.EmailAddress.Trim(),
             CellNo = model.CellNo.Trim(),
             Password = model.Password,
-            RoleId = defaultRole.Id,
-            Role = defaultRole.Name
+            RoleId = selectedRole.Id,
+            Role = selectedRole.Name
         });
 
         return RedirectToAction(nameof(Index));
@@ -220,7 +227,7 @@ public class UserController(IUserStore userStore) : AppController(userStore)
     private IReadOnlyCollection<SelectListItem> GetRoleSelectList()
     {
         return _userStore.GetAllRoles()
-            .Select(role => new SelectListItem($"{role.Id} - {role.Name}", role.Id.ToString()))
+            .Select(role => new SelectListItem(role.Name, role.Id.ToString()))
             .ToList();
     }
 }

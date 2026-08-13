@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace test1233.Models;
 
@@ -35,4 +36,10 @@ public class UserCreateViewModel
     [Display(Name = "Confirm password")]
     [Compare(nameof(Password), ErrorMessage = "Passwords do not match.")]
     public string ConfirmPassword { get; set; } = string.Empty;
+
+    [Required]
+    [Display(Name = "Role")]
+    public int RoleId { get; set; } = 2;
+
+    public IReadOnlyCollection<SelectListItem> AvailableRoles { get; set; } = Array.Empty<SelectListItem>();
 }

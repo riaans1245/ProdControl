@@ -244,12 +244,11 @@
                                     {filteredUsedTokens.slice(0, 6).map((token) => (
                                         <div className="dashboard-activity-item" key={token.id}>
                                             <div className="dashboard-activity-main">
-                                                <strong>{token.username}</strong>
+                                                <strong>User: {token.username}</strong>
                                                 <span>Token: {token.token}</span>
                                             </div>
                                             <div className="dashboard-activity-meta">
-                                                <span>User Id: {token.userId}</span>
-                                                <span>Token Id: {token.tokenId}</span>
+                                                
                                                 <span>{formatDate(token.sentAtUtc)}</span>
                                             </div>
                                         </div>
@@ -272,7 +271,7 @@
                                 type="search"
                                 value={query}
                                 onChange={(event) => setQuery(event.target.value)}
-                                placeholder="Search by user, token, id, or date"
+                                placeholder="Search by user, or date"
                             />
                             <div className="dashboard-date-grid">
                                 <div className="dashboard-field-inline">

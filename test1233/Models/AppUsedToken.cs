@@ -12,5 +12,9 @@ public class AppUsedToken
 
     public required string Username { get; set; }
 
+    public int ProductId { get; set; }
+
+    public string ProductName { get; set; } = string.Empty;
+
     public DateTime SentAtUtc { get; set; }
 }

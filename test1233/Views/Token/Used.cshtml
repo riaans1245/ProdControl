@@ -28,6 +28,7 @@
                                 <th>Username</th>
                                 <th>User ID</th>
                                 <th>Token</th>
+                                <th>Product</th>
                                 <th>Sent</th>
                             </tr>
                         </thead>
@@ -38,6 +39,9 @@
                                 <td>@token.Username</td>
                                 <td>@token.UserId</td>
                                 <td>@token.Token</td>
+                                <td>
+                                    <span class="badge" style="background-color: #f2be63; color: #5c3600;">@token.ProductName</span>
+                                </td>
                                 <td>@token.SentAtUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")</td>
                             </tr>
                         }

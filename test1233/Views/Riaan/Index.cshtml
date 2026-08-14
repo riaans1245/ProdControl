@@ -212,7 +212,7 @@
                         <div className="dashboard-meta">
                             <div><strong>Admin:</strong> {data.currentUser}</div>
                             <div><strong>Updated:</strong> {formatDate(data.generatedAtUtc)}</div>
-                            <div><strong>API:</strong> {data.activityEndpoint}</div>
+                          
                         </div>
                     </section>
 
@@ -248,7 +248,7 @@
                                                 <span>Token: {token.token}</span>
                                             </div>
                                             <div className="dashboard-activity-meta">
-                                                
+                                                <span className="dashboard-product-badge">{token.productName || "No product"}</span>
                                                 <span>{formatDate(token.sentAtUtc)}</span>
                                             </div>
                                         </div>
@@ -316,6 +316,7 @@
                                             <th>User</th>
                                             <th>User Id</th>
                                             <th>Token</th>
+                                            <th>Product</th>
                                             <th>Token Id</th>
                                             <th>Sent At</th>
                                         </tr>
@@ -327,6 +328,7 @@
                                                 <td>{row.username}</td>
                                                 <td>{row.userId}</td>
                                                 <td>{row.token}</td>
+                                                <td><span className="dashboard-product-badge">{row.productName || "No product"}</span></td>
                                                 <td>{row.tokenId}</td>
                                                 <td>{formatDate(row.sentAtUtc)}</td>
                                             </tr>
@@ -356,6 +358,7 @@
                                             <th>User</th>
                                             <th>User Id</th>
                                             <th>Token</th>
+                                            <th>Product</th>
                                             <th>Sent Through API</th>
                                         </tr>
                                     </thead>
@@ -366,6 +369,7 @@
                                                 <td>{row.username}</td>
                                                 <td>{row.userId}</td>
                                                 <td>{row.token}</td>
+                                                <td><span className="dashboard-product-badge">{row.productName || "No product"}</span></td>
                                                 <td>{row.hasBeenSent ? "Yes" : "No"}</td>
                                             </tr>
                                         ))}
@@ -669,6 +673,17 @@
             font-weight: 800;
             letter-spacing: 0.08em;
             text-transform: uppercase;
+        }
+
+        .dashboard-product-badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: 0.28rem 0.7rem;
+            background: #f2be63;
+            color: #5c3600;
+            font-size: 0.78rem;
+            font-weight: 800;
         }
 
         .dashboard-empty {

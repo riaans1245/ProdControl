@@ -21,6 +21,8 @@ public class TokenApiController(IUserStore userStore) : ControllerBase
                 token.Token,
                 token.UserId,
                 token.Username,
+                token.ProductId,
+                token.ProductName,
                 token.SentAtUtc
             });
 
@@ -60,6 +62,8 @@ public class TokenApiController(IUserStore userStore) : ControllerBase
             Token = token.Token,
             UserId = token.UserId,
             Username = token.Username,
+            ProductId = token.ProductId,
+            ProductName = token.ProductName,
             SentAtUtc = DateTime.UtcNow
         });
 

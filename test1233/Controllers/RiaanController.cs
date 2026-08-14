@@ -74,6 +74,8 @@ public class RiaanController(ICalculationService calculationService, IUserStore 
                 token.Token,
                 token.UserId,
                 token.Username,
+                token.ProductId,
+                token.ProductName,
                 token.SentAtUtc
             })
             .ToList();
@@ -85,6 +87,8 @@ public class RiaanController(ICalculationService calculationService, IUserStore 
                 token.Token,
                 token.UserId,
                 token.Username,
+                token.ProductId,
+                token.ProductName,
                 HasBeenSent = usedTokens.Any(usedToken => usedToken.TokenId == token.TokenId)
             })
             .OrderByDescending(token => token.HasBeenSent)

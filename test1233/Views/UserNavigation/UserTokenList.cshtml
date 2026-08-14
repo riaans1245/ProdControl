@@ -54,6 +54,7 @@
                             <tr>
                                 <th>Token</th>
                                 <th>User</th>
+                                <th>Product</th>
                             <th class="text-end">Actions</th>
                         </tr>
                         </thead>
@@ -63,6 +64,7 @@
                             <tr>
                                 <td>@tokens.Token</td>
                                 <td>@tokens.Username</td>
+                                <td>@tokens.ProductName</td>
                                 <td class="text-end">
                                 <a asp-action="Use" asp-route-id="@tokens.TokenId" class="btn btn-sm btn-outline-danger">Use Token</a>
                             </td>

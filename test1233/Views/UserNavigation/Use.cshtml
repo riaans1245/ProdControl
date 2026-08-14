@@ -19,6 +19,11 @@
 
                 <dt class="col-sm-3">Token</dt>
                 <dd class="col-sm-9">@Model.Token</dd>
+
+                <dt class="col-sm-3">Product</dt>
+                <dd class="col-sm-9">
+                    <span class="badge" style="background-color: #f2be63; color: #5c3600;">@Model.ProductName</span>
+                </dd>
             </dl>
 
             <form asp-action="Use" method="post">
@@ -27,6 +32,8 @@
                 <input type="hidden" name="UserId" value="@Model.UserId" />
                 <input type="hidden" name="Username" value="@Model.Username" />
                 <input type="hidden" name="Token" value="@Model.Token" />
+                <input type="hidden" name="ProductId" value="@Model.ProductId" />
+                <input type="hidden" name="ProductName" value="@Model.ProductName" />
                 <div class="d-flex gap-2">
                     <button type="submit" class="btn btn-danger">Send Token</button>
                     <a asp-action="UserTokenList" class="btn btn-outline-secondary">Cancel</a>

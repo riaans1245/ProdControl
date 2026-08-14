@@ -9,4 +9,8 @@ public class UseTokenApiRequest
     public required string Username { get; set; }
 
     public required string Token { get; set; }
+
+    public int ProductId { get; set; }
+
+    public string ProductName { get; set; } = string.Empty;
 }

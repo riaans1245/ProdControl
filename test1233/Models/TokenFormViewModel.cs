@@ -16,5 +16,11 @@ public class TokenFormViewModel
     [Display(Name = "User")]
     public int UserId { get; set; }
 
+    [Required]
+    [Display(Name = "Product")]
+    public int ProductId { get; set; }
+
     public IReadOnlyCollection<SelectListItem> AvailableUsers { get; set; } = Array.Empty<SelectListItem>();
+
+    public IReadOnlyCollection<SelectListItem> AvailableProducts { get; set; } = Array.Empty<SelectListItem>();
 }

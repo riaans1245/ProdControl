@@ -554,7 +554,9 @@ lock (_lock)
                     TokenId = token.TokenId,
                     Token = token.Token,
                     UserId = token.UserId,
-                    Username = token.Username
+                    Username = token.Username,
+                    ProductId = token.ProductId,
+                    ProductName = token.ProductName
                 };
         }
     }
@@ -622,7 +624,9 @@ lock (_lock)
                 TokenId = nextId,
                 Token = tokens.Token,
                 UserId = tokens.UserId,
-                Username = tokens.Username
+                Username = tokens.Username,
+                ProductId = tokens.ProductId,
+                ProductName = tokens.ProductName
             });
         }
     }
@@ -766,6 +770,8 @@ lock (_lock)
                 Token = usedToken.Token,
                 UserId = usedToken.UserId,
                 Username = usedToken.Username,
+                ProductId = usedToken.ProductId,
+                ProductName = usedToken.ProductName,
                 SentAtUtc = usedToken.SentAtUtc
             });
         }
@@ -814,6 +820,8 @@ public void SuggestionCreate(AppSuggestion suggest)
             existingToken.Token = tokens.Token;
             existingToken.UserId = tokens.UserId;
             existingToken.Username = tokens.Username;
+            existingToken.ProductId = tokens.ProductId;
+            existingToken.ProductName = tokens.ProductName;
             return true;
         }
     }

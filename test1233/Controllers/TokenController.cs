@@ -24,6 +24,7 @@ public class TokenController(IUserStore userStore, ITokenApiClient tokenApiClien
             tokens = tokens.Where(token =>
                 token.Token.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
                 token.Username.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
+                token.ProductName.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
                 token.UserId.ToString().Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -60,7 +61,8 @@ public class TokenController(IUserStore userStore, ITokenApiClient tokenApiClien
     {
         return View(new TokenFormViewModel
         {
-            AvailableUsers = GetUserSelectList()
+            AvailableUsers = GetUserSelectList(),
+            AvailableProducts = GetProductSelectList()
         });
     }
 
@@ -71,31 +73,41 @@ public class TokenController(IUserStore userStore, ITokenApiClient tokenApiClien
         if (!ModelState.IsValid)
         {
             model.AvailableUsers = GetUserSelectList();
+            model.AvailableProducts = GetProductSelectList();
             return View(model);
         }
 
         var user = _userStore.GetUserById(model.UserId);
+        var product = _userStore.GetProductById(model.ProductId);
         if (user is null)
         {
-            ModelState.AddModelError(nameof(model.UserId), "Please choose a valid category.");
+            ModelState.AddModelError(nameof(model.UserId), "Please choose a valid user.");
+        }
+
+        if (product is null)
+        {
+            ModelState.AddModelError(nameof(model.ProductId), "Please choose a valid product.");
         }
 
         if (_userStore.TokenNameExists(model.Token, model.UserId))
         {
-            ModelState.AddModelError(nameof(model.Token), "That Token already exists in the selected category.");
+            ModelState.AddModelError(nameof(model.Token), "That token already exists for the selected user.");
         }
 
         if (!ModelState.IsValid)
         {
             model.AvailableUsers = GetUserSelectList();
+            model.AvailableProducts = GetProductSelectList();
             return View(model);
         }
 
         _userStore.CreateToken(new AppTokens
         {
-             Token = model.Token.Trim(),
-             UserId = user!.Id,
-             Username = user.Username
+            Token = model.Token.Trim(),
+            UserId = user!.Id,
+            Username = user.Username,
+            ProductId = product!.Id,
+            ProductName = product.Name
         });
 
         return RedirectToAction(nameof(Index));
@@ -114,7 +126,9 @@ public class TokenController(IUserStore userStore, ITokenApiClient tokenApiClien
              TokenId = token.TokenId,
              Token = token.Token,
             UserId = token.UserId,
-            AvailableUsers = GetUserSelectList()
+            ProductId = token.ProductId,
+            AvailableUsers = GetUserSelectList(),
+            AvailableProducts = GetProductSelectList()
          });
     }
 
@@ -125,6 +139,7 @@ public class TokenController(IUserStore userStore, ITokenApiClient tokenApiClien
         if (!ModelState.IsValid)
         {
             model.AvailableUsers = GetUserSelectList();
+            model.AvailableProducts = GetProductSelectList();
             return View(model);
         }
 
@@ -135,9 +150,15 @@ public class TokenController(IUserStore userStore, ITokenApiClient tokenApiClien
         }
 
         var user = _userStore.GetUserById(model.UserId);
+        var product = _userStore.GetProductById(model.ProductId);
         if (user is null)
         {
             ModelState.AddModelError(nameof(model.UserId), "Please choose a valid user.");
+        }
+
+        if (product is null)
+        {
+            ModelState.AddModelError(nameof(model.ProductId), "Please choose a valid product.");
         }
 
         if (_userStore.TokenNameExists(model.Token, model.UserId, model.TokenId))
@@ -148,6 +169,7 @@ public class TokenController(IUserStore userStore, ITokenApiClient tokenApiClien
         if (!ModelState.IsValid)
         {
             model.AvailableUsers = GetUserSelectList();
+            model.AvailableProducts = GetProductSelectList();
             return View(model);
         }
 
@@ -156,7 +178,9 @@ public class TokenController(IUserStore userStore, ITokenApiClient tokenApiClien
             TokenId = model.TokenId,
             Token = model.Token.Trim(),
             UserId = user!.Id,
-            Username = user.Username
+            Username = user.Username,
+            ProductId = product!.Id,
+            ProductName = product.Name
         });
 
         return RedirectToAction(nameof(Index));
@@ -191,6 +215,13 @@ public class TokenController(IUserStore userStore, ITokenApiClient tokenApiClien
     {
         return _userStore.GetAllUsers()
             .Select(user => new SelectListItem(user.Username, user.Id.ToString()))
+            .ToList();
+    }
+
+    private IReadOnlyCollection<SelectListItem> GetProductSelectList()
+    {
+        return _userStore.GetAllProducts()
+            .Select(product => new SelectListItem(product.Name, product.Id.ToString()))
             .ToList();
     }
 

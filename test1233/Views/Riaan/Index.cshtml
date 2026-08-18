@@ -1,6 +1,6 @@
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
 @{
-    Layout = User.IsInRole("Admin") ? "_Layout" : "_LayoutUsers";
+    Layout = "~/Views/Shared/_ReportLayout.cshtml";
     var antiForgeryToken = Antiforgery.GetAndStoreTokens(Context).RequestToken ?? string.Empty;
     var initialState = new
     {
@@ -359,7 +359,7 @@
                                             <th>User Id</th>
                                             <th>Token</th>
                                             <th>Product</th>
-                                            <th>Sent Through API</th>
+                                            <th>TOKEN IS USED</th>
                                         </tr>
                                     </thead>
                                     <tbody>

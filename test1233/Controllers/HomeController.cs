@@ -273,15 +273,15 @@ public class HomeController(IUserStore userStore, IWebHostEnvironment environmen
     private MenuUploadViewModel BuildManageMenuViewModel(MenuUploadViewModel model)
     {
         var menus = GetMenus();
-        var activeMenu = menus.FirstOrDefault(menu => menu.IsSelected) ?? menus.FirstOrDefault();
+        var activeMenu = menus.FirstOrDefault(menu => menu.IsSelected) ?? (menus.Count > 0 ? menus[0] : null);
 
-        if (activeMenu is not null && !activeMenu.IsSelected)
+        if (activeMenu?.IsSelected == false)
         {
             activeMenu.IsSelected = true;
         }
 
         model.ActiveMenu = activeMenu;
-        model.LatestMenu = menus.FirstOrDefault();
+        model.LatestMenu = menus.Count > 0 ? menus[0] : null;
         model.Menus = menus;
         return model;
     }

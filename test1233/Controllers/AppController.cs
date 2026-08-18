@@ -12,7 +12,7 @@ public abstract class AppController(IUserStore userStore) : Controller
     {
         base.OnActionExecuting(context);
 
-        ViewBag.HasUsedTokens = _userStore.GetAllUsedTokens().Any();
+        ViewBag.HasUsedTokens = _userStore.GetAllUsedTokens().Count > 0;
         ViewBag.WelcomeMessage = "Welcome to our application!";
     }
 }

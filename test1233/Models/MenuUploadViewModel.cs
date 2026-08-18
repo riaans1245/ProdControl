@@ -10,7 +10,7 @@ public class MenuUploadViewModel
 
     public MenuListItemViewModel? LatestMenu { get; set; }
 
-    public IReadOnlyList<MenuListItemViewModel> Menus { get; set; } = Array.Empty<MenuListItemViewModel>();
+    public IReadOnlyList<MenuListItemViewModel> Menus { get; set; } = [];
 }
 
 public class MenuListItemViewModel

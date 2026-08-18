@@ -9,9 +9,27 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/test1233.styles.css" asp-append-version="true" />
+    <script>
+        (() => {
+            if (sessionStorage.getItem("admin-left-nav-collapsed") === "true") {
+                document.documentElement.classList.add("admin-left-nav-collapsed-state");
+            }
+        })();
+    </script>
     <style>
         .app-shell {
             min-height: 0;
+        }
+
+        .left-nav-toggle-btn {
+            border: 1px solid rgba(214, 226, 239, 0.34);
+            background-color: transparent;
+        }
+
+        .left-nav-toggle-btn:focus,
+        .left-nav-toggle-btn:active {
+            box-shadow: none;
+            outline: none;
         }
     </style>
 </head>
@@ -24,6 +42,15 @@
     <!-- Top Navigation Bar --> 
     <nav class="navbar navbar-expand-md navbar-dark border-bottom shadow-sm py-3 admin-topbar"> 
         <div class="container-fluid"> 
+            @if (isAdmin)
+            {
+                <button id="admin-left-nav-toggle"
+                        type="button"
+                        class="navbar-toggler me-3 d-inline-flex left-nav-toggle-btn"
+                        aria-label="Toggle admin navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            }
             <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">Easy Eats Admin</a> 
             @if (hasUsedTokens)
             {
@@ -76,7 +103,7 @@
     <div class="d-flex flex-grow-1 align-items-stretch app-shell"> 
         @if (isAdmin)
         {
-            <aside class="flex-shrink-0 app-sidebar">
+            <aside class="flex-shrink-0 app-sidebar" id="admin-left-navigation">
                 <nav class="p-4 shadow-sm h-100 admin-sidebar-nav">
                     <div class="admin-sidebar-scroll">
                         <div class="border rounded-4 p-3 mb-4 sidebar-heading-card admin-sidebar-card">
@@ -157,6 +184,51 @@
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (() => {
+            const leftNavigation = document.getElementById("admin-left-navigation");
+            const leftNavToggle = document.getElementById("admin-left-nav-toggle");
+
+            if (!leftNavigation || !leftNavToggle) {
+                return;
+            }
+
+            const syncButtonState = () => {
+                const isExpanded = !leftNavigation.classList.contains("app-sidebar-collapsed");
+                leftNavToggle.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+                leftNavToggle.setAttribute("title", isExpanded ? "Hide admin menu" : "Show admin menu");
+            };
+
+            const mobileMediaQuery = window.matchMedia("(max-width: 991.98px)");
+
+            const applyInitialState = () => {
+                const savedState = sessionStorage.getItem("admin-left-nav-collapsed");
+                const shouldCollapse = savedState !== null
+                    ? savedState === "true"
+                    : mobileMediaQuery.matches;
+
+                leftNavigation.classList.toggle("app-sidebar-collapsed", shouldCollapse);
+                document.documentElement.classList.toggle("admin-left-nav-collapsed-state", shouldCollapse);
+                syncButtonState();
+            };
+
+            leftNavToggle.addEventListener("click", () => {
+                leftNavigation.classList.toggle("app-sidebar-collapsed");
+                const isCollapsed = leftNavigation.classList.contains("app-sidebar-collapsed");
+                sessionStorage.setItem("admin-left-nav-collapsed", isCollapsed ? "true" : "false");
+                document.documentElement.classList.toggle("admin-left-nav-collapsed-state", isCollapsed);
+                syncButtonState();
+            });
+
+            if (typeof mobileMediaQuery.addEventListener === "function") {
+                mobileMediaQuery.addEventListener("change", applyInitialState);
+            } else if (typeof mobileMediaQuery.addListener === "function") {
+                mobileMediaQuery.addListener(applyInitialState);
+            }
+
+            applyInitialState();
+        })();
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

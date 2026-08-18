@@ -11,7 +11,13 @@
     <link rel="stylesheet" href="~/test1233.styles.css" asp-append-version="true" />
     <script>
         (() => {
-            if (sessionStorage.getItem("left-nav-collapsed") === "true" || sessionStorage.getItem("left-nav-hidden") === "true") {
+            const savedCollapsedState = sessionStorage.getItem("left-nav-collapsed");
+            const savedHiddenState = sessionStorage.getItem("left-nav-hidden");
+            const shouldCollapse = savedCollapsedState === "true"
+                || savedHiddenState === "true"
+                || ((savedCollapsedState === null && savedHiddenState === null) && window.matchMedia("(max-width: 991.98px)").matches);
+
+            if (shouldCollapse) {
                 document.documentElement.classList.add("left-nav-collapsed-state");
             }
         })();
@@ -240,6 +246,20 @@
                 leftNavToggle.setAttribute("title", isExpanded ? "Hide Menu" : "Show Menu");
             };
 
+            const mobileMediaQuery = window.matchMedia("(max-width: 991.98px)");
+
+            const applyInitialState = () => {
+                const savedCollapsedState = sessionStorage.getItem("left-nav-collapsed");
+                const savedHiddenState = sessionStorage.getItem("left-nav-hidden");
+                const shouldCollapse = savedCollapsedState === "true"
+                    || savedHiddenState === "true"
+                    || ((savedCollapsedState === null && savedHiddenState === null) && mobileMediaQuery.matches);
+
+                leftNavigation.classList.toggle("app-sidebar-collapsed", shouldCollapse);
+                document.documentElement.classList.toggle("left-nav-collapsed-state", shouldCollapse);
+                syncButtonState();
+            };
+
             leftNavToggle.addEventListener("click", () => {
                 leftNavigation.classList.toggle("app-sidebar-collapsed");
                 const isCollapsed = leftNavigation.classList.contains("app-sidebar-collapsed");
@@ -249,11 +269,13 @@
                 syncButtonState();
             });
 
-            if (sessionStorage.getItem("left-nav-collapsed") === "true" || sessionStorage.getItem("left-nav-hidden") === "true") {
-                leftNavigation.classList.add("app-sidebar-collapsed");
+            if (typeof mobileMediaQuery.addEventListener === "function") {
+                mobileMediaQuery.addEventListener("change", applyInitialState);
+            } else if (typeof mobileMediaQuery.addListener === "function") {
+                mobileMediaQuery.addListener(applyInitialState);
             }
 
-            syncButtonState();
+            applyInitialState();
         })();
 
     </script>

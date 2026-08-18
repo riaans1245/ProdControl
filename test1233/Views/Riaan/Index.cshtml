@@ -314,10 +314,8 @@
                                         <tr>
                                             <th>Record Id</th>
                                             <th>User</th>
-                                            <th>User Id</th>
                                             <th>Token</th>
                                             <th>Product</th>
-                                            <th>Token Id</th>
                                             <th>Sent At</th>
                                         </tr>
                                     </thead>
@@ -325,11 +323,9 @@
                                         {filteredUsedTokens.map((row) => (
                                             <tr key={row.id}>
                                                 <td>{row.id}</td>
-                                                <td>{row.username}</td>
-                                                <td>{row.userId}</td>
+                                                <td>{row.username}</td> 
                                                 <td>{row.token}</td>
                                                 <td><span className="dashboard-product-badge">{row.productName || "No product"}</span></td>
-                                                <td>{row.tokenId}</td>
                                                 <td>{formatDate(row.sentAtUtc)}</td>
                                             </tr>
                                         ))}
@@ -356,7 +352,6 @@
                                         <tr>
                                             <th>Token Id</th>
                                             <th>User</th>
-                                            <th>User Id</th>
                                             <th>Token</th>
                                             <th>Product</th>
                                             <th>TOKEN IS USED</th>
@@ -367,7 +362,6 @@
                                             <tr key={row.tokenId}>
                                                 <td>{row.tokenId}</td>
                                                 <td>{row.username}</td>
-                                                <td>{row.userId}</td>
                                                 <td>{row.token}</td>
                                                 <td><span className="dashboard-product-badge">{row.productName || "No product"}</span></td>
                                                 <td>{row.hasBeenSent ? "Yes" : "No"}</td>

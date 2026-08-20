@@ -43,9 +43,9 @@
                             </div>
                         </div>
 
-                        <form asp-action="ConfirmPayment" method="post" class="d-grid gap-2">
+                        <form method="post" class="d-grid gap-2">
                             @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-success">Confirm Payment</button>
+                            <button asp-action="ConfirmPayment" type="submit" class="btn btn-success">Confirm Payment</button>
                             <a asp-action="UserOrderList" class="btn btn-outline-secondary">Back to Orders</a>
                         </form>
                     }

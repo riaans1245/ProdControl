@@ -113,11 +113,7 @@
                         @Html.AntiForgeryToken()
                         <button type="submit" class="btn btn-success w-100" @(Model.CartItems.Count == 0 ? "disabled" : null)>Checkout Order</button>
                     </form>
-                    <a asp-controller="UserNavigation"
-                       asp-action="UserOrderList"
-                       class="btn btn-outline-dark w-100 mt-2">
-                        View order list
-                    </a>
+                    <a asp-controller="UserNavigation" asp-action="UserOrderList" class="btn btn-outline-dark w-100 mt-2">View order list</a>                
                 </div>
             </div>
         </div>

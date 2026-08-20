@@ -13,17 +13,13 @@
         </div>
     </div>
 
-    <form asp-action="UserNotificationsList" method="get" class="row g-2 align-items-end mb-4">
+    <form class="row g-2 align-items-end mb-4">
         <div class="col-sm-8 col-md-6 col-lg-4">
             <label for="searchString" class="form-label">Search my notifications</label>
-            <input id="searchString"
-                   name="searchString"
-                   value="@currentSearch"
-                   class="form-control"
-                   placeholder="Search by Notification" />
+            <input id="searchString" name="searchString" value="@currentSearch" class="form-control" placeholder="Search by Notification" />  
         </div>
         <div class="col-auto">
-            <button type="submit" class="btn btn-dark">Search</button>
+            <button method="get" asp-action="UserNotificationsList" type="submit" class="btn btn-dark">Search</button>
         </div>
         <div class="col-auto">
             <a asp-action="UserNotificationsList" class="btn btn-outline-secondary">Clear</a>

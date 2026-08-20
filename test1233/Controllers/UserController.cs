@@ -114,12 +114,6 @@ public class UserController(IUserStore userStore) : AppController(userStore)
             return RedirectToAction("Login", "Account");
         }
 
-        // var currentUser = GetCurrentUser();
-        // if (currentUser is null)
-        // {
-        //     return RedirectToAction("Login", "Account");
-        // }
-
         return View(BuildUserEditViewModel(user));
     }
 

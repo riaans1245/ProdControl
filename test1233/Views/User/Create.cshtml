@@ -10,7 +10,7 @@
             <h1 class="h3 mb-3">Create User</h1>
             <p class="text-muted">Create a user account and choose whether it should be a Users or Admin account. Users stays selected by default.</p>
 
-            <form asp-action="Create" method="post">
+            <form method="post">
                 @Html.AntiForgeryToken()
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
@@ -63,7 +63,7 @@
                 </div>
 
                 <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-dark">Save</button>
+                    <button asp-action="Create" type="submit" class="btn btn-dark">Save</button>
                     <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
                 </div>
             </form>

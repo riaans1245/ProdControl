@@ -112,10 +112,10 @@
                                     }
                                     else
                                     {
-                                        <form asp-action="SelectMenu" asp-controller="Home" method="post">
+                                        <form asp-controller="Home" method="post">
                                             @Html.AntiForgeryToken()
                                             <input type="hidden" name="menuPath" value="@menu.Path" />
-                                            <button type="submit" class="btn btn-sm btn-dark w-100">Show This Menu</button>
+                                            <button asp-action="SelectMenu" type="submit" class="btn btn-sm btn-dark w-100">Show This Menu</button>
                                         </form>
                                     }
                                 </div>

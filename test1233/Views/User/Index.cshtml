@@ -14,17 +14,13 @@
         <a asp-action="Create" class="btn text-white" style="background-color: #080808; color: #123246;">Add User</a>
     </div>
 
-    <form asp-action="Index" method="get" class="row g-2 align-items-end mb-4">
+    <form method="get" class="row g-2 align-items-end mb-4">
         <div class="col-sm-8 col-md-6 col-lg-4">
             <label for="searchString" class="form-label">Search users</label>
-            <input id="searchString"
-                   name="searchString"
-                   value="@currentSearch"
-                   class="form-control"
-                   placeholder="Search by name, surname, username, or email" />
+            <input id="searchString" name="searchString" value="@currentSearch" class="form-control" placeholder="Search by name, surname, username, or email" />     
         </div>
         <div class="col-auto">
-            <button type="submit" class="btn btn-dark">Search</button>
+            <button asp-action="Index" type="submit" class="btn btn-dark">Search</button>
         </div>
         <div class="col-auto">
             <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>

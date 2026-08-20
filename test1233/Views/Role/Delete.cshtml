@@ -14,11 +14,11 @@
             <p class="mb-2">You are deleting <strong>@Model.Id - @Model.Name</strong>.</p>
             <p class="text-muted">Assigned users: @userCount</p>
 
-            <form asp-action="Delete" method="post">
+            <form method="post">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="id" value="@Model.Id" />
                 <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this role?');">Delete</button>
+                    <button asp-action="Delete" type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this role?');">Delete</button>
                     <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
                 </div>
             </form>

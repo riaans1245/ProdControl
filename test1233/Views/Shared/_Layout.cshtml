@@ -112,54 +112,65 @@
                             <p class="mb-0 admin-sidebar-copy">Move through pages and reports without crowding the top bar.</p>
                         </div>
                         <div class="left-nav-gallery-panel">
-                            <a class="left-nav-gallery-card left-nav-gallery-card-home" asp-controller="Home" asp-action="Index">
+                            <a class="left-nav-gallery-card left-nav-gallery-card-home" 
+                                asp-controller="Home" title="Home" aria-label="Home" asp-action="Index">
                                 <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                                 <span class="left-nav-gallery-label">Home</span>
                             </a>
-                            <a class="left-nav-gallery-card left-nav-gallery-card-users" asp-controller="User" asp-action="Index">
+                            <a class="left-nav-gallery-card left-nav-gallery-card-users" 
+                                asp-controller="User" title="Users" aria-label="Users" asp-action="Index">
                                 <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                                 <span class="left-nav-gallery-label">Users</span>
                             </a>
-                            <a class="left-nav-gallery-card left-nav-gallery-card-roles" asp-controller="Role" asp-action="Index">
+                            <a class="left-nav-gallery-card left-nav-gallery-card-roles" 
+                                asp-controller="Role" title="Roles" aria-label="Roles" asp-action="Index">
                                 <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                                 <span class="left-nav-gallery-label">Roles</span>
                             </a>
-                            <a class="left-nav-gallery-card left-nav-gallery-card-products" asp-controller="Product" asp-action="Index">
+                            <a class="left-nav-gallery-card left-nav-gallery-card-products" 
+                                asp-controller="Product" title="Products" aria-label="Products" asp-action="Index">
                                 <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                                 <span class="left-nav-gallery-label">Products</span>
                             </a>
-                            <a class="left-nav-gallery-card left-nav-gallery-card-categories" asp-controller="Category" asp-action="Index">
+                            <a class="left-nav-gallery-card left-nav-gallery-card-categories" 
+                                asp-controller="Category" title="Categories" aria-label="Categories" asp-action="Index">
                                 <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                                 <span class="left-nav-gallery-label">Categories</span>
                             </a>
-                            <a class="left-nav-gallery-card left-nav-gallery-card-menu" asp-controller="Home" asp-action="ManageMenu">
+                            <a class="left-nav-gallery-card left-nav-gallery-card-menu" 
+                                asp-controller="Home" title="Our Menu" aria-label="Our Menu" asp-action="ManageMenu">
                                 <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                                 <span class="left-nav-gallery-label">Our Menu</span>
                             </a>
-                            <a class="left-nav-gallery-card left-nav-gallery-card-notifications" asp-controller="Notification" asp-action="Index">
+                            <a class="left-nav-gallery-card left-nav-gallery-card-notifications" 
+                                asp-controller="Notification" title="Notifications" aria-label="Notifications" asp-action="Index">
                                 <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                                 <span class="left-nav-gallery-label">Notifications</span>
                             </a>
-                            <a class="left-nav-gallery-card left-nav-gallery-card-tokens" asp-controller="Token" asp-action="Index">
+                            <a class="left-nav-gallery-card left-nav-gallery-card-tokens" 
+                                asp-controller="Token" title="Tokens" aria-label="Tokens" asp-action="Index">
                                 <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                                 <span class="left-nav-gallery-label">Tokens</span>
                             </a>
-                            <a class="left-nav-gallery-card left-nav-gallery-card-suggestions" asp-controller="Suggestion" asp-action="Index">
+                            <a class="left-nav-gallery-card left-nav-gallery-card-suggestions" 
+                                asp-controller="Suggestion" title="Suggestions" aria-label="Suggestions" asp-action="Index">
                                 <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                                 <span class="left-nav-gallery-label">Suggestions</span>
+                            </a>
+                         <a class="left-nav-gallery-card left-nav-gallery-card-table" 
+                                asp-controller="Table" title="My Table" aria-label="My Table" asp-action="Index">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="left-nav-gallery-label">Tables</span>
                             </a>
                             </div>
                     </div>
                     <hr class="admin-nav-divider" />
                     <div class="left-nav-gallery-panel">
-                        <a class="left-nav-gallery-card left-nav-gallery-card-roles" asp-controller="Reports" asp-action="Index">
+                        <a class="left-nav-gallery-card left-nav-gallery-card-roles" 
+                            asp-controller="Reports" title="Reports" aria-label="Reports" asp-action="Index">
                             <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                             <span class="left-nav-gallery-label">Report</span>
                         </a>
-                        @* <a class="left-nav-gallery-card left-nav-gallery-card-home" asp-controller="Riaan" asp-action="Index">
-                            <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                            <span class="left-nav-gallery-label">Eats Dashboard</span>
-                        </a> *@
                         <h6 class="mb-0 admin-sidebar-copy">Eats Dashboard - https://localhost:7084/Riaan</h6>
                     </div>
                 </nav>

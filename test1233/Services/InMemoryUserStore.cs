@@ -1,3 +1,4 @@
+using DocumentFormat.OpenXml.Drawing;
 using test1233.Models;
 
 namespace test1233.Services;
@@ -86,6 +87,11 @@ public class InMemoryUserStore : IUserStore
     ];
 
      private readonly List<AppSuggestion> _suggest =
+    [
+
+    ];
+
+    private readonly List<AppTables> _table =
     [
 
     ];
@@ -791,6 +797,19 @@ public void SuggestionCreate(AppSuggestion suggest)
          }
     }
 
+    public void TableCreate(AppTables tables)
+    {
+        lock (_lock)
+        {
+             var nextId = _table.Count == 0 ? 1 : _table.Max(item => item.TableId) + 1;
+             _table.Add(new AppTables
+             {
+                 TableId = nextId,
+                 TableName = tables.TableName,
+                 TableNumber = tables.TableNumber
+             });
+         }
+    }
 
     public void CreateNotification(AppNotification notification)
     {
@@ -937,6 +956,15 @@ public void SuggestionCreate(AppSuggestion suggest)
         }
     }
 
+      public AppTables? GetTablesById(int id)
+    {
+        lock (_lock)
+        {
+            var tables = _table.FirstOrDefault(item => item.TableId == id);
+            return tables is null ? null : new AppTables { TableId = tables.TableId, TableName = tables.TableName, TableNumber = tables.TableNumber};
+        }
+    }
+
     public bool DeleteSuggestion(int id)
     {
         lock (_lock)
@@ -948,6 +976,21 @@ public void SuggestionCreate(AppSuggestion suggest)
             }
 
             _suggest.Remove(suggest);
+            return true;
+        }
+    }
+
+    public bool DeleteTable(int id)
+    {
+        lock (_lock)
+        {
+            var table = _table.FirstOrDefault(item => item.TableId == id);
+            if (table is null)
+            {
+                return false;
+            }
+
+            _table.Remove(table);
             return true;
         }
     }
@@ -1041,6 +1084,23 @@ public void SuggestionCreate(AppSuggestion suggest)
                 .ToList()
                 .AsReadOnly();
 
+        }
+    }
+
+    public IReadOnlyCollection<AppTables> GetAllTables()
+    {
+        lock (_lock)
+        {
+            return _table
+                .OrderBy(table => table.TableId)
+                .Select(table => new AppTables
+                {
+                    TableId = table.TableId,
+                    TableName = table.TableName,
+                    TableNumber = table.TableNumber
+                })
+                .ToList()
+                .AsReadOnly();
         }
     }
 

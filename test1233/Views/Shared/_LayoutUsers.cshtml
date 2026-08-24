@@ -198,6 +198,16 @@
                             <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                             <span class="left-nav-gallery-label">Orders</span>
                         </a>
+                    <a class="left-nav-gallery-card left-nav-gallery-card-table"
+                            asp-controller="UserNavigation"
+                            asp-route-id="@currentUserId"
+                            asp-action="UserOrderTable"                            
+                            title="My Table"
+                            aria-label="My Table">
+                            <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                            <span class="left-nav-gallery-label">Book a table</span>
+                        </a>
+                    
                     </div> 
                 </nav>
             </aside> 

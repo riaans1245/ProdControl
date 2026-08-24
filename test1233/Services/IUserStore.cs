@@ -21,6 +21,8 @@ public interface IUserStore
 
     void SuggestionCreate(AppSuggestion suggest);
 
+    void TableCreate(AppTables tables);
+
     IReadOnlyCollection<AppUser> GetAllUsers();
 
     IReadOnlyCollection<AppUser> GetAllUsersList();
@@ -58,6 +60,8 @@ public interface IUserStore
     bool UpdateToken(AppTokens tokens);
 
     bool UpdateNotification(AppNotification notification);
+
+    IReadOnlyCollection<AppTables> GetAllTables();
 
     bool DeleteToken(int id);
 
@@ -123,7 +127,11 @@ public interface IUserStore
 
     AppSuggestion? GetSuggestById(int id);
 
+    AppTables? GetTablesById(int id);
+
     bool DeleteSuggestion(int id);
+
+    bool DeleteTable(int id);
 
     void CreateRole(AppRole role);
 

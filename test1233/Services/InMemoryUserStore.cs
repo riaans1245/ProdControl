@@ -818,7 +818,8 @@ public void SuggestionCreate(AppSuggestion suggest)
                  TableName = tables.TableName,
                  TableNumber = tables.TableNumber,
                  UserId = tables.UserId,
-                 Username = tables.Username
+                 Username = tables.Username,
+                 BookedForUtc = tables.BookedForUtc
              });
          }
     }
@@ -984,7 +985,8 @@ public void SuggestionCreate(AppSuggestion suggest)
                 TableName = tables.TableName,
                 TableNumber = tables.TableNumber,
                 UserId = tables.UserId,
-                Username = tables.Username
+                Username = tables.Username,
+                BookedForUtc = tables.BookedForUtc
             };
         }
     }
@@ -1069,6 +1071,7 @@ public void SuggestionCreate(AppSuggestion suggest)
             existingTables.TableNumber = tables.TableNumber;
             existingTables.UserId = tables.UserId;
             existingTables.Username = tables.Username;
+            existingTables.BookedForUtc = tables.BookedForUtc;
 
             return true;
         }
@@ -1142,7 +1145,8 @@ public void SuggestionCreate(AppSuggestion suggest)
                     TableName = table.TableName,
                     TableNumber = table.TableNumber,
                     UserId = table.UserId,
-                    Username = table.Username
+                    Username = table.Username,
+                    BookedForUtc = table.BookedForUtc
                 })
                 .ToList()
                 .AsReadOnly();
@@ -1166,7 +1170,8 @@ public void SuggestionCreate(AppSuggestion suggest)
                     TableName = table.TableName,
                     TableNumber = table.TableNumber,
                     UserId = table.UserId,
-                    Username = string.IsNullOrWhiteSpace(table.Username) ? "Not Booked" : table.Username
+                    Username = string.IsNullOrWhiteSpace(table.Username) ? "Not Booked" : table.Username,
+                    BookedForUtc = table.BookedForUtc
                 })
                 .ToList()
                 .AsReadOnly();

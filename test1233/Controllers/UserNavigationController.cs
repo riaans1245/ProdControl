@@ -339,20 +339,75 @@ public class UserNavigationController(IUserStore userStore, ITokenApiClient toke
         return View(_userStore.GetTablesGroupedByUser(currentUser.Username));
     }
 
-    // public IActionResult UserOrderTable(int id)
-    // {
-    //      var currentUser = GetCurrentTable();
-    //      if (currentUser is null)
-    //      {
-    //          return RedirectToAction("Login", "Account");
-    //      }
+     public IActionResult UserBookMe(int TableId)
+     {
+         var currentUser = GetCurrentUser();
+         if (currentUser is null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
 
-    //      var tokens = _userStore.GetTokenById(id);
-    //      if (tokens is null || tokens.UserId != currentUser.Id)
-    //      {
-    //          return NotFound();
-    //      }
+         var tables = _userStore.GetTablesById(TableId);
+        if (tables is null)
+        {
+            return NotFound();
+        }
 
-    //     return View(tokens);
-    // }
+        return View(new TableFormViewModel
+        {
+            TableId = tables.TableId,
+            TableName = tables.TableName,
+            TableNumber = tables.TableNumber,
+            UserId = currentUser.Id,
+            BookedForUtc = tables.BookedForUtc
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult UserBookMe(TableFormViewModel model)
+    {
+        var currentUser = GetCurrentUser();
+        if (currentUser is null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var tables = _userStore.GetTablesById(model.TableId);
+        if (tables is null)
+        {
+            return NotFound();
+        }
+
+        model.UserId = currentUser.Id;
+
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        if (!model.BookedForUtc.HasValue)
+        {
+            ModelState.AddModelError(nameof(model.BookedForUtc), "Please select a booking date and time.");
+            return View(model);
+        }
+
+        if (_userStore.TableNameExists(model.TableName, model.TableId))
+        {
+            ModelState.AddModelError(nameof(model.TableId), "That table already exists.");
+            return View(model);
+        }
+
+        _userStore.UpdateTable(new AppTables
+        {
+            TableId = model.TableId,
+            TableName = model.TableName.Trim(),
+            TableNumber = model.TableNumber,
+            UserId = currentUser.Id,
+            Username = currentUser.Username,
+            BookedForUtc = model.BookedForUtc
+        });
+
+        return RedirectToAction(nameof(UserOrderTable));
+    }
 }

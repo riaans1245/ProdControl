@@ -1,17 +1,18 @@
 @model test1233.Models.TableFormViewModel
 
 @{
-    ViewData["Title"] = "Edit Table Booking";
+    ViewData["Title"] = "Book Table";
 }
 
 <div class="container py-4" style="max-width: 620px;">
     <div class="card shadow-sm border-0">
         <div class="card-body p-4">
-            <h1 class="h3 mb-3">Make Table Booking</h1>
+            <h1 class="h3 mb-3">Book Table</h1>
 
             <form method="post">
                 @Html.AntiForgeryToken()
                 <input asp-for="TableId" type="hidden" />
+                <input asp-for="UserId" type="hidden" />
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                 <div class="mb-3">
@@ -25,22 +26,18 @@
                     <input asp-for="TableNumber" class="form-control" />
                     <span asp-validation-for="TableNumber" class="text-danger"></span>
                 </div>
-            
-            <div class="mb-4">
+
+                <div class="mb-4">
                     <label asp-for="BookedForUtc" class="form-label"></label>
                     <input asp-for="BookedForUtc" type="datetime-local" class="form-control" />
                     <span asp-validation-for="BookedForUtc" class="text-danger"></span>
                 </div>
-            
-            <div class="mb-4">
-                    <label asp-for="UserId" class="form-label"></label>
-                    <select asp-for="UserId" asp-items="Model.AvailableUsers" class="form-select"></select>
-                    <span asp-validation-for="UserId" class="text-danger"></span>
-                </div>
+
+                <p class="text-muted mb-4">This booking will be saved for your currently signed-in account.</p>
 
                 <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-dark">Save changes</button>
-                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-dark">Book table</button>
+                    <a asp-action="UserOrderTable" class="btn btn-outline-secondary">Cancel</a>
                 </div>
             </form>
         </div>

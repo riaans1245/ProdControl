@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Table Booking";
+    string FormatBookingDate(DateTime? value) =>
+        value.HasValue ? value.Value.ToString("dd MMM yyyy HH:mm") : "Not booked";
 }
 
 <div class="container py-4">
@@ -27,7 +29,8 @@
                                 <th>Table Name</th>
                                 <th>Table Number</th>
                                 <th>User</th>
-                                 <th class="text-end">Actions</th>
+                                <th>Booked For</th>
+                                <th class="text-end">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -37,9 +40,10 @@
                                     <td>@table.TableName</td>
                                     <td>@table.TableNumber</td>
                                     <td>@table.Username</td>
-                                     <td class="text-end">
-                                    <a asp-controller="UserNavigation" asp-action="UserBook" asp-route-TableId="@table.TableId" class="btn btn-sm btn-outline-secondary">Book Me</a>
-                                </td>
+                                    <td>@FormatBookingDate(table.BookedForUtc)</td>
+                                    <td class="text-end">
+                                        <a asp-controller="UserNavigation" asp-action="UserBookMe" asp-route-TableId="@table.TableId" class="btn btn-sm btn-outline-secondary">Book Me</a>
+                                    </td>
                                 </tr>
                             }
                         </tbody>

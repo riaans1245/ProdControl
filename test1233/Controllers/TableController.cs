@@ -60,7 +60,8 @@ public class TableController(IUserStore userStore) : AppController(userStore)
             TableName = model.TableName,
             TableNumber = model.TableNumber,
             UserId = 0,
-            Username = string.Empty
+            Username = string.Empty,
+            BookedForUtc = null
          });
 
          return RedirectToAction(nameof(Index));
@@ -79,7 +80,8 @@ public class TableController(IUserStore userStore) : AppController(userStore)
             TableId = tables.TableId,
             TableName = tables.TableName,
             TableNumber = tables.TableNumber,
-            UserId = tables.UserId
+            UserId = tables.UserId,
+            BookedForUtc = tables.BookedForUtc
         });
     }
 
@@ -111,7 +113,8 @@ public class TableController(IUserStore userStore) : AppController(userStore)
               TableName = model.TableName.Trim(),
               TableNumber = model.TableNumber,
               UserId = tables.UserId,
-              Username = tables.Username
+              Username = tables.Username,
+              BookedForUtc = tables.BookedForUtc
           });
 
          return RedirectToAction(nameof(Index));
@@ -131,6 +134,7 @@ public class TableController(IUserStore userStore) : AppController(userStore)
             TableName = tables.TableName,
             TableNumber = tables.TableNumber,
             UserId = tables.UserId,
+            BookedForUtc = tables.BookedForUtc,
             AvailableUsers = GetUserSelectList()
         });
     }
@@ -173,7 +177,8 @@ public class TableController(IUserStore userStore) : AppController(userStore)
               TableName = model.TableName.Trim(),
               TableNumber = model.TableNumber,
               UserId = user.Id,
-              Username = user.Username
+              Username = user.Username,
+              BookedForUtc = model.BookedForUtc
           });
 
          return RedirectToAction(nameof(Index));

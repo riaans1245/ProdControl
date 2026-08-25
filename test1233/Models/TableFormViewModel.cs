@@ -19,6 +19,9 @@ public class TableFormViewModel
     [Display(Name = "User")]
     public int? UserId { get; set; }
 
+    [Display(Name = "Booking Date and Time")]
+    public DateTime? BookedForUtc { get; set; }
+
     public IReadOnlyCollection<SelectListItem> AvailableUsers { get; set; } = Array.Empty<SelectListItem>();
 
 

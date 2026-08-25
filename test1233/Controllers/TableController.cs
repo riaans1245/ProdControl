@@ -58,7 +58,9 @@ public class TableController(IUserStore userStore) : AppController(userStore)
          _userStore.TableCreate(new AppTables
          {
             TableName = model.TableName,
-            TableNumber = model.TableNumber
+            TableNumber = model.TableNumber,
+            UserId = 0,
+            Username = string.Empty
          });
 
          return RedirectToAction(nameof(Index));
@@ -76,7 +78,8 @@ public class TableController(IUserStore userStore) : AppController(userStore)
         {
             TableId = tables.TableId,
             TableName = tables.TableName,
-            TableNumber = tables.TableNumber
+            TableNumber = tables.TableNumber,
+            UserId = tables.UserId
         });
     }
 
@@ -90,24 +93,88 @@ public class TableController(IUserStore userStore) : AppController(userStore)
              return View(model);
          }
 
-    //     var existingRole = _userStore.GetRoleById(model.Id);
-    //     if (existingRole is null)
-    //     {
-    //         return NotFound();
-    //     }
+         var tables = _userStore.GetTablesById(model.TableId);
+         if (tables is null)
+         {
+             return NotFound();
+         }
 
-    //     if (_userStore.RoleNameExists(model.Name, model.Id))
-    //     {
-    //         ModelState.AddModelError(nameof(model.Name), "That role already exists.");
-    //         return View(model);
-    //     }
+         if (_userStore.TableNameExists(model.TableName, model.TableId))
+         {
+             ModelState.AddModelError(nameof(model.TableName), "That table already exists.");
+             return View(model);
+         }
 
-    //     _userStore.UpdateRole(new AppRole
-    //     {
-    //         Id = model.Id,
-    //         Name = model.Name.Trim(),
-    //         IdentityCode = model.IdentityCode
-    //     });
+          _userStore.UpdateTable(new AppTables
+          {
+              TableId = model.TableId,
+              TableName = model.TableName.Trim(),
+              TableNumber = model.TableNumber,
+              UserId = tables.UserId,
+              Username = tables.Username
+          });
+
+         return RedirectToAction(nameof(Index));
+    }
+
+    public IActionResult BookMe(int TableId)
+    {
+        var tables = _userStore.GetTablesById(TableId);
+        if (tables is null)
+        {
+            return NotFound();
+        }
+
+        return View(new TableFormViewModel
+        {
+            TableId = tables.TableId,
+            TableName = tables.TableName,
+            TableNumber = tables.TableNumber,
+            UserId = tables.UserId,
+            AvailableUsers = GetUserSelectList()
+        });
+    }
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+     public IActionResult BookMe(TableFormViewModel model)
+    {
+         if (!ModelState.IsValid)
+        {
+            model.AvailableUsers = GetUserSelectList();
+            return View(model);
+        }
+
+          var tables = _userStore.GetTablesById(model.TableId);
+         if (tables is null)
+         {
+             return NotFound();
+         }
+
+         if (_userStore.TableNameExists(model.TableName, model.TableId))
+         {
+             ModelState.AddModelError(nameof(model.TableName), "That table already exists.");
+             model.AvailableUsers = GetUserSelectList();
+             return View(model);
+         }
+
+         var user = model.UserId.HasValue ? _userStore.GetUserById(model.UserId.Value) : null;
+         if (user is null)
+         {
+             ModelState.AddModelError(nameof(model.UserId), "Please select a valid user.");
+             model.AvailableUsers = GetUserSelectList();
+             return View(model);
+         }
+
+          _userStore.UpdateTable(new AppTables
+          {
+              TableId = model.TableId,
+              TableName = model.TableName.Trim(),
+              TableNumber = model.TableNumber,
+              UserId = user.Id,
+              Username = user.Username
+          });
 
          return RedirectToAction(nameof(Index));
      }
@@ -145,5 +212,12 @@ public class TableController(IUserStore userStore) : AppController(userStore)
 
         return _userStore.GetAllUsers()
             .FirstOrDefault(user => string.Equals(user.Username, username, StringComparison.OrdinalIgnoreCase));
+    }
+
+        private IReadOnlyCollection<SelectListItem> GetUserSelectList()
+    {
+        return _userStore.GetAllUsers()
+            .Select(user => new SelectListItem(user.Username, user.Id.ToString()))
+            .ToList();
     }
 }

@@ -330,7 +330,13 @@ public class UserNavigationController(IUserStore userStore, ITokenApiClient toke
 
      public IActionResult UserOrderTable()
     {
-        return View(_userStore.GetAllTables());
+        var currentUser = GetCurrentUser();
+        if (currentUser is null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        return View(_userStore.GetTablesGroupedByUser(currentUser.Username));
     }
 
     // public IActionResult UserOrderTable(int id)

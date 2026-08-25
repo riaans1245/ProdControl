@@ -17,6 +17,8 @@ public interface IUserStore
 
     bool RoleNameExists(string roleName, int? excludeRoleId = null);
 
+    bool TableNameExists(string TableName, int? excludeTableId = null);
+
     void CreateUser(AppUser user);
 
     void SuggestionCreate(AppSuggestion suggest);
@@ -62,6 +64,8 @@ public interface IUserStore
     bool UpdateNotification(AppNotification notification);
 
     IReadOnlyCollection<AppTables> GetAllTables();
+
+    IReadOnlyCollection<AppTables> GetTablesGroupedByUser(string currentUsername);
 
     bool DeleteToken(int id);
 
@@ -136,6 +140,8 @@ public interface IUserStore
     void CreateRole(AppRole role);
 
     bool UpdateRole(AppRole role);
+
+    bool UpdateTable(AppTables tables);
 
     bool DeleteRole(int id);
 

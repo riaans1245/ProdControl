@@ -26,6 +26,7 @@
                             <tr>
                                 <th>Table Name</th>
                                 <th>Table Number</th>
+                                <th>User</th>
                                  <th class="text-end">Actions</th>
                             </tr>
                         </thead>
@@ -35,8 +36,9 @@
                                 <tr>
                                     <td>@table.TableName</td>
                                     <td>@table.TableNumber</td>
-                                    <td class="text-end">
-                                    <a asp-action="Edit" asp-route-id="@table.TableId" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    <td>@table.Username</td>
+                                     <td class="text-end">
+                                    <a asp-controller="UserNavigation" asp-action="UserBook" asp-route-TableId="@table.TableId" class="btn btn-sm btn-outline-secondary">Book Me</a>
                                 </td>
                                 </tr>
                             }

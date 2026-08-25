@@ -175,6 +175,16 @@ public class InMemoryUserStore : IUserStore
         }
     }
 
+     public bool TableNameExists(string TableName, int? excludeTableId = null)
+    {
+        lock (_lock)
+        {
+            return _table.Any(table =>
+                table.TableId != excludeTableId &&
+                string.Equals(table.TableName, TableName, StringComparison.OrdinalIgnoreCase));
+        }
+    }
+
     public void CreateUser(AppUser user)
     {
         lock (_lock)
@@ -806,7 +816,9 @@ public void SuggestionCreate(AppSuggestion suggest)
              {
                  TableId = nextId,
                  TableName = tables.TableName,
-                 TableNumber = tables.TableNumber
+                 TableNumber = tables.TableNumber,
+                 UserId = tables.UserId,
+                 Username = tables.Username
              });
          }
     }
@@ -952,7 +964,12 @@ public void SuggestionCreate(AppSuggestion suggest)
         lock (_lock)
         {
             var suggest = _suggest.FirstOrDefault(item => item.SuggestId == id);
-            return suggest is null ? null : new AppSuggestion { SuggestId = suggest.SuggestId, Suggestion = suggest.Suggestion, MyName = suggest.MyName};
+            return suggest is null ? null : new AppSuggestion
+            {
+                SuggestId = suggest.SuggestId,
+                Suggestion = suggest.Suggestion,
+                MyName = suggest.MyName
+            };
         }
     }
 
@@ -961,7 +978,14 @@ public void SuggestionCreate(AppSuggestion suggest)
         lock (_lock)
         {
             var tables = _table.FirstOrDefault(item => item.TableId == id);
-            return tables is null ? null : new AppTables { TableId = tables.TableId, TableName = tables.TableName, TableNumber = tables.TableNumber};
+            return tables is null ? null : new AppTables
+            {
+                TableId = tables.TableId,
+                TableName = tables.TableName,
+                TableNumber = tables.TableNumber,
+                UserId = tables.UserId,
+                Username = tables.Username
+            };
         }
     }
 
@@ -1026,6 +1050,25 @@ public void SuggestionCreate(AppSuggestion suggest)
             {
                 user.Role = role.Name;
             }
+
+            return true;
+        }
+    }
+
+    public bool UpdateTable(AppTables tables)
+    {
+        lock (_lock)
+        {
+            var existingTables = _table.FirstOrDefault(item => item.TableId == tables.TableId);
+            if (existingTables is null)
+            {
+                return false;
+            }
+
+            existingTables.TableName = tables.TableName;
+            existingTables.TableNumber = tables.TableNumber;
+            existingTables.UserId = tables.UserId;
+            existingTables.Username = tables.Username;
 
             return true;
         }
@@ -1097,7 +1140,33 @@ public void SuggestionCreate(AppSuggestion suggest)
                 {
                     TableId = table.TableId,
                     TableName = table.TableName,
-                    TableNumber = table.TableNumber
+                    TableNumber = table.TableNumber,
+                    UserId = table.UserId,
+                    Username = table.Username
+                })
+                .ToList()
+                .AsReadOnly();
+        }
+    }
+
+    public IReadOnlyCollection<AppTables> GetTablesGroupedByUser(string currentUsername)
+    {
+        lock (_lock)
+        {
+            return _table
+                .Where(table =>
+                    string.Equals(table.Username, currentUsername, StringComparison.OrdinalIgnoreCase) ||
+                    table.UserId <= 0 ||
+                    string.IsNullOrWhiteSpace(table.Username))
+                .OrderBy(table => string.IsNullOrWhiteSpace(table.Username) ? "Not Booked" : table.Username)
+                .ThenBy(table => table.TableId)
+                .Select(table => new AppTables
+                {
+                    TableId = table.TableId,
+                    TableName = table.TableName,
+                    TableNumber = table.TableNumber,
+                    UserId = table.UserId,
+                    Username = string.IsNullOrWhiteSpace(table.Username) ? "Not Booked" : table.Username
                 })
                 .ToList()
                 .AsReadOnly();

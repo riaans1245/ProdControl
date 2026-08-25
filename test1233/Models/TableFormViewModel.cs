@@ -16,4 +16,10 @@ public class TableFormViewModel
     [Display(Name = "Table Number")]
     public int TableNumber { get; set; }
 
+    [Display(Name = "User")]
+    public int? UserId { get; set; }
+
+    public IReadOnlyCollection<SelectListItem> AvailableUsers { get; set; } = Array.Empty<SelectListItem>();
+
+
 }

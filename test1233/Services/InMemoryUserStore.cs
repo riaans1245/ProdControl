@@ -905,6 +905,23 @@ public void SuggestionCreate(AppSuggestion suggest)
         }
     }
 
+    public bool DeleteBooking(int id)
+    {
+        lock (_lock)
+        {
+            var existingBook = _table.FirstOrDefault(item => item.TableId == id);
+            if (existingBook is null)
+            {
+                return false;
+            }
+
+            existingBook.UserId = 0;
+            existingBook.Username = string.Empty;
+            existingBook.BookedForUtc = null;
+            return true;
+        }
+    }
+
 
     public bool UpdateProduct(AppProduct product)
     {
@@ -1145,7 +1162,7 @@ public void SuggestionCreate(AppSuggestion suggest)
                     TableName = table.TableName,
                     TableNumber = table.TableNumber,
                     UserId = table.UserId,
-                    Username = table.Username,
+                    Username = string.IsNullOrWhiteSpace(table.Username) ? "Not Booked" : table.Username,
                     BookedForUtc = table.BookedForUtc
                 })
                 .ToList()

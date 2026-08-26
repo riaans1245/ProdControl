@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using ClosedXML.Excel;
+using DocumentFormat.OpenXml.EMMA;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using test1233.Models;
 using test1233.Services;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace test1233.Controllers;
 
@@ -232,6 +234,40 @@ public class UserNavigationController(IUserStore userStore, ITokenApiClient toke
             PendingOrders = _userStore.GetPendingOrdersForUser(currentUser.Id),
             LatestReceipt = receipt
         });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult DeleteBooking(int tableId)
+    {
+        var currentUser = GetCurrentUser();
+        if (currentUser is null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var table = _userStore.GetTablesById(tableId);
+        if (table is null)
+        {
+            return NotFound();
+        }
+
+        if (table.UserId != currentUser.Id)
+        {
+            return NotFound();
+        }
+
+        _userStore.UpdateTable(new AppTables
+        {
+            TableId = table.TableId,
+            TableName = table.TableName,
+            TableNumber = table.TableNumber,
+            UserId = 0,
+            Username = string.Empty,
+            BookedForUtc = null
+        });
+
+        return RedirectToAction(nameof(UserOrderTable));
     }
 
     public IActionResult Products()

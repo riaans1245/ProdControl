@@ -71,6 +71,8 @@ public interface IUserStore
 
     bool DeleteNotification(int id);
 
+    bool DeleteBooking(int id);
+
     AppUser? GetUserById(int id);
 
     AppUser? GetUserByEmailAddress(string emailAddress);

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace test1233.Models;
@@ -40,6 +41,9 @@ public class UserCreateViewModel
     [Required]
     [Display(Name = "Role")]
     public int RoleId { get; set; } = 2;
+
+    [Display(Name = "Profile picture")]
+    public IFormFile? ProfileImage { get; set; }
 
     public IReadOnlyCollection<SelectListItem> AvailableRoles { get; set; } = Array.Empty<SelectListItem>();
 }

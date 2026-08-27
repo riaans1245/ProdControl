@@ -9,9 +9,10 @@ using test1233.Services;
 
 namespace test1233.Controllers;
 
-public class AccountController(IUserStore userStore) : AppController(userStore)
+public class AccountController(IUserStore userStore, IWebHostEnvironment webHostEnvironment) : AppController(userStore)
 {
     private readonly IUserStore _userStore = userStore;
+    private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
 
     [AllowAnonymous]
     public IActionResult Login(string? returnUrl = null)
@@ -106,6 +107,7 @@ public class AccountController(IUserStore userStore) : AppController(userStore)
             EmailAddress = model.EmailAddress.Trim(),
             CellNo = model.CellNo.Trim(),
             Password = model.Password,
+            ProfileImagePath = SaveProfileImage(model.ProfileImage),
             RoleId = defaultRole.Id,
             Role = defaultRole.Name
         };
@@ -176,5 +178,26 @@ public class AccountController(IUserStore userStore) : AppController(userStore)
             {
                 IsPersistent = isPersistent
             });
+    }
+
+    private string? SaveProfileImage(IFormFile? profileImage)
+    {
+        if (profileImage is null || profileImage.Length == 0)
+        {
+            return null;
+        }
+
+        var uploadsDirectory = Path.Combine(_webHostEnvironment.WebRootPath, "images", "user-profiles");
+        Directory.CreateDirectory(uploadsDirectory);
+
+        var fileExtension = Path.GetExtension(profileImage.FileName);
+        var safeExtension = string.IsNullOrWhiteSpace(fileExtension) ? ".jpg" : fileExtension;
+        var fileName = $"{Guid.NewGuid():N}{safeExtension}";
+        var filePath = Path.Combine(uploadsDirectory, fileName);
+
+        using var stream = new FileStream(filePath, FileMode.Create);
+        profileImage.CopyTo(stream);
+
+        return $"/images/user-profiles/{fileName}";
     }
 }

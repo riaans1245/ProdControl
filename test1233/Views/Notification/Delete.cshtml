@@ -22,7 +22,7 @@
                 @Html.AntiForgeryToken()
                 <input type="hidden" asp-for="NotificationId" />
                 <div class="d-flex gap-2">
-                    <button asp-action="Delete" type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');">Delete</button>
+                    <button asp-action="Delete" type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to delete this item?');">Delete</button>
                     <a asp-action="Index" class="btn btn-outline-secondary clear-action-button">Cancel</a>
                 </div>
             </form>

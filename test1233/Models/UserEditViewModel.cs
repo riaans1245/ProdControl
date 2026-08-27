@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace test1233.Models;
@@ -41,6 +42,15 @@ public class UserEditViewModel
     [Display(Name = "Confirm new password")]
     [Compare(nameof(Password), ErrorMessage = "Passwords do not match.")]
     public string ConfirmPassword { get; set; } = string.Empty;
+
+    [Display(Name = "Current profile picture")]
+    public string? CurrentProfileImagePath { get; set; }
+
+    [Display(Name = "New profile picture")]
+    public IFormFile? ProfileImage { get; set; }
+
+    [Display(Name = "Remove current picture")]
+    public bool RemoveProfileImage { get; set; }
 
     public IReadOnlyCollection<SelectListItem> AvailableRoles { get; set; } = Array.Empty<SelectListItem>();
 }

@@ -4,6 +4,33 @@
     ViewData["Title"] = "Ordering";
 }
 
+<style>
+    .ordering-turquoise-text {
+        color: #1f8a93 !important;
+    }
+
+    .ordering-turquoise-button {
+        background-color: #0f5d63;
+        border-color: #0f5d63;
+        color: #f4ffff;
+    }
+
+    .ordering-turquoise-button:hover,
+    .ordering-turquoise-button:focus {
+        background-color: #0a4549;
+        border-color: #0a4549;
+        color: #ffffff;
+        box-shadow: none;
+    }
+
+    .ordering-turquoise-button:disabled {
+        background-color: #0f5d63;
+        border-color: #0f5d63;
+        color: rgba(244, 255, 255, 0.72);
+        opacity: 0.75;
+    }
+</style>
+
 <div class="container py-4">
     <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 mb-4">
         <div>
@@ -33,7 +60,7 @@
                                         <div class="text-muted small text-uppercase">@product.CategoryName</div>
                                         <h2 class="h5 mb-1">@product.Name</h2>
                                     </div>
-                                    <div class="fw-bold text-success">@product.Price.ToString("C")</div>
+                                    <div class="fw-bold ordering-turquoise-text">@product.Price.ToString("C")</div>
                                 </div>
 
                                 <form asp-action="AddToCart" method="post" class="mt-auto d-flex flex-wrap align-items-end gap-2">
@@ -48,7 +75,7 @@
                                                min="1"
                                                value="1" />
                                     </div>
-                                    <button type="submit" class="btn btn-dark">Add to cart</button>
+                                    <button type="submit" class="btn ordering-turquoise-button">Add to cart</button>
                                 </form>
                             </div>
                         </div>
@@ -111,9 +138,9 @@
 
                     <form asp-action="CheckoutOrder" method="post" class="mt-4">
                         @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-success w-100" @(Model.CartItems.Count == 0 ? "disabled" : null)>Checkout Order</button>
+                        <button type="submit" class="btn ordering-turquoise-button w-100" @(Model.CartItems.Count == 0 ? "disabled" : null)>Checkout Order</button>
                     </form>
-                    <a asp-controller="UserNavigation" asp-action="UserOrderList" class="btn btn-outline-dark w-100 mt-2">View order list</a>                
+                    <a asp-controller="UserNavigation" asp-action="UserOrderList" class="btn search-action-button w-100 mt-2">View order list</a>                
                 </div>
             </div>
         </div>

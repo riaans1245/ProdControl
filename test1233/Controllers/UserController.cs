@@ -7,9 +7,10 @@ using test1233.Services;
 namespace test1233.Controllers;
 
 //[Authorize(Roles = "Admin")]
-public class UserController(IUserStore userStore) : AppController(userStore)
+public class UserController(IUserStore userStore, IWebHostEnvironment webHostEnvironment) : AppController(userStore)
 {
     private readonly IUserStore _userStore = userStore;
+    private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
     private const int PageSize = 10;
 
     public IActionResult Index(string searchString, int page = 1)
@@ -99,6 +100,7 @@ public class UserController(IUserStore userStore) : AppController(userStore)
             EmailAddress = model.EmailAddress.Trim(),
             CellNo = model.CellNo.Trim(),
             Password = model.Password,
+            ProfileImagePath = SaveProfileImage(model.ProfileImage),
             RoleId = selectedRole.Id,
             Role = selectedRole.Name
         });
@@ -121,16 +123,17 @@ public class UserController(IUserStore userStore) : AppController(userStore)
     [ValidateAntiForgeryToken]
     public IActionResult Edit(UserEditViewModel model)
     {
-        if (!ModelState.IsValid)
-        {
-            model.AvailableRoles = GetRoleSelectList();
-            return View(model);
-        }
-
         var existingUser = _userStore.GetUserById(model.Id);
         if (existingUser is null)
         {
             return NotFound();
+        }
+
+        if (!ModelState.IsValid)
+        {
+            model.AvailableRoles = GetRoleSelectList();
+            model.CurrentProfileImagePath = existingUser.ProfileImagePath;
+            return View(model);
         }
 
         if (_userStore.UsernameExists(model.Username, model.Id))
@@ -152,7 +155,22 @@ public class UserController(IUserStore userStore) : AppController(userStore)
         if (!ModelState.IsValid)
         {
             model.AvailableRoles = GetRoleSelectList();
+            model.CurrentProfileImagePath = existingUser.ProfileImagePath;
             return View(model);
+        }
+
+        var updatedProfileImagePath = existingUser.ProfileImagePath;
+
+        if (model.RemoveProfileImage)
+        {
+            DeleteProfileImage(updatedProfileImagePath);
+            updatedProfileImagePath = null;
+        }
+
+        if (model.ProfileImage is not null && model.ProfileImage.Length > 0)
+        {
+            DeleteProfileImage(updatedProfileImagePath);
+            updatedProfileImagePath = SaveProfileImage(model.ProfileImage);
         }
 
         _userStore.UpdateUser(new AppUser
@@ -164,6 +182,7 @@ public class UserController(IUserStore userStore) : AppController(userStore)
             EmailAddress = model.EmailAddress.Trim(),
             CellNo = model.CellNo.Trim(),
             Password = string.IsNullOrWhiteSpace(model.Password) ? existingUser.Password : model.Password,
+            ProfileImagePath = updatedProfileImagePath,
             RoleId = selectedRole!.Id,
             Role = selectedRole.Name
         });
@@ -214,6 +233,7 @@ public class UserController(IUserStore userStore) : AppController(userStore)
             EmailAddress = user.EmailAddress,
             CellNo = user.CellNo,
             RoleId = user.RoleId,
+            CurrentProfileImagePath = user.ProfileImagePath,
             AvailableRoles = GetRoleSelectList()
         };
     }
@@ -223,5 +243,42 @@ public class UserController(IUserStore userStore) : AppController(userStore)
         return _userStore.GetAllRoles()
             .Select(role => new SelectListItem(role.Name, role.Id.ToString()))
             .ToList();
+    }
+
+    private string? SaveProfileImage(IFormFile? profileImage)
+    {
+        if (profileImage is null || profileImage.Length == 0)
+        {
+            return null;
+        }
+
+        var uploadsDirectory = Path.Combine(_webHostEnvironment.WebRootPath, "images", "user-profiles");
+        Directory.CreateDirectory(uploadsDirectory);
+
+        var fileExtension = Path.GetExtension(profileImage.FileName);
+        var safeExtension = string.IsNullOrWhiteSpace(fileExtension) ? ".jpg" : fileExtension;
+        var fileName = $"{Guid.NewGuid():N}{safeExtension}";
+        var filePath = Path.Combine(uploadsDirectory, fileName);
+
+        using var stream = new FileStream(filePath, FileMode.Create);
+        profileImage.CopyTo(stream);
+
+        return $"/images/user-profiles/{fileName}";
+    }
+
+    private void DeleteProfileImage(string? profileImagePath)
+    {
+        if (string.IsNullOrWhiteSpace(profileImagePath) || !profileImagePath.StartsWith("/images/user-profiles/", StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        var relativePath = profileImagePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
+        var fullPath = Path.Combine(_webHostEnvironment.WebRootPath, relativePath);
+
+        if (System.IO.File.Exists(fullPath))
+        {
+            System.IO.File.Delete(fullPath);
+        }
     }
 }

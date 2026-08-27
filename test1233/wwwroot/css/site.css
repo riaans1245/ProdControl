@@ -83,7 +83,7 @@ body {
 }
 
 .user-topbar {
-  background: linear-gradient(135deg, #13293d 0%, #1f3c57 52%, #335a7d 100%);
+  background: linear-gradient(135deg, #2d4c66 0%, #4b6f90 52%, #6f93b2 100%);
 }
 
 .user-topbar .navbar-brand {
@@ -226,6 +226,28 @@ body {
   box-shadow: none !important;
 }
 
+.payment-action-button {
+  background-color: #0f5d63 !important;
+  border-color: #0f5d63 !important;
+  color: #f4ffff !important;
+}
+
+.payment-action-button:hover,
+.payment-action-button:focus {
+  background-color: #0a4549 !important;
+  border-color: #0a4549 !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.payment-action-button:disabled,
+.payment-action-button.disabled {
+  background-color: #0f5d63 !important;
+  border-color: #0f5d63 !important;
+  color: rgba(244, 255, 255, 0.72) !important;
+  opacity: 0.75;
+}
+
 .user-shell .app-shell {
   gap: 1.25rem;
   padding: 1.25rem;
@@ -252,6 +274,29 @@ body {
 
 .user-sidebar-title {
   color: #1f3247;
+}
+
+.user-profile-spot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 0.9rem;
+  text-align: center;
+}
+
+.user-profile-photo {
+  width: 72px;
+  height: 72px;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, 0.72);
+  box-shadow: 0 10px 22px rgba(32, 52, 76, 0.14);
+}
+
+.user-profile-name {
+  margin-top: 0.55rem;
+  color: #284058;
+  font-size: 0.88rem;
 }
 
 .user-sidebar-copy {
@@ -357,7 +402,7 @@ body {
 }
 
 .user-footer {
-  background: #162c42 !important;
+  background: #3b5f7f !important;
 }
 
 .user-content-hero::after {

@@ -116,7 +116,7 @@
                 </div>
             </div>
             <a asp-action="UserOrderPlace"
-               class="btn btn-success @(Model.HasOrders ? null : "disabled")"
+               class="btn payment-action-button @(Model.HasOrders ? null : "disabled")"
                aria-disabled="@(Model.HasOrders ? "false" : "true")">Place Order</a>
         </div>
     </div>

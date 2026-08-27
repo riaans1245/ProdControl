@@ -16,6 +16,8 @@ public class AppUser
 
     public required string Password { get; set; }
 
+    public string? ProfileImagePath { get; set; }
+
     public int RoleId { get; set; }
 
     public required string Role { get; set; }

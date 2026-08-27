@@ -10,7 +10,7 @@
             <h1 class="h3 mb-3">Edit User</h1>
             <p class="text-muted">Admins can change profile details and assign roles here.</p>
 
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
                 <input asp-for="Id" type="hidden" />
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
@@ -52,6 +52,10 @@
                         <span asp-validation-for="RoleId" class="text-danger"></span>
                     </div>
                 }
+                else
+                {
+                    <input asp-for="RoleId" type="hidden" />
+                }
                 <div class="mb-3">
                     <label asp-for="Password" class="form-label"></label>
                     <input asp-for="Password" class="form-control" />
@@ -63,6 +67,28 @@
                     <input asp-for="ConfirmPassword" class="form-control" />
                     <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                 </div>
+
+                <div class="mb-3">
+                    <label asp-for="ProfileImage" class="form-label"></label>
+                    <input asp-for="ProfileImage" class="form-control" type="file" accept="image/*" />
+                    <span asp-validation-for="ProfileImage" class="text-danger"></span>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(Model.CurrentProfileImagePath))
+                {
+                    <div class="mb-3">
+                        <label class="form-label d-block">Current picture</label>
+                        <img src="@Model.CurrentProfileImagePath"
+                             alt="Current profile picture for @Model.Username"
+                             class="rounded-circle border"
+                             style="width: 72px; height: 72px; object-fit: cover;" />
+                    </div>
+
+                    <div class="form-check mb-4">
+                        <input asp-for="RemoveProfileImage" class="form-check-input" />
+                        <label asp-for="RemoveProfileImage" class="form-check-label"></label>
+                    </div>
+                }
 
                 <div class="d-flex gap-2">
                     <button asp-action="Edit" type="submit" class="btn search-action-button">Save changes</button>

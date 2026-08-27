@@ -108,6 +108,7 @@ public class InMemoryUserStore : IUserStore
             EmailAddress = "riaan.strydom@gmail.com",
             CellNo = "0000000000",
             Password = "a",
+            ProfileImagePath = null,
             RoleId = 1,
             Role = "Admin"
         }
@@ -318,6 +319,7 @@ public class InMemoryUserStore : IUserStore
             existingUser.EmailAddress = user.EmailAddress;
             existingUser.CellNo = user.CellNo;
             existingUser.Password = user.Password;
+            existingUser.ProfileImagePath = user.ProfileImagePath;
             existingUser.RoleId = user.RoleId;
             existingUser.Role = user.Role;
 
@@ -426,6 +428,7 @@ public class InMemoryUserStore : IUserStore
                     EmailAddress = users.EmailAddress,
                     CellNo = users.CellNo,
                     Password = users.Password,
+                    ProfileImagePath = users.ProfileImagePath,
                     RoleId = users.RoleId,
                     Role = users.Role
                 })

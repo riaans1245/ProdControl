@@ -75,6 +75,10 @@
             .GetAllUsers()
             .FirstOrDefault(user => string.Equals(user.Username, currentUsername, StringComparison.OrdinalIgnoreCase))
             ?.Id;
+        var currentUserProfileImagePath = UserStore
+            .GetAllUsers()
+            .FirstOrDefault(user => string.Equals(user.Username, currentUsername, StringComparison.OrdinalIgnoreCase))
+            ?.ProfileImagePath ?? "/images/4305293.jpg";
         var currentUserToken = currentUserId.HasValue
             ? UserStore.GetAllTokens().FirstOrDefault(tokens => tokens.UserId == currentUserId.Value)?.Token
             : null;
@@ -178,6 +182,12 @@
                 <nav class="p-4 shadow-sm h-100 user-sidebar-nav"> 
                     <div class="border rounded-4 p-3 mb-4 sidebar-heading-card user-sidebar-card">
                         <p class="mb-2 user-sidebar-kicker">My Space</p>
+                        <div class="user-profile-spot">
+                            <img src="@currentUserProfileImagePath"
+                                 alt="Profile photo for @displayUsername"
+                                 class="user-profile-photo" />
+                            <div class="user-profile-name">@displayUsername</div>
+                        </div>
                         <p class="mb-1 fw-semibold user-sidebar-title">
                             <label name=lblUserInfo class="fw-semibold me-2">Welcome, @displayUsername</label> 
                         </p>

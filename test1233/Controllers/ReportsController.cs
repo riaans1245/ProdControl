@@ -63,6 +63,11 @@ public class ReportsController(IUserStore userStore) : AppController(userStore)
         return View(_userStore.GetAllUserOrders());
     }
 
+     public IActionResult Tables()
+    {
+        return View(_userStore.GetAllTables());
+    }
+
     public IActionResult ExportRoles()
     {
         using var workbook = new XLWorkbook();

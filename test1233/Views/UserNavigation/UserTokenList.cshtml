@@ -27,10 +27,10 @@
             <input id="searchString" name="searchString" value="@currentSearch" class="form-control" placeholder="Search by Token" />   
         </div>
         <div class="col-auto">
-            <button asp-action="UserTokenList" type="submit" class="btn btn-dark">Search</button>
+            <button asp-action="UserTokenList" type="submit" class="btn search-action-button">Search</button>
         </div>
         <div class="col-auto">
-            <a asp-action="UserTokenList" class="btn btn-outline-secondary">Clear</a>
+            <a asp-action="UserTokenList" class="btn btn-outline-secondary clear-action-button">Clear</a>
         </div>
     </form>
 
@@ -62,7 +62,7 @@
                                 <td>@tokens.Username</td>
                                 <td>@tokens.ProductName</td>
                                 <td class="text-end">
-                                <a asp-action="Use" asp-route-id="@tokens.TokenId" class="btn btn-dark">Use Token</a>
+                                <a asp-action="Use" asp-route-id="@tokens.TokenId" class="btn search-action-button grid-action-button">Use Token</a>
                             </td>
                             </tr>
                         }

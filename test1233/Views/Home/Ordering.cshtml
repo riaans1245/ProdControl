@@ -64,7 +64,7 @@
                         <h2 class="h5 mb-0">Cart</h2>
                         <form asp-action="ClearCart" method="post" class="m-0">
                             @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-sm btn-outline-secondary" @(Model.CartItems.Count == 0 ? "disabled" : null)>Clear</button>
+                            <button type="submit" class="btn btn-sm btn-outline-secondary clear-action-button" @(Model.CartItems.Count == 0 ? "disabled" : null)>Clear</button>
                         </form>
                     </div>
 

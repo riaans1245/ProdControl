@@ -16,7 +16,7 @@
         </div>
     @if (isUser)
         {
-            <a asp-action="Create" class="btn text-white" style="background-color: #080808; color: #123246;">Add Suggestion</a>
+            <a asp-action="Create" class="btn search-action-button">Add Suggestion</a>
         }
     </div>
 
@@ -26,10 +26,10 @@
             <input id="searchString" name="searchString" value="@currentSearch" class="form-control" placeholder="Search by Name, Suggestion." />    
         </div>
         <div class="col-auto">
-            <button asp-action="Index" type="submit" class="btn btn-dark">Search</button>
+            <button asp-action="Index" type="submit" class="btn search-action-button">Search</button>
         </div>
         <div class="col-auto">
-            <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
+            <a asp-action="Index" class="btn btn-outline-secondary clear-action-button">Clear</a>
         </div>
     </form>
 
@@ -85,7 +85,7 @@
                                             : suggestion.Suggestion)
                                     </td>
                                     <td class="text-end">
-                                        <a asp-action="Select" asp-route-id="@suggestion.SuggestId" class="btn btn-sm btn-outline-secondary">Select</a>
+                                        <a asp-action="Select" asp-route-id="@suggestion.SuggestId" class="btn btn-sm btn-outline-secondary grid-action-button">Select</a>
                                     </td>
                                 </tr>
                             }

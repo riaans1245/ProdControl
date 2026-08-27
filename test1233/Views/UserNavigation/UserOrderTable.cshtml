@@ -42,13 +42,13 @@
                                     <td>@table.Username</td>
                                     <td>@FormatBookingDate(table.BookedForUtc)</td>
                                     <td class="text-end">
-                                        <a asp-controller="UserNavigation" asp-action="UserBookMe" asp-route-TableId="@table.TableId" class="btn btn-sm btn-dark">Book</a>
+                                        <a asp-controller="UserNavigation" asp-action="UserBookMe" asp-route-TableId="@table.TableId" class="btn btn-sm search-action-button-compact grid-action-button">Book</a>
                                         @if (!string.Equals(table.Username, "Not Booked", StringComparison.OrdinalIgnoreCase))
                                         {
                                             <form asp-controller="UserNavigation" asp-action="DeleteBooking" method="post" class="d-inline">
                                                 @Html.AntiForgeryToken()
                                                 <input type="hidden" name="tableId" value="@table.TableId" />
-                                                 <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to cancel the table booking?');">Cancel</button> 
+                                                 <button type="submit" class="btn btn-sm btn-outline-danger grid-action-button" onclick="return confirm('Are you sure you want to cancel the table booking?');">Cancel</button> 
                                             </form>
                                         }
                                     </td>

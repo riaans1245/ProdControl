@@ -120,69 +120,6 @@ public class TableController(IUserStore userStore) : AppController(userStore)
          return RedirectToAction(nameof(Index));
     }
 
-    // public IActionResult BookMe(int TableId)
-    // {
-    //     var tables = _userStore.GetTablesById(TableId);
-    //     if (tables is null)
-    //     {
-    //         return NotFound();
-    //     }
-
-    //     return View(new TableFormViewModel
-    //     {
-    //         TableId = tables.TableId,
-    //         TableName = tables.TableName,
-    //         TableNumber = tables.TableNumber,
-    //         UserId = tables.UserId,
-    //         BookedForUtc = tables.BookedForUtc,
-    //         AvailableUsers = GetUserSelectList()
-    //     });
-    // }
-
-
-    // [HttpPost]
-    // [ValidateAntiForgeryToken]
-    //  public IActionResult BookMe(TableFormViewModel model)
-    // {
-    //      if (!ModelState.IsValid)
-    //     {
-    //         model.AvailableUsers = GetUserSelectList();
-    //         return View(model);
-    //     }
-
-    //       var tables = _userStore.GetTablesById(model.TableId);
-    //      if (tables is null)
-    //      {
-    //          return NotFound();
-    //      }
-
-    //      if (_userStore.TableNameExists(model.TableName, model.TableId))
-    //      {
-    //          ModelState.AddModelError(nameof(model.TableName), "That table already exists.");
-    //          model.AvailableUsers = GetUserSelectList();
-    //          return View(model);
-    //      }
-
-    //      var user = model.UserId.HasValue ? _userStore.GetUserById(model.UserId.Value) : null;
-    //      if (user is null)
-    //      {
-    //          ModelState.AddModelError(nameof(model.UserId), "Please select a valid user.");
-    //          model.AvailableUsers = GetUserSelectList();
-    //          return View(model);
-    //      }
-
-    //       _userStore.UpdateTable(new AppTables
-    //       {
-    //           TableId = model.TableId,
-    //           TableName = model.TableName.Trim(),
-    //           TableNumber = model.TableNumber,
-    //           UserId = user.Id,
-    //           Username = user.Username,
-    //           BookedForUtc = model.BookedForUtc
-    //       });
-
-    //      return RedirectToAction(nameof(Index));
-    //  }
 
     public IActionResult Delete(int id)
      {
@@ -207,35 +144,6 @@ public class TableController(IUserStore userStore) : AppController(userStore)
          return RedirectToAction(nameof(Index));
      }
 
-    // [HttpPost]
-    // [ValidateAntiForgeryToken]
-    // public IActionResult DeleteBooking(int tableId)
-    // {
-    //     var currentUser = GetCurrentUser();
-    //     if (currentUser is null)
-    //     {
-    //         return RedirectToAction("Login", "Account");
-    //     }
-
-    //     var table = _userStore.GetTablesById(tableId);
-    //     if (table is null)
-    //     {
-    //         return NotFound();
-    //     }
-
-    //     _userStore.UpdateTable(new AppTables
-    //     {
-    //         TableId = table.TableId,
-    //         TableName = table.TableName,
-    //         TableNumber = table.TableNumber,
-    //         UserId = 0,
-    //         Username = string.Empty,
-    //         BookedForUtc = null
-    //     });
-
-    //     return RedirectToAction(nameof(Index));
-    // }
-
     private AppUser? GetCurrentUser()
     {
         var username = User.Identity?.Name;
@@ -247,45 +155,4 @@ public class TableController(IUserStore userStore) : AppController(userStore)
         return _userStore.GetAllUsers()
             .FirstOrDefault(user => string.Equals(user.Username, username, StringComparison.OrdinalIgnoreCase));
     }
-
-        private IReadOnlyCollection<SelectListItem> GetUserSelectList()
-    {
-        return _userStore.GetAllUsers()
-            .Select(user => new SelectListItem(user.Username, user.Id.ToString()))
-            .ToList();
-    }
-
-    // [HttpPost]
-    // [ValidateAntiForgeryToken]
-    // public IActionResult DeleteUserBooking(int tableId)
-    // {
-    //     var currentUser = GetCurrentUser();
-    //     if (currentUser is null)
-    //     {
-    //         return RedirectToAction("Login", "Account");
-    //     }
-
-    //     var table = _userStore.GetTablesById(tableId);
-    //     if (table is null)
-    //     {
-    //         return NotFound();
-    //     }
-
-    //     if (table.UserId != currentUser.Id)
-    //     {
-    //         return NotFound();
-    //     }
-
-    //     _userStore.UpdateTable(new AppTables
-    //     {
-    //         TableId = table.TableId,
-    //         TableName = table.TableName,
-    //         TableNumber = table.TableNumber,
-    //         UserId = 0,
-    //         Username = string.Empty,
-    //         BookedForUtc = null
-    //     });
-
-        //return RedirectToAction(nameof(Index));
-    //}
 }

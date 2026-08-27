@@ -126,6 +126,106 @@ body {
   background: rgba(255, 255, 255, 0.14);
 }
 
+.btn-dark,
+.btn-soft-action {
+  background-color: #d0eef7 !important;
+  border-color: #d0eef7 !important;
+  color: #123246 !important;
+  text-decoration: none;
+}
+
+.btn-dark:hover,
+.btn-dark:focus,
+.btn-soft-action:hover,
+.btn-soft-action:focus {
+  background-color: #b8e5f2 !important;
+  border-color: #b8e5f2 !important;
+  color: #0f2a3b !important;
+  text-decoration: none;
+  box-shadow: none;
+}
+
+.btn-dark:active,
+.btn-dark.active,
+.btn-soft-action:active,
+.btn-soft-action.active {
+  background-color: #a7dce9 !important;
+  border-color: #a7dce9 !important;
+  color: #0f2a3b !important;
+}
+
+.btn-dark:disabled,
+.btn-dark.disabled,
+.btn-soft-action:disabled,
+.btn-soft-action.disabled {
+  background-color: #d0eef7 !important;
+  border-color: #d0eef7 !important;
+  color: #4d6473 !important;
+  opacity: 0.75;
+}
+
+.search-action-button {
+  border: 1px solid #1f3c57 !important;
+  border-radius: 0.375rem;
+  background: #1f3c57 !important;
+  color: #edf4fb !important;
+  min-height: 38px;
+  padding: 0.45rem 0.85rem;
+}
+
+.search-action-button:hover,
+.search-action-button:focus {
+  background: #335a7d !important;
+  border-color: #335a7d !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.search-action-button-compact {
+  border: 1px solid #1f3c57 !important;
+  background: #1f3c57 !important;
+  color: #edf4fb !important;
+}
+
+.search-action-button-compact:hover,
+.search-action-button-compact:focus {
+  background: #335a7d !important;
+  border-color: #335a7d !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.clear-action-button {
+  border-radius: 0.375rem;
+  min-height: 38px;
+  padding: 0.45rem 0.85rem;
+}
+
+.grid-action-button {
+  border-radius: 0.375rem;
+  font-size: 0.8rem;
+  min-height: 30px;
+  padding: 0.25rem 0.55rem;
+}
+
+.logout-match-button {
+  border: 1px solid rgba(214, 226, 239, 0.34) !important;
+  border-radius: 0.375rem;
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: #edf4fb !important;
+  min-height: 38px;
+  padding: 0.45rem 0.85rem;
+  text-decoration: none;
+}
+
+.logout-match-button:hover,
+.logout-match-button:focus {
+  background: rgba(255, 255, 255, 0.14) !important;
+  color: #ffffff !important;
+  text-decoration: none;
+  box-shadow: none !important;
+}
+
 .user-shell .app-shell {
   gap: 1.25rem;
   padding: 1.25rem;

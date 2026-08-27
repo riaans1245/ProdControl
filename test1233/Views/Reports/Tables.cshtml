@@ -1,0 +1,48 @@
+@model IReadOnlyCollection<test1233.Models.AppTables>
+
+@{
+    ViewData["Title"] = "Table Booking";
+    Layout = "~/Views/Shared/_ReportLayout.cshtml";
+    string FormatBookingDate(DateTime? value) =>
+        value.HasValue ? value.Value.ToString("dd MMM yyyy HH:mm") : "Not booked";
+}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">Table Report</h1>
+            <p class="text-muted mb-0">Current tables in the system.</p>
+        </div>
+     <a asp-action="ExportRoles" class="btn btn-success">Export to Excel</a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped align-middle mb-0">
+                    <thead>
+                        <tr>
+                           <th>Table Name</th>
+                                <th>Table Number</th>
+                                <th>User</th>
+                                <th>Booked For</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                     @foreach (var table in Model)
+                            {
+                            <tr>
+                                <td>@table.TableName</td>
+                                <td>@table.TableNumber</td>
+                                <td>@table.Username</td>
+                                <td>@FormatBookingDate(table.BookedForUtc)</td>
+                            </tr>
+                            }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

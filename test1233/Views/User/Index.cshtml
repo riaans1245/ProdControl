@@ -11,7 +11,7 @@
             <h1 class="h3 mb-1">User Management</h1>
             <p class="text-muted mb-0">Admins can maintain users and assign roles after registration.</p>
         </div>
-        <a asp-action="Create" class="btn text-white" style="background-color: #080808; color: #123246;">Add User</a>
+        <a asp-action="Create" class="btn search-action-button">Add User</a>
     </div>
 
     <form method="get" class="row g-2 align-items-end mb-4">
@@ -20,10 +20,10 @@
             <input id="searchString" name="searchString" value="@currentSearch" class="form-control" placeholder="Search by name, surname, username, or email" />     
         </div>
         <div class="col-auto">
-            <button asp-action="Index" type="submit" class="btn btn-dark">Search</button>
+            <button asp-action="Index" type="submit" class="btn search-action-button">Search</button>
         </div>
         <div class="col-auto">
-            <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
+            <a asp-action="Index" class="btn btn-outline-secondary clear-action-button">Clear</a>
         </div>
     </form>
 
@@ -63,8 +63,8 @@
                                 <td>@user.Password</td>
                                 <td>@($"{user.RoleId} - {user.Role}")</td>
                                 <td class="text-end">
-                                    <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                    <a asp-action="Delete" asp-route-id="@user.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                                    <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-outline-secondary grid-action-button">Edit</a>
+                                    <a asp-action="Delete" asp-route-id="@user.Id" class="btn btn-sm btn-outline-danger grid-action-button">Delete</a>
                                 </td>
                             </tr>
                         }

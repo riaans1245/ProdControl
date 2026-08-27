@@ -19,10 +19,10 @@
             <input id="searchString" name="searchString" value="@currentSearch" class="form-control" placeholder="Search by Notification" />  
         </div>
         <div class="col-auto">
-            <button method="get" asp-action="UserNotificationsList" type="submit" class="btn btn-dark">Search</button>
+            <button method="get" asp-action="UserNotificationsList" type="submit" class="btn search-action-button">Search</button>
         </div>
         <div class="col-auto">
-            <a asp-action="UserNotificationsList" class="btn btn-outline-secondary">Clear</a>
+            <a asp-action="UserNotificationsList" class="btn btn-outline-secondary clear-action-button">Clear</a>
         </div>
     </form>
 
@@ -52,7 +52,7 @@
                                 <td>@notifications.Notification</td>
                                 @* <td>@notifications.UserName</td> *@
                                 <td class="text-end">
-                                <a asp-action="UserNotificationDelete" asp-route-id="@notifications.NotificationId" class="btn btn-sm btn-outline-danger">Delete</a>
+                                <a asp-action="UserNotificationDelete" asp-route-id="@notifications.NotificationId" class="btn btn-sm btn-outline-danger grid-action-button">Delete</a>
                             </td>
                             </tr>
                         }

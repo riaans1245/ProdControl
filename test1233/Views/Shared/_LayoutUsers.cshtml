@@ -78,7 +78,7 @@
         var currentUserProfileImagePath = UserStore
             .GetAllUsers()
             .FirstOrDefault(user => string.Equals(user.Username, currentUsername, StringComparison.OrdinalIgnoreCase))
-            ?.ProfileImagePath ?? "/images/4305293.jpg";
+            ?.ProfileImagePath;
         var currentUserToken = currentUserId.HasValue
             ? UserStore.GetAllTokens().FirstOrDefault(tokens => tokens.UserId == currentUserId.Value)?.Token
             : null;
@@ -114,12 +114,12 @@
                 <li class="nav-item"> 
                         <a class="nav-link text-white px-3" asp-controller="Suggestion" asp-action="Index">Suggestions</a> 
                     </li>
-                    @if (User.Identity?.IsAuthenticated == true)
-                    {
+                    @* @if (User.Identity?.IsAuthenticated == true)
+                    {*@
                         <li class="nav-item">
-                            <a asp-controller="Home" asp-action="Ordering" class="nav-link text-white px-3">Start Ordering</a>
+                             <a class="nav-link text-white px-3" asp-controller="Home" asp-action="ContactUs">Contact Us</a> 
                         </li>
-                    }
+                    @*} *@
                 </ul> 
                 <!-- Topbar Right Authentication Controls --> 
                 <ul class="navbar-nav align-items-center gap-2"> 
@@ -183,9 +183,17 @@
                     <div class="border rounded-4 p-3 mb-4 sidebar-heading-card user-sidebar-card">
                         <p class="mb-2 user-sidebar-kicker">My Space</p>
                         <div class="user-profile-spot">
-                            <img src="@currentUserProfileImagePath"
-                                 alt="Profile photo for @displayUsername"
-                                 class="user-profile-photo" />
+                            @if (!string.IsNullOrWhiteSpace(currentUserProfileImagePath))
+                            {
+                                <img src="@currentUserProfileImagePath"
+                                     alt="Profile photo for @displayUsername"
+                                     class="user-profile-photo" />
+                            }
+                            else
+                            {
+                                <span class="user-profile-photo user-profile-photo-placeholder"
+                                      aria-hidden="true"></span>
+                            }
                         </div>
                         <p class="mb-1 fw-semibold user-sidebar-title">
                             <label name=lblUserInfo class="fw-semibold me-2">Welcome, @displayUsername</label> 
@@ -209,6 +217,24 @@
                             <span class="left-nav-gallery-label">Menu</span>
                         </a>
                         <hr />
+                        <a class="left-nav-gallery-card left-nav-gallery-card-notifications"
+                            asp-controller="UserNavigation"
+                            asp-route-id="@currentUserId"
+                            asp-action="UserNotificationsList"                            
+                            title="My Notifications"
+                            aria-label="My Notifications">
+                            <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                            <span class="left-nav-gallery-label">Notifications</span>
+                        </a>
+                        <a class="left-nav-gallery-card left-nav-gallery-card-table"
+                            asp-controller="UserNavigation"
+                            asp-route-id="@currentUserId"
+                            asp-action="UserOrderTable"                            
+                            title="My Table"
+                            aria-label="My Table">
+                            <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                            <span class="left-nav-gallery-label">Book a table</span>
+                        </a>
                         <a class="left-nav-gallery-card left-nav-gallery-card-tokens"
                             asp-controller="UserNavigation"
                             asp-route-id="@currentUserId"
@@ -218,14 +244,14 @@
                             <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                             <span class="left-nav-gallery-label">Tokens</span>
                         </a>
-                        <a class="left-nav-gallery-card left-nav-gallery-card-notifications"
-                            asp-controller="UserNavigation"
+                        <a class="left-nav-gallery-card left-nav-gallery-card-start-ordering"
+                            asp-controller="Home" 
                             asp-route-id="@currentUserId"
-                            asp-action="UserNotificationsList"                            
-                            title="My Notifications"
-                            aria-label="My Notifications">
+                            asp-action="Ordering"
+                            title="Start Orderings"
+                            aria-label="My Orders">
                             <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                            <span class="left-nav-gallery-label">Notifications</span>
+                            <span class="left-nav-gallery-label">Start Ordering</span>
                         </a>
                         <a class="left-nav-gallery-card left-nav-gallery-card-purchases"
                             asp-controller="UserNavigation"
@@ -236,16 +262,6 @@
                             <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                             <span class="left-nav-gallery-label">Orders</span>
                         </a>
-                    <a class="left-nav-gallery-card left-nav-gallery-card-table"
-                            asp-controller="UserNavigation"
-                            asp-route-id="@currentUserId"
-                            asp-action="UserOrderTable"                            
-                            title="My Table"
-                            aria-label="My Table">
-                            <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                            <span class="left-nav-gallery-label">Book a table</span>
-                        </a>
-                    
                     </div> 
                 </nav>
             </aside> 
@@ -269,12 +285,19 @@
     <!-- Footer Area --> 
     <footer class="footer border-top mt-auto shadow-sm user-footer" style="height: 55px;"> 
         <div class="container-fluid d-flex justify-content-between align-items-center h-100 px-4"> 
-            <a class="nav-link text-white px-3" asp-controller="Home" asp-action="ContactUs">Contact Us</a> 
             <ul class="nav"> 
                 <li class="nav-item"> 
                     <span class="nav-link text-white px-3">Created by Riaan</span> 
                 </li> 
             </ul> 
+            <div class="footer-social-links" aria-label="Social media links">
+                <a class="footer-social-link" href="#" aria-label="Facebook">
+                    <span class="footer-social-icon footer-social-icon-facebook" aria-hidden="true"></span>
+                </a>
+                <a class="footer-social-link" href="#" aria-label="Twitter">
+                    <span class="footer-social-icon footer-social-icon-twitter" aria-hidden="true"></span>
+                </a>
+            </div>
         </div> 
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

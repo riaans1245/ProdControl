@@ -44,7 +44,7 @@
                             <span asp-validation-for="MenuFile" class="text-danger"></span>
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Upload Menu</button>
+                        <button type="submit" class="btn search-action-button">Upload Menu</button>
                     </form>
                 </div>
             </div>
@@ -97,7 +97,7 @@
                                     <span>Uploaded: @FormatUploadDate(menu.UploadedAtUtc)</span>
                                     @if (menu.IsSelected)
                                     {
-                                        <span class="badge bg-success">Active</span>
+                                        <span class="badge bg-success fs-6 px-3 py-2">Active</span>
                                     }
                                 </div>
                                 <img src="@menu.Path"
@@ -105,20 +105,16 @@
                                      alt="Easy Eats menu"
                                      class="img-fluid w-100"
                                      style="max-height: 180px; object-fit: cover;" />
-                                <div class="p-3 bg-white border-top">
-                                    @if (menu.IsSelected)
-                                    {
-                                        <button type="button" class="btn btn-sm btn-outline-success w-100" disabled>Currently Showing</button>
-                                    }
-                                    else
-                                    {
+                                @if (!menu.IsSelected)
+                                {
+                                    <div class="p-3 bg-white border-top">
                                         <form asp-controller="Home" method="post">
                                             @Html.AntiForgeryToken()
                                             <input type="hidden" name="menuPath" value="@menu.Path" />
-                                            <button asp-action="SelectMenu" type="submit" class="btn btn-sm btn-dark w-100">Show This Menu</button>
+                                            <button asp-action="SelectMenu" type="submit" class="btn search-action-button w-100">Show This Menu</button>
                                         </form>
-                                    }
-                                </div>
+                                    </div>
+                                }
                             </div>
                         </div>
                     }

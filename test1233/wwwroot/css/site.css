@@ -181,6 +181,15 @@ body {
   box-shadow: none !important;
 }
 
+.search-action-button:disabled,
+.search-action-button.disabled {
+  background: #1f3c57 !important;
+  border-color: #1f3c57 !important;
+  color: rgba(237, 244, 251, 0.82) !important;
+  opacity: 1 !important;
+  cursor: default;
+}
+
 .search-action-button-compact {
   border: 1px solid #1f3c57 !important;
   background: #1f3c57 !important;

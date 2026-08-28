@@ -10,6 +10,13 @@
             <h1 class="h3 mb-3">Edit User</h1>
             <p class="text-muted">Admins can change profile details and assign roles here.</p>
 
+            @if (TempData["UserEditMessage"] is string userEditMessage && !string.IsNullOrWhiteSpace(userEditMessage))
+            {
+                <div class="alert alert-info shadow-sm" role="alert">
+                    @userEditMessage
+                </div>
+            }
+
             <form method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
                 <input asp-for="Id" type="hidden" />
@@ -108,4 +115,10 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    @if (TempData["UserEditMessage"] is string userEditMessage && !string.IsNullOrWhiteSpace(userEditMessage))
+    {
+        <script>
+            alert("@userEditMessage");
+        </script>
+    }
 }

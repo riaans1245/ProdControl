@@ -187,7 +187,8 @@ public class UserController(IUserStore userStore, IWebHostEnvironment webHostEnv
             Role = selectedRole.Name
         });
 
-        return RedirectToAction(nameof(Index));
+        //TempData["UserEditMessage"] = "Profile updated successfully.";
+        return RedirectToAction(nameof(Edit), new { id = existingUser.Id });
     }
     // bool ContactUs(ContactUs user);
 

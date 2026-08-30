@@ -2,7 +2,129 @@
 
 @{
     ViewData["Title"] = "Place Order";
+    var hasPendingOrders = Model.PendingOrders.Count > 0;
+    var latestReceipt = Model.LatestReceipt;
 }
+
+<style>
+    .token-selection-panel {
+        background:
+            radial-gradient(circle at top right, rgba(255, 214, 102, 0.32), transparent 34%),
+            linear-gradient(160deg, #fff4cf 0%, #fffaf0 46%, #eef7f4 100%);
+        border: 1px solid rgba(160, 118, 24, 0.2);
+        box-shadow: 0 18px 34px rgba(125, 94, 18, 0.12);
+    }
+
+    .token-selection-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .token-selection-kicker {
+        display: inline-block;
+        margin-bottom: 0.4rem;
+        padding: 0.25rem 0.65rem;
+        border-radius: 999px;
+        background: rgba(148, 111, 20, 0.12);
+        color: #8a6514;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+
+    .token-selection-title {
+        margin: 0;
+        color: #17324d;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.2rem;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+    }
+
+    .token-selection-copy {
+        margin: 0.45rem 0 0;
+        max-width: 36rem;
+        color: #5f6977;
+    }
+
+    .token-selection-badge {
+        flex: 0 0 auto;
+        padding: 0.45rem 0.75rem;
+        border-radius: 1rem;
+        background: rgba(20, 108, 67, 0.12);
+        color: #146c43;
+        font-size: 0.82rem;
+        font-weight: 700;
+    }
+
+    .token-option-label {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem 0;
+        margin: 0;
+        cursor: pointer;
+    }
+
+    .token-option-label:first-of-type {
+        padding-top: 0;
+        border-top: 0 !important;
+    }
+
+    .token-option-label + .token-option-label {
+        border-top: 1px solid rgba(28, 45, 72, 0.08);
+    }
+
+    .token-option-body {
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-start;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .token-option-checkbox {
+        width: 1.15rem;
+        height: 1.15rem;
+        margin-top: 0.2rem;
+        flex: 0 0 auto;
+    }
+
+    .token-option-copy {
+        min-width: 0;
+    }
+
+    .token-option-copy .fw-semibold {
+        color: #17324d;
+    }
+
+    .token-status-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.2rem 0.55rem;
+        margin-top: 0.45rem;
+        border-radius: 999px;
+        background-color: #eef2f7;
+        color: #5b6776;
+        font-size: 0.78rem;
+        font-weight: 600;
+    }
+
+    .token-status-pill.is-selected {
+        background-color: #e5f6ed;
+        color: #146c43;
+    }
+
+    .token-discount-value {
+        color: #146c43;
+        white-space: nowrap;
+    }
+</style>
 
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -26,7 +148,7 @@
                     <p class="text-uppercase small fw-semibold mb-2 public-section-kicker">Payment Summary</p>
                     <h2 class="h4 mb-3">Ready to pay</h2>
 
-                    @if (Model.PendingOrders.Count == 0)
+                    @if (!hasPendingOrders)
                     {
                         <div class="text-muted">There are no order items ready for payment.</div>
                     }
@@ -37,14 +159,59 @@
                                 <span>Total items</span>
                                 <strong>@Model.TotalItems</strong>
                             </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal</span>
+                                <strong>@Model.TotalValue.ToString("C")</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2 text-success @(Model.SelectedTokenDiscount > 0 ? string.Empty : "d-none")"
+                                 data-payment-token-discount-row>
+                                <span>Token discount</span>
+                                <strong data-payment-token-discount-value>-@Model.SelectedTokenDiscount.ToString("C")</strong>
+                            </div>
                             <div class="d-flex justify-content-between">
                                 <span>Total due</span>
-                                <strong>@Model.TotalValue.ToString("C")</strong>
+                                <strong data-payment-total-due>@Model.TotalDue.ToString("C")</strong>
                             </div>
                         </div>
 
-                        <form method="post" class="d-grid gap-2">
+                        <form method="post" class="d-grid gap-2" id="confirm-payment-form">
                             @Html.AntiForgeryToken()
+                            @if (Model.EligibleTokens.Count > 0)
+                            {
+                                <div class="border rounded-4 p-3 text-start token-selection-panel">
+                                    <div class="token-selection-header">
+                                        <div>
+                                            <span class="token-selection-kicker">Savings</span>
+                                            <h3 class="token-selection-title">Available token discounts</h3>
+                                            <p class="small token-selection-copy">Select the tokens you want to apply to this payment. Each matching token reduces the total for its linked order item.</p>
+                                        </div>
+                                        <div class="token-selection-badge">Optional</div>
+                                    </div>
+                                    @foreach (var token in Model.EligibleTokens)
+                                    {
+                                        <label class="token-option-label"
+                                               data-token-option
+                                               data-token-id="@token.TokenId"
+                                               data-discount-amount="@token.DiscountAmount">
+                                            <span class="token-option-body">
+                                                <input class="form-check-input token-option-checkbox"
+                                                       type="checkbox"
+                                                       name="selectedTokenIds"
+                                                       value="@token.TokenId"
+                                                       data-token-checkbox
+                                                       @(Model.SelectedTokenIds.Contains(token.TokenId) ? "checked" : null) />
+                                                <span class="token-option-copy">
+                                                    <span class="fw-semibold d-block">@token.Token</span>
+                                                    <span class="small text-muted d-block">Applies to @token.ProductName on order #@token.OrderId</span>
+                                                    <span class="token-status-pill @(Model.SelectedTokenIds.Contains(token.TokenId) ? "is-selected" : string.Empty)"
+                                                          data-token-status>@(Model.SelectedTokenIds.Contains(token.TokenId) ? "Selected for payment" : "Not selected")</span>
+                                                </span>
+                                            </span>
+                                            <strong class="token-discount-value">-@token.DiscountAmount.ToString("C")</strong>
+                                        </label>
+                                    }
+                                </div>
+                            }
                             <button asp-action="ConfirmPayment" type="submit" class="btn payment-action-button">Confirm Payment</button>
                             <a asp-action="UserOrderList" class="btn btn-outline-secondary">Back to Orders</a>
                         </form>
@@ -64,24 +231,16 @@
                         </div>
                     </div>
 
-                    @if (Model.LatestReceipt is null || Model.LatestReceipt.Items.Count == 0)
-                    {
-                        <div class="text-muted">No receipt has been generated yet.</div>
-                    }
-                    else
+                    @if (hasPendingOrders)
                     {
                         <div class="border rounded-4 p-3 mb-3 bg-light">
                             <div class="d-flex justify-content-between small mb-2">
-                                <span class="text-muted">Receipt #</span>
-                                <strong>@Model.LatestReceipt.ReceiptNumber</strong>
-                            </div>
-                            <div class="d-flex justify-content-between small mb-2">
-                                <span class="text-muted">Paid</span>
-                                <strong>@Model.LatestReceipt.PaidAtUtc.ToLocalTime().ToString("dd MMM yyyy h:mm tt")</strong>
+                                <span class="text-muted">Status</span>
+                                <strong>Preview before payment</strong>
                             </div>
                             <div class="d-flex justify-content-between small">
                                 <span class="text-muted">Orders Included</span>
-                                <strong>@string.Join(", ", Model.LatestReceipt.OrderIds)</strong>
+                                <strong>@string.Join(", ", Model.PendingOrders.Select(order => order.OrderId))</strong>
                             </div>
                         </div>
 
@@ -95,7 +254,91 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var item in Model.LatestReceipt.Items)
+                                    @foreach (var order in Model.PendingOrders)
+                                    {
+                                        foreach (var item in order.Items)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <div class="fw-semibold">@item.Name</div>
+                                                    <div class="small text-muted">@item.CategoryName</div>
+                                                </td>
+                                                <td class="text-end">@item.Quantity</td>
+                                                <td class="text-end">@((item.Quantity * item.Price).ToString("C"))</td>
+                                            </tr>
+                                        }
+                                    }
+                                    @foreach (var token in Model.EligibleTokens)
+                                    {
+                                        <tr class="text-success @(Model.SelectedTokenIds.Contains(token.TokenId) ? string.Empty : "d-none")"
+                                            data-slip-token-row
+                                            data-token-id="@token.TokenId">
+                                            <td>
+                                                <div class="fw-semibold">Token applied: @token.Token</div>
+                                                <div class="small text-muted">@token.ProductName</div>
+                                            </td>
+                                            <td class="text-end">1</td>
+                                            <td class="text-end">-@token.DiscountAmount.ToString("C")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="border-top pt-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Total items</span>
+                                <strong>@Model.TotalItems</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal</span>
+                                <strong>@Model.TotalValue.ToString("C")</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2 text-success @(Model.SelectedTokenDiscount > 0 ? string.Empty : "d-none")"
+                                 data-slip-token-discount-row>
+                                <span>Token discount</span>
+                                <strong data-slip-token-discount-value>-@Model.SelectedTokenDiscount.ToString("C")</strong>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Total due</span>
+                                <strong data-slip-total-due>@Model.TotalDue.ToString("C")</strong>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        @if (latestReceipt is null || latestReceipt.Items.Count == 0)
+                        {
+                            <div class="text-muted">No receipt has been generated yet.</div>
+                        }
+                        else
+                        {
+                        <div class="border rounded-4 p-3 mb-3 bg-light">
+                            <div class="d-flex justify-content-between small mb-2">
+                                <span class="text-muted">Receipt #</span>
+                                <strong>@latestReceipt.ReceiptNumber</strong>
+                            </div>
+                            <div class="d-flex justify-content-between small mb-2">
+                                <span class="text-muted">Paid</span>
+                                <strong>@latestReceipt.PaidAtUtc.ToLocalTime().ToString("dd MMM yyyy h:mm tt")</strong>
+                            </div>
+                            <div class="d-flex justify-content-between small">
+                                <span class="text-muted">Orders Included</span>
+                                <strong>@string.Join(", ", latestReceipt.OrderIds)</strong>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-3">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th class="text-end">Qty</th>
+                                        <th class="text-end">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in latestReceipt.Items)
                                     {
                                         <tr>
                                             <td>
@@ -106,6 +349,17 @@
                                             <td class="text-end">@((item.Quantity * item.Price).ToString("C"))</td>
                                         </tr>
                                     }
+                                    @foreach (var appliedToken in latestReceipt.AppliedTokens)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="fw-semibold text-success">Token applied: @appliedToken.Token</div>
+                                                <div class="small text-muted">@appliedToken.ProductName</div>
+                                            </td>
+                                            <td class="text-end">1</td>
+                                            <td class="text-end text-success">-@appliedToken.DiscountAmount.ToString("C")</td>
+                                        </tr>
+                                    }
                                 </tbody>
                             </table>
                         </div>
@@ -113,16 +367,97 @@
                         <div class="border-top pt-3">
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Total items</span>
-                                <strong>@Model.LatestReceipt.Items.Sum(item => item.Quantity)</strong>
+                                <strong>@latestReceipt.Items.Sum(item => item.Quantity)</strong>
                             </div>
+                            @if (latestReceipt.AppliedTokens.Count > 0)
+                            {
+                                <div class="d-flex justify-content-between mb-2 text-success">
+                                    <span>Token discount</span>
+                                    <strong>-@latestReceipt.AppliedTokens.Sum(token => token.DiscountAmount).ToString("C")</strong>
+                                </div>
+                            }
                             <div class="d-flex justify-content-between">
                                 <span>Total paid</span>
-                                <strong>@Model.LatestReceipt.Items.Sum(item => item.Quantity * item.Price).ToString("C")</strong>
+                                <strong>@((latestReceipt.Items.Sum(item => item.Quantity * item.Price) - latestReceipt.AppliedTokens.Sum(token => token.DiscountAmount)).ToString("C"))</strong>
                             </div>
                         </div>
+                        }
                     }
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@if (hasPendingOrders && Model.EligibleTokens.Count > 0)
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const tokenOptions = Array.from(document.querySelectorAll("[data-token-option]"));
+            if (tokenOptions.length === 0) {
+                return;
+            }
+
+            const currencyFormatter = new Intl.NumberFormat(undefined, {
+                style: "currency",
+                currency: "USD"
+            });
+
+            const subtotal = @Model.TotalValue.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            const paymentDiscountRow = document.querySelector("[data-payment-token-discount-row]");
+            const paymentDiscountValue = document.querySelector("[data-payment-token-discount-value]");
+            const paymentTotalDue = document.querySelector("[data-payment-total-due]");
+            const slipDiscountRow = document.querySelector("[data-slip-token-discount-row]");
+            const slipDiscountValue = document.querySelector("[data-slip-token-discount-value]");
+            const slipTotalDue = document.querySelector("[data-slip-total-due]");
+
+            function updateSummaries() {
+                let selectedDiscount = 0;
+
+                tokenOptions.forEach(function (option) {
+                    const checkbox = option.querySelector("[data-token-checkbox]");
+                    const status = option.querySelector("[data-token-status]");
+                    const tokenRow = document.querySelector('[data-slip-token-row][data-token-id="' + option.dataset.tokenId + '"]');
+                    const discountAmount = Number(option.dataset.discountAmount || "0");
+
+                    if (checkbox.checked) {
+                        selectedDiscount += discountAmount;
+                        status.textContent = "Selected for payment";
+                        status.classList.add("is-selected");
+                        if (tokenRow) {
+                            tokenRow.classList.remove("d-none");
+                        }
+                    } else {
+                        status.textContent = "Not selected";
+                        status.classList.remove("is-selected");
+                        if (tokenRow) {
+                            tokenRow.classList.add("d-none");
+                        }
+                    }
+                });
+
+                const totalDue = Math.max(0, subtotal - selectedDiscount);
+                const hasDiscount = selectedDiscount > 0;
+                const formattedDiscount = "-" + currencyFormatter.format(selectedDiscount);
+                const formattedTotal = currencyFormatter.format(totalDue);
+
+                paymentDiscountRow.classList.toggle("d-none", !hasDiscount);
+                paymentDiscountValue.textContent = formattedDiscount;
+                paymentTotalDue.textContent = formattedTotal;
+
+                if (slipDiscountRow && slipDiscountValue && slipTotalDue) {
+                    slipDiscountRow.classList.toggle("d-none", !hasDiscount);
+                    slipDiscountValue.textContent = formattedDiscount;
+                    slipTotalDue.textContent = formattedTotal;
+                }
+            }
+
+            tokenOptions.forEach(function (option) {
+                const checkbox = option.querySelector("[data-token-checkbox]");
+                checkbox.addEventListener("change", updateSummaries);
+            });
+
+            updateSummaries();
+        });
+    </script>
+}

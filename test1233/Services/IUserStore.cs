@@ -53,7 +53,7 @@ public interface IUserStore
 
     AppOrder CreatePendingOrder(int userId, string username, IReadOnlyCollection<AppCartItem> items, DateTime placedAtUtc);
 
-    AppReceipt? ConfirmPendingOrdersPayment(int userId, string username, DateTime paidAtUtc);
+    AppReceipt? ConfirmPendingOrdersPayment(int userId, string username, DateTime paidAtUtc, IReadOnlyCollection<AppReceiptAppliedToken>? appliedTokens = null);
 
     void RecordUsedToken(AppUsedToken usedToken);
 

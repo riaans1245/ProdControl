@@ -32,6 +32,10 @@ public class TokenApiController(IUserStore userStore) : ControllerBase
     [HttpPost("use")]
     public IActionResult UseToken([FromBody] UseTokenApiRequest request)
     {
+        
+        /// check if user has an order for the token to be used
+        
+        
         var currentUser = GetCurrentUser();
         if (currentUser is null)
         {

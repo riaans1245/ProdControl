@@ -213,7 +213,7 @@ public class UserNavigationController(IUserStore userStore, ITokenApiClient toke
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult ConfirmPayment()
+    public IActionResult ConfirmPayment(List<int>? selectedTokenIds)
     {
         var currentUser = GetCurrentUser();
         if (currentUser is null)
@@ -221,7 +221,18 @@ public class UserNavigationController(IUserStore userStore, ITokenApiClient toke
             return RedirectToAction("Login", "Account");
         }
 
-        var receipt = _userStore.ConfirmPendingOrdersPayment(currentUser.Id, currentUser.Username, DateTime.UtcNow);
+        var pendingOrders = _userStore.GetPendingOrdersForUser(currentUser.Id);
+        var tokenApplications = BuildEligibleTokenApplications(currentUser, pendingOrders);
+        var selectedApplications = tokenApplications
+            .Where(token => selectedTokenIds?.Contains(token.TokenId) == true)
+            .ToList();
+
+        var receipt = _userStore.ConfirmPendingOrdersPayment(
+            currentUser.Id,
+            currentUser.Username,
+            DateTime.UtcNow,
+            selectedApplications);
+
         if (receipt is null)
         {
             TempData["OrderPlaceMessage"] = "There are no order items ready for payment.";
@@ -232,7 +243,8 @@ public class UserNavigationController(IUserStore userStore, ITokenApiClient toke
         return View("UserOrderPlace", new UserOrderPlaceViewModel
         {
             PendingOrders = _userStore.GetPendingOrdersForUser(currentUser.Id),
-            LatestReceipt = receipt
+            LatestReceipt = receipt,
+            SelectedTokenIds = Array.Empty<int>()
         });
     }
 
@@ -357,11 +369,97 @@ public class UserNavigationController(IUserStore userStore, ITokenApiClient toke
 
     private UserOrderPlaceViewModel BuildUserOrderPlaceViewModel(AppUser currentUser)
     {
+        var pendingOrders = _userStore.GetPendingOrdersForUser(currentUser.Id);
+
         return new UserOrderPlaceViewModel
         {
-            PendingOrders = _userStore.GetPendingOrdersForUser(currentUser.Id),
+            PendingOrders = pendingOrders,
+            EligibleTokens = BuildEligibleTokenOptions(currentUser, pendingOrders),
             LatestReceipt = _userStore.GetLatestReceiptForUser(currentUser.Id)
         };
+    }
+
+    private IReadOnlyCollection<OrderPaymentTokenOptionViewModel> BuildEligibleTokenOptions(AppUser currentUser, IReadOnlyCollection<AppOrder> pendingOrders)
+    {
+        return BuildEligibleTokenApplications(currentUser, pendingOrders)
+            .Select(token => new OrderPaymentTokenOptionViewModel
+            {
+                TokenId = token.TokenId,
+                Token = token.Token,
+                ProductId = token.ProductId,
+                ProductName = token.ProductName,
+                DiscountAmount = token.DiscountAmount,
+                OrderId = token.OrderId
+            })
+            .ToList()
+            .AsReadOnly();
+    }
+
+    private IReadOnlyCollection<AppReceiptAppliedTokenPreview> BuildEligibleTokenApplications(AppUser currentUser, IReadOnlyCollection<AppOrder> pendingOrders)
+    {
+        var availableTokens = _userStore.GetAllTokens()
+            .Where(token => token.UserId == currentUser.Id)
+            .OrderBy(token => token.TokenId)
+            .ToList();
+
+        var availableOrderItems = pendingOrders
+            .OrderBy(order => order.OrderId)
+            .SelectMany(order => order.Items.Select(item => new PendingOrderItemMatch
+            {
+                OrderId = order.OrderId,
+                ProductId = item.ProductId,
+                ProductName = item.Name,
+                UnitPrice = item.Price,
+                RemainingQuantity = item.Quantity
+            }))
+            .ToList();
+
+        var matches = new List<AppReceiptAppliedTokenPreview>();
+
+        foreach (var token in availableTokens)
+        {
+            var matchingItem = availableOrderItems.FirstOrDefault(item =>
+                item.RemainingQuantity > 0 &&
+                item.ProductId == token.ProductId &&
+                string.Equals(item.ProductName, token.ProductName, StringComparison.OrdinalIgnoreCase));
+
+            if (matchingItem is null)
+            {
+                continue;
+            }
+
+            matchingItem.RemainingQuantity--;
+
+            matches.Add(new AppReceiptAppliedTokenPreview
+            {
+                TokenId = token.TokenId,
+                Token = token.Token,
+                ProductId = token.ProductId,
+                ProductName = token.ProductName,
+                DiscountAmount = matchingItem.UnitPrice,
+                OrderId = matchingItem.OrderId
+            });
+        }
+
+        return matches.AsReadOnly();
+    }
+
+    private sealed class PendingOrderItemMatch
+    {
+        public int OrderId { get; init; }
+
+        public int ProductId { get; init; }
+
+        public string ProductName { get; init; } = string.Empty;
+
+        public decimal UnitPrice { get; init; }
+
+        public int RemainingQuantity { get; set; }
+    }
+
+    private sealed class AppReceiptAppliedTokenPreview : AppReceiptAppliedToken
+    {
+        public int OrderId { get; init; }
     }
 
      public IActionResult UserOrderTable()

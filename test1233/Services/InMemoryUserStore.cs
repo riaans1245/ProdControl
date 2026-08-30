@@ -734,7 +734,7 @@ lock (_lock)
         }
     }
 
-    public AppReceipt? ConfirmPendingOrdersPayment(int userId, string username, DateTime paidAtUtc)
+    public AppReceipt? ConfirmPendingOrdersPayment(int userId, string username, DateTime paidAtUtc, IReadOnlyCollection<AppReceiptAppliedToken>? appliedTokens = null)
     {
         lock (_lock)
         {
@@ -769,8 +769,41 @@ lock (_lock)
                         Price = item.Price,
                         Quantity = item.Quantity
                     })
+                    .ToList(),
+                AppliedTokens = (appliedTokens ?? Array.Empty<AppReceiptAppliedToken>())
+                    .Select(token => new AppReceiptAppliedToken
+                    {
+                        TokenId = token.TokenId,
+                        Token = token.Token,
+                        ProductId = token.ProductId,
+                        ProductName = token.ProductName,
+                        DiscountAmount = NormalizePrice(token.DiscountAmount)
+                    })
                     .ToList()
             };
+
+            foreach (var appliedToken in receipt.AppliedTokens)
+            {
+                var token = _tokens.FirstOrDefault(item => item.TokenId == appliedToken.TokenId && item.UserId == userId);
+                if (token is null)
+                {
+                    continue;
+                }
+
+                _usedTokens.Add(new AppUsedToken
+                {
+                    Id = _usedTokens.Count == 0 ? 1 : _usedTokens.Max(item => item.Id) + 1,
+                    TokenId = token.TokenId,
+                    Token = token.Token,
+                    UserId = token.UserId,
+                    Username = token.Username,
+                    ProductId = token.ProductId,
+                    ProductName = token.ProductName,
+                    SentAtUtc = paidAtUtc
+                });
+
+                _tokens.Remove(token);
+            }
 
             _receipts.Add(receipt);
             return CloneReceipt(receipt);
@@ -1244,6 +1277,16 @@ public void SuggestionCreate(AppSuggestion suggest)
                     CategoryName = item.CategoryName,
                     Price = item.Price,
                     Quantity = item.Quantity
+                })
+                .ToList(),
+            AppliedTokens = receipt.AppliedTokens
+                .Select(token => new AppReceiptAppliedToken
+                {
+                    TokenId = token.TokenId,
+                    Token = token.Token,
+                    ProductId = token.ProductId,
+                    ProductName = token.ProductName,
+                    DiscountAmount = token.DiscountAmount
                 })
                 .ToList()
         };

@@ -109,6 +109,10 @@ public interface IUserStore
 
     IReadOnlyCollection<AppProduct> GetAllProducts();
 
+    AppProductIngredience? GetProductIngredienceById(int id);
+
+    IReadOnlyCollection<AppProductIngredience> GetAllProductIngredience();
+
     IReadOnlyCollection<AppProduct> GetAllUserOrders();
 
     AppProduct? GetProductById(int id);

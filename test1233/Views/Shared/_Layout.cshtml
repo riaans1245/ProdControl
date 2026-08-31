@@ -152,15 +152,20 @@
                                 <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                                 <span class="left-nav-gallery-label">Roles</span>
                             </a>
+                             <a class="left-nav-gallery-card left-nav-gallery-card-categories" 
+                                asp-controller="Category" title="Categories" aria-label="Categories" asp-action="Index">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="left-nav-gallery-label">Categories</span>
+                            </a>
                             <a class="left-nav-gallery-card left-nav-gallery-card-products" 
                                 asp-controller="Product" title="Products" aria-label="Products" asp-action="Index">
                                 <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                                 <span class="left-nav-gallery-label">Products</span>
                             </a>
-                            <a class="left-nav-gallery-card left-nav-gallery-card-categories" 
-                                asp-controller="Category" title="Categories" aria-label="Categories" asp-action="Index">
+                            <a class="left-nav-gallery-card left-nav-gallery-card-products" 
+                                asp-controller="ProductIng" title="ProductIngredients" aria-label="Product Ingredients" asp-action="Index">
                                 <span class="left-nav-gallery-icon" aria-hidden="true"></span>
-                                <span class="left-nav-gallery-label">Categories</span>
+                                <span class="left-nav-gallery-label">Product Ingredients</span>
                             </a>
                             <a class="left-nav-gallery-card left-nav-gallery-card-menu" 
                                 asp-controller="Home" title="Our Menu" aria-label="Our Menu" asp-action="ManageMenu">

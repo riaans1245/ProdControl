@@ -35,7 +35,8 @@
     <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 mb-4">
         <div>
             <h1 class="h3 mb-1">Ordering</h1>
-            <p class="text-muted mb-0">Choose products, set quantities, and build your cart with server-side C# actions.</p>
+            <p class="text-muted mb-0">Choose products, set quantities, and build your cart by clicking on the 'Add to Cart' button.</p>
+            <p class="text-muted mb-0">Click on the 'Check Ingredients' to check the product.</p>
         </div>
         <div class="text-muted small">Signed in as <strong>@User.Identity?.Name</strong></div>
     </div>
@@ -56,10 +57,19 @@
                         <div class="card h-100 shadow-sm border-0">
                             <div class="card-body d-flex flex-column">
                                 <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+                                <form method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="productId" value="@product.Id" />
                                     <div>
                                         <div class="text-muted small text-uppercase">@product.CategoryName</div>
-                                        <h2 class="h5 mb-1">@product.Name</h2>
+                                        <hr />
+                                            <h2 class="h5 mb-1">@product.Name</h2> 
+                                        <hr />  
+                                        <a class="left-nav-gallery-card left-nav-gallery-card-notifications" asp-route-id="@product.Id" asp-controller="ProductIngredients" asp-action="Index">
+                                                <span class="left-nav-gallery-label">Check Ingredients - </span>
+                                        </a> 
                                     </div>
+                                </form>
                                     <div class="fw-bold ordering-turquoise-text">@product.Price.ToString("C")</div>
                                 </div>
 

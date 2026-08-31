@@ -14,26 +14,56 @@ public class InMemoryUserStore : IUserStore
         new AppProduct { Id = 3, Name = "Tomato", Price = 0.50m, CategoryId = 4, CategoryName = "Sides" },
         new AppProduct { Id = 4, Name = "Bacon", Price = 2.50m, CategoryId = 4, CategoryName = "Sides" },
         new AppProduct { Id = 5, Name = "Egg", Price = 1.00m, CategoryId = 4, CategoryName = "Sides" },
-        new AppProduct { Id = 6, Name = "ScrambledEggonToast", Price = 13.25m, CategoryId = 1, CategoryName = "Breakfast" },
-        new AppProduct { Id = 7, Name = "EnglisgBreakFast", Price = 29.00m, CategoryId = 1, CategoryName = "Breakfast" },
-        new AppProduct { Id = 8, Name = "EggBenedict", Price = 19.50m, CategoryId = 1, CategoryName = "Breakfast" },
-        new AppProduct { Id = 9, Name = "AvoOnToast", Price = 16.50m, CategoryId = 1, CategoryName = "Breakfast" },
-        new AppProduct { Id = 10, Name = "SteakEggChips", Price = 35.00m, CategoryId = 2, CategoryName = "Mains" },
-        new AppProduct { Id = 11, Name = "T-BoneandChips", Price = 32.00m, CategoryId = 2, CategoryName = "Mains" },
-        new AppProduct { Id = 12, Name = "PorkBelly", Price = 29.99m, CategoryId = 2, CategoryName = "Mains" },
-        new AppProduct { Id = 13, Name = "ChickenBurger", Price = 23.00m, CategoryId = 2, CategoryName = "Mains" },
-        new AppProduct { Id = 14, Name = "BeefBurger", Price = 25.00m, CategoryId = 2, CategoryName = "Mains" },
+        new AppProduct { Id = 6, Name = "Scrambled Egg on Toast", Price = 13.25m, CategoryId = 1, CategoryName = "Breakfast" },
+        new AppProduct { Id = 7, Name = "English Break Fast", Price = 29.00m, CategoryId = 1, CategoryName = "Breakfast" },
+        new AppProduct { Id = 8, Name = "Egg Benedict", Price = 19.50m, CategoryId = 1, CategoryName = "Breakfast" },
+        new AppProduct { Id = 9, Name = "Avo On Toast", Price = 16.50m, CategoryId = 1, CategoryName = "Breakfast" },
+        new AppProduct { Id = 10, Name = "Steak Egg and Chips", Price = 35.00m, CategoryId = 2, CategoryName = "Mains" },
+        new AppProduct { Id = 11, Name = "T-Bone Steak and Chips", Price = 32.00m, CategoryId = 2, CategoryName = "Mains" },
+        new AppProduct { Id = 12, Name = "Pork Belly", Price = 29.99m, CategoryId = 2, CategoryName = "Mains" },
+        new AppProduct { Id = 13, Name = "Chicken Burger", Price = 23.00m, CategoryId = 2, CategoryName = "Mains" },
+        new AppProduct { Id = 14, Name = "Beef Burger", Price = 25.00m, CategoryId = 2, CategoryName = "Mains" },
         new AppProduct { Id = 15, Name = "Lisagne", Price = 22.50m, CategoryId = 2, CategoryName = "Mains" },
-        new AppProduct { Id = 16, Name = "LambChops", Price = 27.50m, CategoryId = 2, CategoryName = "Mains" },
-        new AppProduct { Id = 17, Name = "FlatWhite", Price = 3.50m, CategoryId = 5, CategoryName = "Drinks" },
+        new AppProduct { Id = 16, Name = "Lamb Chops", Price = 27.50m, CategoryId = 2, CategoryName = "Mains" },
+        new AppProduct { Id = 17, Name = "Flat White", Price = 3.50m, CategoryId = 5, CategoryName = "Drinks" },
         new AppProduct { Id = 18, Name = "Cuppochine", Price = 4.50m, CategoryId = 5, CategoryName = "Drinks" },
         new AppProduct { Id = 19, Name = "Americano", Price = 4.50m, CategoryId = 5, CategoryName = "Drinks" },
-        new AppProduct { Id = 20, Name = "ChiaLatte", Price = 5.00m, CategoryId = 5, CategoryName = "Drinks" },
+        new AppProduct { Id = 20, Name = "Chia Latte", Price = 5.00m, CategoryId = 5, CategoryName = "Drinks" },
         new AppProduct { Id = 21, Name = "Coke", Price = 3.50m, CategoryId = 5, CategoryName = "Drinks" },
         new AppProduct { Id = 22, Name = "Sprite", Price = 3.50m, CategoryId = 5, CategoryName = "Drinks" },
         new AppProduct { Id = 23, Name = "OrangeJuice", Price = 3.00m, CategoryId = 5, CategoryName = "Drinks" },
-        new AppProduct { Id = 24, Name = "FishandChips", Price = 22.00m, CategoryId = 3, CategoryName = "Specials" },
-        new AppProduct { Id = 25, Name = "BuffaloWings", Price = 18.00m, CategoryId = 3, CategoryName = "Specials" },
+        new AppProduct { Id = 24, Name = "Fish and Chips", Price = 22.00m, CategoryId = 3, CategoryName = "Specials" },
+        new AppProduct { Id = 25, Name = "Buffalo Wings", Price = 18.00m, CategoryId = 3, CategoryName = "Specials" },
+    ];
+
+    private readonly List<AppProductIngredience> _productsIngredients =
+    [
+        new AppProductIngredience { Id = 1, ProdIngredienceName = "Fluffy bread Golden toasted", ProductId = 5, Name = "Toast"},
+        new AppProductIngredience { Id = 2, ProdIngredienceName = "Fresh potatoes cut for delicious chips", ProductId = 5, Name = "Chips"},
+        new AppProductIngredience { Id = 3, ProdIngredienceName = "Fresh plucked tomato", ProductId = 5, Name = "Tomato"},
+        new AppProductIngredience { Id = 4, ProdIngredienceName = "Best back bacon in Wellington", ProductId = 5, Name = "Bacon"},
+        new AppProductIngredience { Id = 5, ProdIngredienceName = "Fresh freerange eggs", ProductId = 5, Name = "Egg"},
+        new AppProductIngredience { Id = 6, ProdIngredienceName = "Fluffy golden toast, Fresh freerange eggs", ProductId = 5, Name = "Scrambled Egg on Toast"},
+        new AppProductIngredience { Id = 7, ProdIngredienceName = "Fluffy golden toast, Fresh freerange eggs, Fresh potatoes cut for chips", ProductId = 5, Name = "English Break Fast"},
+        new AppProductIngredience { Id = 8, ProdIngredienceName = "Fresh freerange eggs, Golden Toast, Home may mayo", ProductId = 5, Name = "Egg Benedict"},
+        new AppProductIngredience { Id = 9, ProdIngredienceName = "Golden Toast, Fresh Avo with a bit of salt, pepper and Lemon", ProductId = 5, Name = "Avo On Toast"},
+        new AppProductIngredience { Id = 10, ProdIngredienceName = "Juicy Steak, Fresh freerange eggs and Fresh potatoes cut for delicious chips", ProductId = 5, Name = "Steak Egg and Chips"},
+        new AppProductIngredience { Id = 11, ProdIngredienceName = "Juicy T-Bone Steak and Fresh potatoes cut for delicious chips", ProductId = 5, Name = "T-Bone Steak and Chips"},
+        new AppProductIngredience { Id = 12, ProdIngredienceName = "Pork Belly", ProductId = 5, Name = "Pork Belly"},
+        new AppProductIngredience { Id = 13, ProdIngredienceName = "Chicken Burger", ProductId = 5, Name = "Chicken Burger"},
+        new AppProductIngredience { Id = 14, ProdIngredienceName = "Beef Burger", ProductId = 5, Name = "Beef Burger"},
+        new AppProductIngredience { Id = 15, ProdIngredienceName = "Lisagne", ProductId = 5, Name = "Lisagne"},
+        new AppProductIngredience { Id = 16, ProdIngredienceName = "Lamb Chops", ProductId = 5, Name = "Lamb Chops"},
+        new AppProductIngredience { Id = 17, ProdIngredienceName = "Flat White", ProductId = 5, Name = "Flat Whit"},
+        new AppProductIngredience { Id = 18, ProdIngredienceName = "Cuppochino", ProductId = 5, Name = "Cuppochino"},
+        new AppProductIngredience { Id = 19, ProdIngredienceName = "Americano", ProductId = 5, Name = "Americano"},
+        new AppProductIngredience { Id = 20, ProdIngredienceName = "Chia Latte", ProductId = 5, Name = "Chia Latte"},
+        new AppProductIngredience { Id = 21, ProdIngredienceName = "Coke", ProductId = 5, Name = "Coke"},
+        new AppProductIngredience { Id = 22, ProdIngredienceName = "Sprite", ProductId = 5, Name = "Sprite"},
+        new AppProductIngredience { Id = 23, ProdIngredienceName = "OrangeJuice", ProductId = 5, Name = "OrangeJuice"},
+        new AppProductIngredience { Id = 24, ProdIngredienceName = "Fish and Chips", ProductId = 5, Name = "Fish and Chips"},
+        new AppProductIngredience { Id = 25, ProdIngredienceName = "Buffalo Wings", ProductId = 5, Name = "Buffalo Wings"},
+
     ];
 
     private readonly List<AppCategory> _categories =
@@ -96,6 +126,10 @@ public class InMemoryUserStore : IUserStore
 
     ];
 
+    private readonly List<AppProductIngredience> _productsIngred =
+    [
+
+    ];
 
     private readonly List<AppUser> _users =
     [
@@ -540,6 +574,33 @@ lock (_lock)
             })
             .ToList()
             .AsReadOnly();
+        }
+    }
+
+    public AppProductIngredience? GetProductIngredienceById(int id)
+    {
+        lock (_lock)
+        {
+            return _productsIngredients.FirstOrDefault(ingredient => ingredient.Id == id);
+        }
+    }
+
+
+     public IReadOnlyCollection<AppProductIngredience> GetAllProductIngredience()
+    {
+        lock (_lock)
+        {
+            return _productsIngredients
+                .OrderBy(ingredient => ingredient.Id)
+                .Select(ingredient => new AppProductIngredience
+                {
+                    Id = ingredient.Id,
+                    ProductId = ingredient.ProductId,
+                    Name = ingredient.Name,
+                    ProdIngredienceName = ingredient.ProdIngredienceName
+                })
+                .ToList()
+                .AsReadOnly();
         }
     }
 

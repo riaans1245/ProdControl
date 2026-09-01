@@ -9,39 +9,36 @@ namespace test1233.Controllers;
 public class ProductIngredientUsersController(IUserStore userStore) : AppController(userStore)
 {
     private readonly IUserStore _userStore = userStore;
-    private const int PageSize = 10;
 
-    public IActionResult Index(string searchString, int page = 1)
+    public IActionResult Index(int id)
     {
-        ViewData["CurrentSearch"] = searchString;
-
-        var productIngredients = from item in _userStore.GetAllProductIngredience()
-                                 select item;
-
-        if (!string.IsNullOrWhiteSpace(searchString))
+        var product = _userStore.GetProductById(id);
+        if (product is null)
         {
-            var normalizedSearch = searchString.Trim();
-            productIngredients = productIngredients.Where(item =>
-                item.Name.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
-                item.ProdIngredienceName.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase));
+            return NotFound();
         }
 
-        var filteredItems = productIngredients.ToList();
-        var totalItems = filteredItems.Count;
-        var totalPages = totalItems == 0 ? 1 : (int)Math.Ceiling(totalItems / (double)PageSize);
-        var pageNumber = Math.Min(Math.Max(1, page), totalPages);
-        var items = filteredItems
-            .Skip((pageNumber - 1) * PageSize)
-            .Take(PageSize)
-            .ToList()
+        ViewData["ProductName"] = product.Name;
+
+        var ingredient = _userStore.GetAllProductIngredience()
+            .Where(item =>
+                item.ProductId == product.Id ||
+                string.Equals(item.Name, product.Name, StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(item => item.ProductId == product.Id)
+            .ThenByDescending(item => !string.IsNullOrWhiteSpace(item.ProdIngredienceName))
+            .FirstOrDefault();
+
+        var items = (ingredient is null
+            ? new List<AppProductIngredience>()
+            : new List<AppProductIngredience> { ingredient })
             .AsReadOnly();
 
         return View(new PagedListViewModel<AppProductIngredience>
         {
             Items = items,
-            PageNumber = pageNumber,
-            PageSize = PageSize,
-            TotalItems = totalItems
+            PageNumber = 1,
+            PageSize = items.Count == 0 ? 1 : items.Count,
+            TotalItems = items.Count
         });
     }
 }

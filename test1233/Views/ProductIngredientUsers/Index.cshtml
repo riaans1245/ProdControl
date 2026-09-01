@@ -16,7 +16,7 @@
 
     <div class="card shadow-sm border-0">
         <div class="card-body">
-            @if (Model.Items.Count == 0)
+            @if (Model.Items.Count == 0 || string.IsNullOrWhiteSpace(Model.Items.First().ProdIngredienceName))
             {
                 <div class="text-muted">
                     No ingredient details are available yet for <strong>@productName</strong>.
@@ -24,22 +24,11 @@
             }
             else
             {
-                <div class="table-responsive">
-                    <table class="table table-striped align-middle mb-0">
-                        <thead>
-                            <tr>
-                                <th>Ingredients</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @foreach (var productingre in Model.Items)
-                        {
-                            <tr>
-                                <td>@productingre.ProdIngredienceName</td>
-                            </tr>
-                        }
-                        </tbody>
-                    </table>
+                var ingredient = Model.Items.First();
+
+                <div class="rounded-4 border p-4 bg-light">
+                    <div class="small text-muted text-uppercase mb-2">Ingredients</div>
+                    <div class="fs-5">@ingredient.ProdIngredienceName</div>
                 </div>
             }
         </div>

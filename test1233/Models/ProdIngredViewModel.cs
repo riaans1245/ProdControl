@@ -21,4 +21,4 @@ public class ProdIngredViewModel
     public int ProductId { get; set; }
 
     public IReadOnlyCollection<SelectListItem> AvailableProducts { get; set; } = Array.Empty<SelectListItem>();
-}
+}   

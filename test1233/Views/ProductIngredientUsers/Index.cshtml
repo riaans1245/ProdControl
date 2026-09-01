@@ -1,34 +1,31 @@
-@model test1233.Models.PagedListViewModel<test1233.Models.AppProductIngredience>
+@model test1233.Models.ProductIngredientDetailsViewModel
 
 @{
     ViewData["Title"] = "Product ingredients";
-    var productName = ViewData["ProductName"] as string ?? "this product";
 }
 
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="h3 mb-1">Product Ingredients</h1>
-            <p class="text-muted mb-0">Ingredient details for <strong>@productName</strong>.</p>
+            <p class="text-muted mb-0">Ingredient details for <strong>@Model.ProductName</strong>.</p>
         </div>
         <a asp-controller="Home" asp-action="Ordering" class="btn btn-outline-secondary">Back to Ordering</a>
     </div>
 
     <div class="card shadow-sm border-0">
         <div class="card-body">
-            @if (Model.Items.Count == 0 || string.IsNullOrWhiteSpace(Model.Items.First().ProdIngredienceName))
+            @if (string.IsNullOrWhiteSpace(Model.ProdIngredienceName))
             {
                 <div class="text-muted">
-                    No ingredient details are available yet for <strong>@productName</strong>.
+                    No ingredient details are available yet for <strong>@Model.ProductName</strong>.
                 </div>
             }
             else
             {
-                var ingredient = Model.Items.First();
-
                 <div class="rounded-4 border p-4 bg-light">
                     <div class="small text-muted text-uppercase mb-2">Ingredients</div>
-                    <div class="fs-5">@ingredient.ProdIngredienceName</div>
+                    <div class="fs-5">@Model.ProdIngredienceName</div>
                 </div>
             }
         </div>

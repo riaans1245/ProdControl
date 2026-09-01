@@ -27,23 +27,32 @@ public class ProductIngredientsController(IUserStore userStore) : AppController(
                 item.ProdIngredienceName.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase));
         }
 
-        var filteredItems = productIngredients.ToList();
-        var totalItems = filteredItems.Count;
+        var items = productIngredients
+            .ToList();
+
+        var totalItems = items.Count;
         var totalPages = totalItems == 0 ? 1 : (int)Math.Ceiling(totalItems / (double)PageSize);
         var pageNumber = Math.Min(Math.Max(1, page), totalPages);
-        var items = filteredItems
+
+        ViewData["PageNumber"] = pageNumber;
+        ViewData["PageSize"] = PageSize;
+        ViewData["TotalItems"] = totalItems;
+        ViewData["TotalPages"] = totalPages;
+
+        var pagedItems = items
             .Skip((pageNumber - 1) * PageSize)
             .Take(PageSize)
+            .Select(item => new ProductIngredientListItemViewModel
+            {
+                Id = item.Id,
+                ProductId = item.ProductId,
+                Name = item.Name,
+                ProdIngredienceName = item.ProdIngredienceName
+            })
             .ToList()
             .AsReadOnly();
 
-        return View(new PagedListViewModel<AppProductIngredience>
-        {
-            Items = items,
-            PageNumber = pageNumber,
-            PageSize = PageSize,
-            TotalItems = totalItems
-        });
+        return View(pagedItems);
     }
 
     public IActionResult Create()

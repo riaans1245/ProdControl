@@ -18,8 +18,6 @@ public class ProductIngredientUsersController(IUserStore userStore) : AppControl
             return NotFound();
         }
 
-        ViewData["ProductName"] = product.Name;
-
         var ingredient = _userStore.GetAllProductIngredience()
             .Where(item =>
                 item.ProductId == product.Id ||
@@ -28,17 +26,12 @@ public class ProductIngredientUsersController(IUserStore userStore) : AppControl
             .ThenByDescending(item => !string.IsNullOrWhiteSpace(item.ProdIngredienceName))
             .FirstOrDefault();
 
-        var items = (ingredient is null
-            ? new List<AppProductIngredience>()
-            : new List<AppProductIngredience> { ingredient })
-            .AsReadOnly();
-
-        return View(new PagedListViewModel<AppProductIngredience>
+        var model = new ProductIngredientDetailsViewModel
         {
-            Items = items,
-            PageNumber = 1,
-            PageSize = items.Count == 0 ? 1 : items.Count,
-            TotalItems = items.Count
-        });
+            ProductName = product.Name,
+            ProdIngredienceName = ingredient?.ProdIngredienceName ?? string.Empty
+        };
+
+        return View(model);
     }
 }

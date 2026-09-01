@@ -1,8 +1,12 @@
-@model test1233.Models.PagedListViewModel<test1233.Models.AppProductIngredience>
+@model IReadOnlyCollection<test1233.Models.ProductIngredientListItemViewModel>
 
 @{
     ViewData["Title"] = "Product ingredients";
     var currentSearch = ViewData["CurrentSearch"] as string ?? string.Empty;
+    var pageNumber = ViewData["PageNumber"] as int? ?? 1;
+    var totalPages = ViewData["TotalPages"] as int? ?? 1;
+    var hasPreviousPage = pageNumber > 1;
+    var hasNextPage = pageNumber < totalPages;
 }
 
 <div class="container py-4">
@@ -29,7 +33,7 @@
 
     <div class="card shadow-sm border-0">
         <div class="card-body">
-            @if (Model.Items.Count == 0)
+            @if (Model.Count == 0)
             {
                 <div class="text-muted">
                     No product ingredients found@(string.IsNullOrWhiteSpace(currentSearch) ? "." : $" for \"{currentSearch}\".").
@@ -47,7 +51,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                        @foreach (var productIng in Model.Items)
+                        @foreach (var productIng in Model)
                         {
                             <tr>
                                 <td>@productIng.Name</td>
@@ -63,20 +67,20 @@
                 </div>
             }
             <div class="d-flex justify-content-between align-items-center mt-4">
-                <span class="text-muted small">Page @Model.PageNumber of @Model.TotalPages</span>
+                <span class="text-muted small">Page @pageNumber of @totalPages</span>
                 <nav aria-label="Product ingredients pagination">
                     <ul class="pagination mb-0">
-                        <li class="page-item @(Model.HasPreviousPage ? string.Empty : "disabled")">
-                            <a class="page-link" asp-action="Index" asp-route-searchString="@currentSearch" asp-route-page="@(Model.PageNumber - 1)">Previous</a>
+                        <li class="page-item @(hasPreviousPage ? string.Empty : "disabled")">
+                            <a class="page-link" asp-action="Index" asp-route-searchString="@currentSearch" asp-route-page="@(pageNumber - 1)">Previous</a>
                         </li>
-                        @for (var pageNumber = 1; pageNumber <= Model.TotalPages; pageNumber++)
+                        @for (var currentPage = 1; currentPage <= totalPages; currentPage++)
                         {
-                            <li class="page-item @(pageNumber == Model.PageNumber ? "active" : string.Empty)">
-                                <a class="page-link" asp-action="Index" asp-route-searchString="@currentSearch" asp-route-page="@pageNumber">@pageNumber</a>
+                            <li class="page-item @(currentPage == pageNumber ? "active" : string.Empty)">
+                                <a class="page-link" asp-action="Index" asp-route-searchString="@currentSearch" asp-route-page="@currentPage">@currentPage</a>
                             </li>
                         }
-                        <li class="page-item @(Model.HasNextPage ? string.Empty : "disabled")">
-                            <a class="page-link" asp-action="Index" asp-route-searchString="@currentSearch" asp-route-page="@(Model.PageNumber + 1)">Next</a>
+                        <li class="page-item @(hasNextPage ? string.Empty : "disabled")">
+                            <a class="page-link" asp-action="Index" asp-route-searchString="@currentSearch" asp-route-page="@(pageNumber + 1)">Next</a>
                         </li>
                     </ul>
                 </nav>

@@ -2,24 +2,37 @@
 
 @{
     ViewData["Title"] = "Product ingredients";
-    var productName = ViewData["ProductName"] as string ?? "this product";
+    var currentSearch = ViewData["CurrentSearch"] as string ?? string.Empty;
 }
 
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="h3 mb-1">Product Ingredients</h1>
-            <p class="text-muted mb-0">Ingredient details for <strong>@productName</strong>.</p>
+            <p class="text-muted mb-0">Manage product ingredient details across the menu.</p>
         </div>
-        <a asp-controller="Home" asp-action="Ordering" class="btn btn-outline-secondary">Back to Ordering</a>
+        <a asp-action="Create" class="btn search-action-button">Add Ingredience</a>
     </div>
+
+    <form asp-action="Index" method="get" class="row g-2 align-items-end mb-4">
+        <div class="col-sm-8 col-md-6 col-lg-4">
+            <label for="searchString" class="form-label">Search product ingredients</label>
+            <input id="searchString" name="searchString" value="@currentSearch" class="form-control" placeholder="Search by product or ingredient" />
+        </div>
+        <div class="col-auto">
+            <button asp-action="Index" type="submit" class="btn search-action-button">Search</button>
+        </div>
+        <div class="col-auto">
+            <a asp-action="Index" class="btn btn-outline-secondary clear-action-button">Clear</a>
+        </div>
+    </form>
 
     <div class="card shadow-sm border-0">
         <div class="card-body">
             @if (Model.Items.Count == 0)
             {
                 <div class="text-muted">
-                    No ingredient details are available yet for <strong>@productName</strong>.
+                    No product ingredients found@(string.IsNullOrWhiteSpace(currentSearch) ? "." : $" for \"{currentSearch}\".").
                 </div>
             }
             else
@@ -28,20 +41,46 @@
                     <table class="table table-striped align-middle mb-0">
                         <thead>
                             <tr>
+                                <th>Product</th>
                                 <th>Ingredients</th>
+                                <th class="text-end">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                        @foreach (var productingre in Model.Items)
+                        @foreach (var productIng in Model.Items)
                         {
                             <tr>
-                                <td>@productingre.ProdIngredienceName</td>
+                                <td>@productIng.Name</td>
+                                <td>@productIng.ProdIngredienceName</td>
+                                <td class="text-end">
+                                    <a asp-controller="ProductIngredients" asp-action="Edit" asp-route-id="@productIng.Id" class="btn btn-sm btn-outline-secondary grid-action-button">Edit</a>
+                                    <a asp-action="Delete" asp-route-id="@productIng.Id" class="btn btn-sm btn-outline-danger grid-action-button">Delete</a>
+                                </td>
                             </tr>
                         }
                         </tbody>
                     </table>
                 </div>
             }
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <span class="text-muted small">Page @Model.PageNumber of @Model.TotalPages</span>
+                <nav aria-label="Product ingredients pagination">
+                    <ul class="pagination mb-0">
+                        <li class="page-item @(Model.HasPreviousPage ? string.Empty : "disabled")">
+                            <a class="page-link" asp-action="Index" asp-route-searchString="@currentSearch" asp-route-page="@(Model.PageNumber - 1)">Previous</a>
+                        </li>
+                        @for (var pageNumber = 1; pageNumber <= Model.TotalPages; pageNumber++)
+                        {
+                            <li class="page-item @(pageNumber == Model.PageNumber ? "active" : string.Empty)">
+                                <a class="page-link" asp-action="Index" asp-route-searchString="@currentSearch" asp-route-page="@pageNumber">@pageNumber</a>
+                            </li>
+                        }
+                        <li class="page-item @(Model.HasNextPage ? string.Empty : "disabled")">
+                            <a class="page-link" asp-action="Index" asp-route-searchString="@currentSearch" asp-route-page="@(Model.PageNumber + 1)">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
         </div>
     </div>
 </div>

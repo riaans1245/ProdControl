@@ -1,0 +1,40 @@
+@model test1233.Models.ProdIngredViewModel
+
+@{
+    ViewData["Title"] = "Edit Product Ingredients";
+}
+
+<div class="container py-4" style="max-width: 620px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <h1 class="h3 mb-3">Edit Product Ingredients</h1>
+
+            <form method="post">
+                @Html.AntiForgeryToken()
+                <input asp-for="Id" type="hidden" />
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ProdIngredienceName" class="form-label"></label>
+                    <input asp-for="ProdIngredienceName" class="form-control" />
+                    <span asp-validation-for="ProdIngredienceName" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button asp-controller="ProductIngredients" asp-action="Edit" type="submit" class="btn search-action-button">Save changes</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary clear-action-button">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

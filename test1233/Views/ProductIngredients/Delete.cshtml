@@ -1,0 +1,24 @@
+@model test1233.Models.AppProductIngredience
+
+@{
+    ViewData["Title"] = "Delete Ingredient";
+}
+
+<div class="container py-4" style="max-width: 620px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <h1 class="h3 mb-3">Delete Product Ingredient</h1>
+            <p class="mb-2">You are deleting the ingredient for: <strong>@Model.Name</strong>.</p>
+            <p class="text-muted">ProductIngredience: @Model.ProdIngredienceName</p>
+
+            <form method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                <div class="d-flex gap-2">
+                    <button asp-action="Delete" type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to delete this ingredient?');">Delete Ingredient</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary clear-action-button">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

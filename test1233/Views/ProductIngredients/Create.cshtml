@@ -1,0 +1,42 @@
+@model test1233.Models.ProdIngredViewModel
+
+@{
+    ViewData["Title"] = "Create Product Ingredients";
+}
+
+<div class="container py-4" style="max-width: 620px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <h1 class="h3 mb-3">Create Product Ingredients</h1>
+
+            <form method="post">
+                @Html.AntiForgeryToken()
+                <input asp-for="Id" type="hidden" />
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="ProductId" class="form-label"></label>
+                    <select asp-for="ProductId" asp-items="Model.AvailableProducts" class="form-select">
+                        <option value="">Select a product</option>
+                    </select>
+                    <span asp-validation-for="ProductId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ProdIngredienceName" class="form-label"></label>
+                    <textarea asp-for="ProdIngredienceName" class="form-control" rows="5" placeholder="Enter ingredients for the selected product"></textarea>
+                    <span asp-validation-for="ProdIngredienceName" class="text-danger"></span>
+                </div>
+                
+                <div class="d-flex gap-2">
+                    <button asp-action="Create" type="submit" class="btn search-action-button">Save ingredients</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary clear-action-button">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

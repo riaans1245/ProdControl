@@ -26,7 +26,7 @@ public class InMemoryUserStore : IUserStore
         new AppProduct { Id = 15, Name = "Lisagne", Price = 22.50m, CategoryId = 2, CategoryName = "Mains" },
         new AppProduct { Id = 16, Name = "Lamb Chops", Price = 27.50m, CategoryId = 2, CategoryName = "Mains" },
         new AppProduct { Id = 17, Name = "Flat White", Price = 3.50m, CategoryId = 5, CategoryName = "Drinks" },
-        new AppProduct { Id = 18, Name = "Cuppochine", Price = 4.50m, CategoryId = 5, CategoryName = "Drinks" },
+        new AppProduct { Id = 18, Name = "Cuppochino", Price = 4.50m, CategoryId = 5, CategoryName = "Drinks" },
         new AppProduct { Id = 19, Name = "Americano", Price = 4.50m, CategoryId = 5, CategoryName = "Drinks" },
         new AppProduct { Id = 20, Name = "Chia Latte", Price = 5.00m, CategoryId = 5, CategoryName = "Drinks" },
         new AppProduct { Id = 21, Name = "Coke", Price = 3.50m, CategoryId = 5, CategoryName = "Drinks" },
@@ -34,6 +34,7 @@ public class InMemoryUserStore : IUserStore
         new AppProduct { Id = 23, Name = "OrangeJuice", Price = 3.00m, CategoryId = 5, CategoryName = "Drinks" },
         new AppProduct { Id = 24, Name = "Fish and Chips", Price = 22.00m, CategoryId = 3, CategoryName = "Specials" },
         new AppProduct { Id = 25, Name = "Buffalo Wings", Price = 18.00m, CategoryId = 3, CategoryName = "Specials" },
+        new AppProduct { Id = 26, Name = "Black Coffee", Price = 4.50m, CategoryId = 5, CategoryName = "Drinks" },
     ];
 
     private readonly List<AppProductIngredience> _productsIngredients =
@@ -54,7 +55,7 @@ public class InMemoryUserStore : IUserStore
         new AppProductIngredience { Id = 14, ProdIngredienceName = "Beef Burger", ProductId = 5, Name = "Beef Burger"},
         new AppProductIngredience { Id = 15, ProdIngredienceName = "Lisagne", ProductId = 5, Name = "Lisagne"},
         new AppProductIngredience { Id = 16, ProdIngredienceName = "Lamb Chops", ProductId = 5, Name = "Lamb Chops"},
-        new AppProductIngredience { Id = 17, ProdIngredienceName = "Flat White", ProductId = 5, Name = "Flat Whit"},
+        new AppProductIngredience { Id = 17, ProdIngredienceName = "Flat White", ProductId = 5, Name = "Flat White"},
         new AppProductIngredience { Id = 18, ProdIngredienceName = "Cuppochino", ProductId = 5, Name = "Cuppochino"},
         new AppProductIngredience { Id = 19, ProdIngredienceName = "Americano", ProductId = 5, Name = "Americano"},
         new AppProductIngredience { Id = 20, ProdIngredienceName = "Chia Latte", ProductId = 5, Name = "Chia Latte"},
@@ -63,6 +64,7 @@ public class InMemoryUserStore : IUserStore
         new AppProductIngredience { Id = 23, ProdIngredienceName = "OrangeJuice", ProductId = 5, Name = "OrangeJuice"},
         new AppProductIngredience { Id = 24, ProdIngredienceName = "Fish and Chips", ProductId = 5, Name = "Fish and Chips"},
         new AppProductIngredience { Id = 25, ProdIngredienceName = "Buffalo Wings", ProductId = 5, Name = "Buffalo Wings"},
+       
 
     ];
 
@@ -126,10 +128,10 @@ public class InMemoryUserStore : IUserStore
 
     ];
 
-    private readonly List<AppProductIngredience> _productsIngred =
-    [
+    // private readonly List<AppProductIngredience> _productsIngred =
+    // [
 
-    ];
+    // ];
 
     private readonly List<AppUser> _users =
     [
@@ -546,6 +548,18 @@ public class InMemoryUserStore : IUserStore
         }
     }
 
+ public bool ProductIngredNameExists(string prodIngredienceName, int prodIngredId, int? excludeProductId = null)
+    {
+        lock (_lock)
+        {//_productsIngred
+            return _productsIngredients.Any(productIngr =>
+                productIngr.Id != excludeProductId &&
+                productIngr.Id == prodIngredId &&
+                string.Equals(productIngr.Name, prodIngredienceName, StringComparison.OrdinalIgnoreCase));
+        }
+    }
+    //bool ProductIngredNameExists(string prodIngredienceName, int prodIngredId, int? excludeProdIngredId = null);
+
     public bool TokenNameExists(string tokenName, int userId, int? excludeTokenId = null)
     {
 lock (_lock)
@@ -622,6 +636,25 @@ lock (_lock)
         }
     }
 
+public AppProductIngredience? GetProducIngredById(int id)
+    {
+        lock (_lock)
+        {
+            var productIng = _productsIngredients.FirstOrDefault(item => item.Id == id);
+            return productIng is null
+                ? null
+                : new AppProductIngredience
+                {
+                    Id = productIng.Id,
+                    ProdIngredienceName = productIng.ProdIngredienceName,
+                    ProductId = productIng.ProductId,
+                    Name = productIng.Name
+                };
+        }
+    }
+
+    //AppProductIngredience? GetProducIngredById(int id);
+
      public AppTokens? GetTokenById(int id)
     {
         lock (_lock)
@@ -690,6 +723,21 @@ lock (_lock)
                 Price = NormalizePrice(product.Price),
                 CategoryId = product.CategoryId,
                 CategoryName = product.CategoryName
+            });
+        }
+    }
+
+    public void CreateProductIngredience(AppProductIngredience productIngredience)
+    {
+        lock (_lock)
+        {
+            var nextId = _productsIngredients.Count == 0 ? 1 : _productsIngredients.Max(item => item.Id) + 1;
+            _productsIngredients.Add(new AppProductIngredience
+            {
+                Id = nextId,
+                ProductId = productIngredience.ProductId,
+                Name = productIngredience.Name,
+                ProdIngredienceName = productIngredience.ProdIngredienceName
             });
         }
     }
@@ -1038,6 +1086,24 @@ public void SuggestionCreate(AppSuggestion suggest)
         }
     }
 
+
+    public bool UpdateProductIngred(AppProductIngredience productIng)
+    {
+        lock (_lock)
+        {
+            var existingProductIng = _productsIngredients.FirstOrDefault(item => item.Id == productIng.Id);
+            if (existingProductIng is null)
+            {
+                return false;
+            }
+
+            existingProductIng.ProdIngredienceName = productIng.ProdIngredienceName;
+            existingProductIng.ProductId = productIng.ProductId;
+            existingProductIng.Name = productIng.Name;
+            return true;
+        }
+    }
+
     public bool DeleteProduct(int id)
     {
         lock (_lock)
@@ -1049,6 +1115,21 @@ public void SuggestionCreate(AppSuggestion suggest)
             }
 
             _products.Remove(product);
+            return true;
+        }
+    }
+
+     public bool DeleteProductIngredients(int id)
+    {
+        lock (_lock)
+        {
+            var productIngr = _productsIngredients.FirstOrDefault(item => item.Id == id);
+            if (productIngr is null)
+            {
+                return false;
+            }
+
+            productIngr.ProdIngredienceName = string.Empty;
             return true;
         }
     }

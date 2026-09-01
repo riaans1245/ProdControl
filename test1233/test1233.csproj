@@ -6,6 +6,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <UseAppHost>false</UseAppHost>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="ClosedXML" />
   </ItemGroup>

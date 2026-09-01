@@ -95,8 +95,6 @@ public interface IUserStore
 
     AppCategory? GetCategoryById(int id);
 
-    //AppTokens? GetTokensById(int id);
-
     void CreateCategory(AppCategory category);
 
     bool UpdateCategory(AppCategory category);
@@ -104,6 +102,8 @@ public interface IUserStore
     bool DeleteCategory(int id);
 
     bool ProductNameExists(string productName, int categoryId, int? excludeProductId = null);
+
+    bool ProductIngredNameExists(string prodIngredienceName, int prodIngredId, int? excludeProdIngredId = null);
 
     bool TokenNameExists(string tokenName, int userId, int? excludeTokenId = null);
 
@@ -117,6 +117,8 @@ public interface IUserStore
 
     AppProduct? GetProductById(int id);
 
+    AppProductIngredience? GetProducIngredById(int id);
+
     AppTokens? GetTokenById(int id);
 
     AppNotification? GetDelNotificationById(int id);
@@ -125,9 +127,15 @@ public interface IUserStore
 
     void CreateProduct(AppProduct product);
 
+    void CreateProductIngredience(AppProductIngredience productIngredience);
+
     bool UpdateProduct(AppProduct product);
 
+    bool UpdateProductIngred(AppProductIngredience productIng);
+
     bool DeleteProduct(int id);
+
+    bool DeleteProductIngredients(int id);
 
     IReadOnlyCollection<AppRole> GetAllRoles();
 

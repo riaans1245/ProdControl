@@ -14,6 +14,8 @@ builder.Services
     {
         options.LoginPath = "/Account/Login";
         options.AccessDeniedPath = "/Account/AccessDenied";
+        options.ExpireTimeSpan = TimeSpan.FromDays(30);
+        options.SlidingExpiration = true;
     });
 builder.Services.AddSingleton<IUserStore, InMemoryUserStore>();
 builder.Services.AddScoped<ITokenApiClient, TokenApiClient>();

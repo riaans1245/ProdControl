@@ -176,7 +176,8 @@ public class AccountController(IUserStore userStore, IWebHostEnvironment webHost
             principal,
             new AuthenticationProperties
             {
-                IsPersistent = isPersistent
+                IsPersistent = isPersistent,
+                ExpiresUtc = isPersistent ? DateTimeOffset.UtcNow.AddDays(30) : null
             });
     }
 

@@ -6,7 +6,7 @@ using test1233.Services;
 namespace test1233.Controllers;
 
 
-public class ProductIngController(IUserStore userStore) : AppController(userStore)
+public class ProductIngredientUsersController(IUserStore userStore) : AppController(userStore)
 {
     private readonly IUserStore _userStore = userStore;
     private const int PageSize = 10;

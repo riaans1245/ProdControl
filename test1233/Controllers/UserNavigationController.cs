@@ -233,10 +233,20 @@ public class UserNavigationController(IUserStore userStore, ITokenApiClient toke
             DateTime.UtcNow,
             selectedApplications);
 
+
         if (receipt is null)
         {
             TempData["OrderPlaceMessage"] = "There are no order items ready for payment.";
             return RedirectToAction(nameof(UserOrderPlace));
+        }
+
+        foreach (var selectedApplication in selectedApplications)
+        {
+            var remainingToken = _userStore.GetTokenById(selectedApplication.TokenId);
+            if (remainingToken?.UserId == currentUser.Id)
+            {
+                _userStore.DeleteToken(selectedApplication.TokenId);
+            }
         }
 
         TempData["OrderPlaceMessage"] = $"Payment recorded successfully. Receipt {receipt.ReceiptNumber} was generated.";

@@ -64,8 +64,6 @@ public class InMemoryUserStore : IUserStore
         new AppProductIngredience { Id = 23, ProdIngredienceName = "OrangeJuice", ProductId = 5, Name = "OrangeJuice"},
         new AppProductIngredience { Id = 24, ProdIngredienceName = "Fish and Chips", ProductId = 5, Name = "Fish and Chips"},
         new AppProductIngredience { Id = 25, ProdIngredienceName = "Buffalo Wings", ProductId = 5, Name = "Buffalo Wings"},
-       
-
     ];
 
     private readonly List<AppCategory> _categories =

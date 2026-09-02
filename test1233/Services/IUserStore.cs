@@ -33,6 +33,8 @@ public interface IUserStore
 
     IReadOnlyCollection<AppCartItem> GetCartItemsForUser(int userId);
 
+    IReadOnlyCollection<AppCartItem> GetCartItemsAllUsers();
+
     IReadOnlyCollection<AppUsedToken> GetAllUsedTokens();
 
     IReadOnlyCollection<AppOrder> GetPendingOrdersForUser(int userId);
@@ -113,7 +115,7 @@ public interface IUserStore
 
     IReadOnlyCollection<AppProductIngredience> GetAllProductIngredience();
 
-    IReadOnlyCollection<AppProduct> GetAllUserOrders();
+    IReadOnlyCollection<AppOrder> GetAllOrders();
 
     AppProduct? GetProductById(int id);
 

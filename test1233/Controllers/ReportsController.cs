@@ -11,8 +11,6 @@ namespace test1233.Controllers;
 public class ReportsController(IUserStore userStore) : AppController(userStore)
 {
     private readonly IUserStore _userStore = userStore;
-
-
     public IActionResult Index()
     {
         return View();
@@ -58,9 +56,84 @@ public class ReportsController(IUserStore userStore) : AppController(userStore)
         return View(_userStore.GetAllSuggestions());
     }
 
-     public IActionResult Sales()
+     public IActionResult Sales(string searchString, int page = 1)
+     {
+        var rows = _userStore.GetAllOrders()
+            .SelectMany(order => order.Items.Select(item => new SalesReportRowViewModel
+            {
+                OrderId = order.OrderId,
+                UserId = order.UserId,
+                Username = order.Username,
+                PlacedAtUtc = order.PlacedAtUtc,
+                Name = item.Name,
+                CategoryName = item.CategoryName,
+                Quantity = item.Quantity,
+                Price = item.Price,
+                IsPaid = order.IsPaid
+            }));
+
+        return View(new SalesReportViewModel
+        {
+            Orders = new PagedListViewModel<SalesReportRowViewModel>
+            {
+                Items = rows.ToList().AsReadOnly(),
+                PageNumber = 1,
+                PageSize = int.MaxValue,
+                TotalItems = rows.Count()
+            },
+            TotalItemCount = rows.Sum(row => row.Quantity),
+            TotalSalesValue = rows.Sum(row => row.LineTotal)
+        });
+     }
+
+    public IActionResult ExportSales()
     {
-        return View(_userStore.GetAllUserOrders());
+        using var workbook = new XLWorkbook();
+        var worksheet = workbook.Worksheets.Add("Sales");
+
+        worksheet.Cell(1, 1).Value = "User";
+        worksheet.Cell(1, 2).Value = "User Id";
+        worksheet.Cell(1, 3).Value = "Order #";
+        worksheet.Cell(1, 4).Value = "Placed";
+        worksheet.Cell(1, 5).Value = "Name";
+        worksheet.Cell(1, 6).Value = "Category";
+        worksheet.Cell(1, 7).Value = "Quantity";
+        worksheet.Cell(1, 8).Value = "Unit Price";
+        worksheet.Cell(1, 9).Value = "Price";
+        worksheet.Cell(1, 10).Value = "Status";
+
+        var rows = _userStore.GetAllOrders()
+            .SelectMany(order => order.Items.Select(item => new SalesReportRowViewModel
+            {
+                OrderId = order.OrderId,
+                UserId = order.UserId,
+                Username = order.Username,
+                PlacedAtUtc = order.PlacedAtUtc,
+                Name = item.Name,
+                CategoryName = item.CategoryName,
+                Quantity = item.Quantity,
+                Price = item.Price,
+                IsPaid = order.IsPaid
+            }))
+            .ToList();
+
+        var rowNumber = 2;
+        foreach (var row in rows)
+        {
+            worksheet.Cell(rowNumber, 1).Value = row.Username;
+            worksheet.Cell(rowNumber, 2).Value = row.UserId;
+            worksheet.Cell(rowNumber, 3).Value = row.OrderId;
+            worksheet.Cell(rowNumber, 4).Value = row.PlacedAtUtc;
+            worksheet.Cell(rowNumber, 5).Value = row.Name;
+            worksheet.Cell(rowNumber, 6).Value = row.CategoryName;
+            worksheet.Cell(rowNumber, 7).Value = row.Quantity;
+            worksheet.Cell(rowNumber, 8).Value = row.Price;
+            worksheet.Cell(rowNumber, 9).Value = row.LineTotal;
+            worksheet.Cell(rowNumber, 10).Value = row.IsPaid ? "Paid" : "Pending";
+            rowNumber++;
+        }
+
+        return CreateExcelFile(workbook, "SalesReport.xlsx");
     }
 
      public IActionResult Tables()

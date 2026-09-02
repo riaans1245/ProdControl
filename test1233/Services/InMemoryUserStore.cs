@@ -247,6 +247,14 @@ public class InMemoryUserStore : IUserStore
         }
     }
 
+     public IReadOnlyCollection<AppCartItem> GetCartItemsAllUsers()
+    {
+        lock (_lock)
+        {
+            return _cartItems.ToList().AsReadOnly();
+        }
+    }
+
     public IReadOnlyCollection<AppCartItem> GetCartItemsForUser(int userId)
     {
         lock (_lock)
@@ -313,11 +321,15 @@ public class InMemoryUserStore : IUserStore
         }
     }
 
- public IReadOnlyCollection<AppProduct> GetAllUserOrders()
+    public IReadOnlyCollection<AppOrder> GetAllOrders()
     {
         lock (_lock)
         {
-            return _products.ToList().AsReadOnly();
+            return _orders
+                .OrderByDescending(order => order.PlacedAtUtc)
+                .Select(CloneOrder)
+                .ToList()
+                .AsReadOnly();
         }
     }
 

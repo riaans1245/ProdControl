@@ -6,6 +6,12 @@ public class UserOrderListViewModel
 
     public string SearchString { get; init; } = string.Empty;
 
+    public string SortOrder { get; init; } = string.Empty;
+
+    public string NameSortOrder { get; init; } = "name_asc";
+
+    public string CategorySortOrder { get; init; } = "category_asc";
+
     public int PendingOrderCount { get; init; }
 
     public decimal PendingOrderTotal { get; init; }

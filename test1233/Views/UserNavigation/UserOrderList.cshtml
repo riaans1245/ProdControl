@@ -4,6 +4,21 @@
     ViewData["Title"] = "My Orders";
 }
 
+<style>
+    .sort-header-link {
+        display: inline-block;
+        padding: 0.3rem 0.7rem;
+        border-radius: 999px;
+        color: #817d7d !important;
+        font-weight: 600;
+    }
+
+    .sort-header-link:hover,
+    .sort-header-link:focus {
+        color: #0c062b !important;
+    }
+</style>
+
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -27,6 +42,7 @@
         <div class="col-auto">
             <button method="get" type="submit" class="btn search-action-button">Search</button>
         </div>
+        <input type="hidden" name="sortOrder" value="@Model.SortOrder" />
         <div class="col-auto">
             <a asp-action="UserOrderList" class="btn btn-outline-secondary clear-action-button">Clear</a>
         </div>
@@ -50,8 +66,22 @@
                             <tr>
                                 <th>Order #</th>
                                 <th>Placed</th>
-                                <th>Name</th>
-                                <th>Category</th>
+                                <th>
+                                    <a asp-action="UserOrderList"
+                                       asp-route-searchString="@Model.SearchString"
+                                       asp-route-sortOrder="@Model.NameSortOrder"
+                                       class="sort-header-link text-decoration-none">
+                                        Name
+                                    </a>
+                                </th>
+                                <th>
+                                    <a asp-action="UserOrderList"
+                                       asp-route-searchString="@Model.SearchString"
+                                       asp-route-sortOrder="@Model.CategorySortOrder"
+                                       class="sort-header-link text-decoration-none">
+                                        Category
+                                    </a>
+                                </th>
                                 <th>Quantity</th>
                                 <th>Unit Price</th>
                                 <th>Price</th>
@@ -84,6 +114,7 @@
                                     <a class="page-link"
                                        asp-action="UserOrderList"
                                        asp-route-searchString="@Model.SearchString"
+                                       asp-route-sortOrder="@Model.SortOrder"
                                        asp-route-page="@(Model.Orders.PageNumber - 1)">Previous</a>
                                 </li>
                                 @for (var pageNumber = 1; pageNumber <= Model.Orders.TotalPages; pageNumber++)
@@ -92,6 +123,7 @@
                                         <a class="page-link"
                                            asp-action="UserOrderList"
                                            asp-route-searchString="@Model.SearchString"
+                                           asp-route-sortOrder="@Model.SortOrder"
                                            asp-route-page="@pageNumber">@pageNumber</a>
                                     </li>
                                 }
@@ -99,6 +131,7 @@
                                     <a class="page-link"
                                        asp-action="UserOrderList"
                                        asp-route-searchString="@Model.SearchString"
+                                       asp-route-sortOrder="@Model.SortOrder"
                                        asp-route-page="@(Model.Orders.PageNumber + 1)">Next</a>
                                 </li>
                             </ul>

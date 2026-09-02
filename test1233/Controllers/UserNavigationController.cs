@@ -138,7 +138,7 @@ public class UserNavigationController(IUserStore userStore, ITokenApiClient toke
         return RedirectToAction(nameof(UserNotificationsList));
     }
 
-    public IActionResult UserOrderList(string searchString, int page = 1)
+    public IActionResult UserOrderList(string searchString, string sortOrder = "", int page = 1)
     {
         var currentUser = GetCurrentUser();
         if (currentUser is null)
@@ -166,6 +166,29 @@ public class UserNavigationController(IUserStore userStore, ITokenApiClient toke
                 row.Name.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
                 row.CategoryName.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase));
         }
+
+        rows = sortOrder switch
+        {
+            "name_asc" => rows
+                .OrderBy(row => row.Name)
+                .ThenBy(row => row.CategoryName)
+                .ThenBy(row => row.OrderId),
+            "name_desc" => rows
+                .OrderByDescending(row => row.Name)
+                .ThenBy(row => row.CategoryName)
+                .ThenBy(row => row.OrderId),
+            "category_asc" => rows
+                .OrderBy(row => row.CategoryName)
+                .ThenBy(row => row.Name)
+                .ThenBy(row => row.OrderId),
+            "category_desc" => rows
+                .OrderByDescending(row => row.CategoryName)
+                .ThenBy(row => row.Name)
+                .ThenBy(row => row.OrderId),
+            _ => rows
+                .OrderBy(row => row.OrderId)
+                .ThenBy(row => row.Name)
+        };
 
         var filteredRows = rows.ToList();
         var totalItems = filteredRows.Count;
@@ -195,6 +218,9 @@ public class UserNavigationController(IUserStore userStore, ITokenApiClient toke
                 TotalItems = totalItems
             },
             SearchString = searchString ?? string.Empty,
+            SortOrder = sortOrder,
+            NameSortOrder = sortOrder == "name_asc" ? "name_desc" : "name_asc",
+            CategorySortOrder = sortOrder == "category_asc" ? "category_desc" : "category_asc",
             PendingOrderCount = pendingOrderCount,
             PendingOrderTotal = pendingOrderTotal
         });

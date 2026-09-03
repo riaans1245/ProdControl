@@ -5,8 +5,28 @@
     var isUser = User.IsInRole("Users");
     
     var currentSearch = ViewData["CurrentSearch"] as string ?? string.Empty;
+    var currentSort = ViewData["CurrentSort"] as string ?? string.Empty;
+    var suggestionFromSort = ViewData["SuggestionFromSort"] as string ?? "from_asc";
+    var suggestionSort = ViewData["SuggestionSort"] as string ?? "suggestion_asc";
     ViewData["Title"] = "Suggestion";
 }
+
+<style>
+    .sort-header-link {
+        display: inline;
+        padding: 0;
+        border-radius: 0;
+        color: #817d7d !important;
+        font-weight: 600;
+        line-height: inherit;
+        vertical-align: baseline;
+    }
+
+    .sort-header-link:hover,
+    .sort-header-link:focus {
+        color: #0c062b !important;
+    }
+</style>
 
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -28,6 +48,7 @@
         <div class="col-auto">
             <button asp-action="Index" type="submit" class="btn search-action-button">Search</button>
         </div>
+        <input type="hidden" name="sortOrder" value="@currentSort" />
         <div class="col-auto">
             <a asp-action="Index" class="btn btn-outline-secondary clear-action-button">Clear</a>
         </div>
@@ -49,8 +70,12 @@
                         <table class="table table-striped align-middle mb-0">
                             <thead>
                                 <tr>
-                                    <th>Suggestion From</th>
-                                    <th>Suggestion</th>
+                                    <th>
+                                        <a class="sort-header-link text-decoration-none" asp-action="Index" asp-route-searchString="@currentSearch" asp-route-sortOrder="@suggestionFromSort">Suggestion From</a>
+                                    </th>
+                                    <th>
+                                        <a class="sort-header-link text-decoration-none" asp-action="Index" asp-route-searchString="@currentSearch" asp-route-sortOrder="@suggestionSort">Suggestion</a>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -69,8 +94,18 @@
                         <table class="table table-striped align-middle mb-0">
                             <thead>
                                 <tr>
-                                    <th>Suggestion From</th>
-                                    <th>Suggestion</th>
+                                    <th>
+                                        <a class="sort-header-link text-decoration-none"
+                                           asp-action="Index"
+                                           asp-route-searchString="@currentSearch"
+                                           asp-route-sortOrder="@suggestionFromSort">Suggestion From</a>
+                                    </th>
+                                    <th>
+                                        <a class="sort-header-link text-decoration-none"
+                                           asp-action="Index"
+                                           asp-route-searchString="@currentSearch"
+                                           asp-route-sortOrder="@suggestionSort">Suggestion</a>
+                                    </th>
                                     <th class="text-end">Actions</th>
                                 </tr>
                             </thead>
@@ -102,6 +137,7 @@
                                 <a class="page-link"
                                    asp-action="Index"
                                    asp-route-page="@(Model.PageNumber - 1)"
+                                   asp-route-sortOrder="@currentSort"
                                    asp-route-searchString="@currentSearch">Previous</a>
                             </li>
                             @for (var pageNumber = 1; pageNumber <= Model.TotalPages; pageNumber++)
@@ -110,6 +146,7 @@
                                     <a class="page-link"
                                        asp-action="Index"
                                        asp-route-page="@pageNumber"
+                                       asp-route-sortOrder="@currentSort"
                                        asp-route-searchString="@currentSearch">@pageNumber</a>
                                 </li>
                             }
@@ -117,6 +154,7 @@
                                 <a class="page-link"
                                    asp-action="Index"
                                    asp-route-page="@(Model.PageNumber + 1)"
+                                   asp-route-sortOrder="@currentSort"
                                    asp-route-searchString="@currentSearch">Next</a>
                             </li>
                         </ul>

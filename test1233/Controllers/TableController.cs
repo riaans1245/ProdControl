@@ -10,7 +10,7 @@ public class TableController(IUserStore userStore) : AppController(userStore)
     private readonly IUserStore _userStore = userStore;
     private const int PageSize = 10;
 
-    public IActionResult Index(int page = 1)
+    public IActionResult Index(string sortOrder = "", int page = 1)
     {
         var currentUser = GetCurrentUser();
         if (currentUser is null)
@@ -18,11 +18,56 @@ public class TableController(IUserStore userStore) : AppController(userStore)
             return RedirectToAction("Login", "Account");
         }
 
-        var tables = _userStore.GetAllTables().ToList();
-        var totalItems = tables.Count;
+        ViewData["CurrentSort"] = sortOrder;
+        ViewData["TableNameSort"] = sortOrder == "name_asc" ? "name_desc" : "name_asc";
+        ViewData["TableNumberSort"] = sortOrder == "number_asc" ? "number_desc" : "number_asc";
+        ViewData["UserSort"] = sortOrder == "user_asc" ? "user_desc" : "user_asc";
+        ViewData["BookedForSort"] = sortOrder == "bookedfor_asc" ? "bookedfor_desc" : "bookedfor_asc";
+
+        IEnumerable<AppTables> tables = _userStore.GetAllTables();
+        tables = sortOrder switch
+        {
+            "name_asc" => tables
+                .OrderBy(table => table.TableName)
+                .ThenBy(table => table.TableNumber)
+                .ThenBy(table => table.TableId),
+            "name_desc" => tables
+                .OrderByDescending(table => table.TableName)
+                .ThenBy(table => table.TableNumber)
+                .ThenBy(table => table.TableId),
+            "number_asc" => tables
+                .OrderBy(table => table.TableNumber)
+                .ThenBy(table => table.TableName)
+                .ThenBy(table => table.TableId),
+            "number_desc" => tables
+                .OrderByDescending(table => table.TableNumber)
+                .ThenBy(table => table.TableName)
+                .ThenBy(table => table.TableId),
+            "user_asc" => tables
+                .OrderBy(table => table.Username)
+                .ThenBy(table => table.TableName)
+                .ThenBy(table => table.TableId),
+            "user_desc" => tables
+                .OrderByDescending(table => table.Username)
+                .ThenBy(table => table.TableName)
+                .ThenBy(table => table.TableId),
+            "bookedfor_asc" => tables
+                .OrderBy(table => table.BookedForUtc ?? DateTime.MaxValue)
+                .ThenBy(table => table.TableName)
+                .ThenBy(table => table.TableId),
+            "bookedfor_desc" => tables
+                .OrderByDescending(table => table.BookedForUtc ?? DateTime.MinValue)
+                .ThenBy(table => table.TableName)
+                .ThenBy(table => table.TableId),
+            _ => tables
+                .OrderBy(table => table.TableId)
+        };
+
+        var tableList = tables.ToList();
+        var totalItems = tableList.Count;
         var totalPages = totalItems == 0 ? 1 : (int)Math.Ceiling(totalItems / (double)PageSize);
         var pageNumber = Math.Min(Math.Max(1, page), totalPages);
-        var items = tables
+        var items = tableList
             .Skip((pageNumber - 1) * PageSize)
             .Take(PageSize)
             .ToList()

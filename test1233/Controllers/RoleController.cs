@@ -11,9 +11,12 @@ public class RoleController(IUserStore userStore) : AppController(userStore)
     private readonly IUserStore _userStore = userStore;
     private const int PageSize = 10;
 
-    public IActionResult Index(string searchString, int page = 1)
+    public IActionResult Index(string searchString, string sortOrder = "", int page = 1)
     {
         ViewData["CurrentSearch"] = searchString;
+        ViewData["CurrentSort"] = sortOrder;
+        ViewData["NameSort"] = sortOrder == "name_asc" ? "name_desc" : "name_asc";
+        ViewData["CodeSort"] = sortOrder == "code_asc" ? "code_desc" : "code_asc";
 
         var roles = from role in _userStore.GetAllRoles()
                     select role;
@@ -24,6 +27,29 @@ public class RoleController(IUserStore userStore) : AppController(userStore)
             roles = roles.Where(role =>
                 role.Name.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase));
         }
+
+        roles = sortOrder switch
+        {
+            "name_asc" => roles
+                .OrderBy(role => role.Name)
+                .ThenBy(role => role.IdentityCode)
+                .ThenBy(role => role.Id),
+            "name_desc" => roles
+                .OrderByDescending(role => role.Name)
+                .ThenBy(role => role.IdentityCode)
+                .ThenBy(role => role.Id),
+            "code_asc" => roles
+                .OrderBy(role => role.IdentityCode)
+                .ThenBy(role => role.Name)
+                .ThenBy(role => role.Id),
+            "code_desc" => roles
+                .OrderByDescending(role => role.IdentityCode)
+                .ThenBy(role => role.Name)
+                .ThenBy(role => role.Id),
+            _ => roles
+                .OrderBy(role => role.Name)
+                .ThenBy(role => role.Id)
+        };
 
         var filteredRoles = roles.ToList();
         var totalItems = filteredRoles.Count;

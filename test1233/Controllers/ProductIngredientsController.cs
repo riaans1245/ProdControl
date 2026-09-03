@@ -12,9 +12,12 @@ public class ProductIngredientsController(IUserStore userStore) : AppController(
     private readonly IUserStore _userStore = userStore;
     private const int PageSize = 10;
 
-    public IActionResult Index(string searchString, int page = 1)
+    public IActionResult Index(string searchString, string sortOrder = "", int page = 1)
     {
         ViewData["CurrentSearch"] = searchString;
+        ViewData["CurrentSort"] = sortOrder;
+        ViewData["ProductSort"] = sortOrder == "product_asc" ? "product_desc" : "product_asc";
+        ViewData["IngredientsSort"] = sortOrder == "ingredients_asc" ? "ingredients_desc" : "ingredients_asc";
 
         var productIngredients = from item in _userStore.GetAllProductIngredience()
                                  select item;
@@ -26,6 +29,29 @@ public class ProductIngredientsController(IUserStore userStore) : AppController(
                 item.Name.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
                 item.ProdIngredienceName.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase));
         }
+
+        productIngredients = sortOrder switch
+        {
+            "product_asc" => productIngredients
+                .OrderBy(item => item.Name)
+                .ThenBy(item => item.ProdIngredienceName)
+                .ThenBy(item => item.Id),
+            "product_desc" => productIngredients
+                .OrderByDescending(item => item.Name)
+                .ThenBy(item => item.ProdIngredienceName)
+                .ThenBy(item => item.Id),
+            "ingredients_asc" => productIngredients
+                .OrderBy(item => item.ProdIngredienceName)
+                .ThenBy(item => item.Name)
+                .ThenBy(item => item.Id),
+            "ingredients_desc" => productIngredients
+                .OrderByDescending(item => item.ProdIngredienceName)
+                .ThenBy(item => item.Name)
+                .ThenBy(item => item.Id),
+            _ => productIngredients
+                .OrderBy(item => item.Name)
+                .ThenBy(item => item.Id)
+        };
 
         var items = productIngredients
             .ToList();

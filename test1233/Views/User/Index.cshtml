@@ -3,7 +3,28 @@
 @{
     ViewData["Title"] = "Users";
     var currentSearch = ViewData["CurrentSearch"] as string ?? string.Empty;
+    var currentSort = ViewData["CurrentSort"] as string ?? string.Empty;
+    var surnameSort = ViewData["SurnameSort"] as string ?? "surname_asc";
+    var emailSort = ViewData["EmailSort"] as string ?? "email_asc";
+    var cellSort = ViewData["CellSort"] as string ?? "cell_asc";
 }
+
+<style>
+    .sort-header-link {
+        display: inline;
+        padding: 0;
+        border-radius: 0;
+        color: #817d7d !important;
+        font-weight: 600;
+        line-height: inherit;
+        vertical-align: baseline;
+    }
+
+    .sort-header-link:hover,
+    .sort-header-link:focus {
+        color: #0c062b !important;
+    }
+</style>
 
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -22,6 +43,7 @@
         <div class="col-auto">
             <button asp-action="Index" type="submit" class="btn search-action-button">Search</button>
         </div>
+        <input type="hidden" name="sortOrder" value="@currentSort" />
         <div class="col-auto">
             <a asp-action="Index" class="btn btn-outline-secondary clear-action-button">Clear</a>
         </div>
@@ -42,9 +64,24 @@
                         <thead>
                             <tr>
                                 <th>Name</th>
-                                <th>Surname</th>
-                                <th>Email address</th>
-                                <th>Cell no</th>
+                                <th>
+                                    <a class="sort-header-link text-decoration-none"
+                                       asp-action="Index"
+                                       asp-route-searchString="@currentSearch"
+                                       asp-route-sortOrder="@surnameSort">Surname</a>
+                                </th>
+                                <th>
+                                    <a class="sort-header-link text-decoration-none"
+                                       asp-action="Index"
+                                       asp-route-searchString="@currentSearch"
+                                       asp-route-sortOrder="@emailSort">Email address</a>
+                                </th>
+                                <th>
+                                    <a class="sort-header-link text-decoration-none"
+                                       asp-action="Index"
+                                       asp-route-searchString="@currentSearch"
+                                       asp-route-sortOrder="@cellSort">Cell no</a>
+                                </th>
                                 <th>User name</th>
                                 <th>Password</th>
                                 <th>Role</th>
@@ -80,6 +117,7 @@
                                 <a class="page-link"
                                    asp-action="Index"
                                    asp-route-page="@(Model.PageNumber - 1)"
+                                   asp-route-sortOrder="@currentSort"
                                    asp-route-searchString="@currentSearch">Previous</a>
                             </li>
                             @for (var pageNumber = 1; pageNumber <= Model.TotalPages; pageNumber++)
@@ -88,6 +126,7 @@
                                     <a class="page-link"
                                        asp-action="Index"
                                        asp-route-page="@pageNumber"
+                                       asp-route-sortOrder="@currentSort"
                                        asp-route-searchString="@currentSearch">@pageNumber</a>
                                 </li>
                             }
@@ -95,6 +134,7 @@
                                 <a class="page-link"
                                    asp-action="Index"
                                    asp-route-page="@(Model.PageNumber + 1)"
+                                   asp-route-sortOrder="@currentSort"
                                    asp-route-searchString="@currentSearch">Next</a>
                             </li>
                         </ul>

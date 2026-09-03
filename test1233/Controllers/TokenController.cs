@@ -11,9 +11,13 @@ public class TokenController(IUserStore userStore, ITokenApiClient tokenApiClien
     private readonly ITokenApiClient _tokenApiClient = tokenApiClient;
     private const int PageSize = 10;
 
-    public IActionResult Index(string searchString, int page = 1)
+    public IActionResult Index(string searchString, string sortOrder = "", int page = 1)
     {
         ViewData["CurrentSearch"] = searchString;
+        ViewData["CurrentSort"] = sortOrder;
+        ViewData["TokenSort"] = sortOrder == "token_asc" ? "token_desc" : "token_asc";
+        ViewData["UserSort"] = sortOrder == "user_asc" ? "user_desc" : "user_asc";
+        ViewData["ProductSort"] = sortOrder == "product_asc" ? "product_desc" : "product_asc";
 
         var tokens = from token in _userStore.GetAllTokens()
                      select token;
@@ -27,6 +31,36 @@ public class TokenController(IUserStore userStore, ITokenApiClient tokenApiClien
                 token.ProductName.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
                 token.UserId.ToString().Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase));
         }
+
+        tokens = sortOrder switch
+        {
+            "token_asc" => tokens
+                .OrderBy(token => token.Token)
+                .ThenBy(token => token.Username)
+                .ThenBy(token => token.TokenId),
+            "token_desc" => tokens
+                .OrderByDescending(token => token.Token)
+                .ThenBy(token => token.Username)
+                .ThenBy(token => token.TokenId),
+            "user_asc" => tokens
+                .OrderBy(token => token.Username)
+                .ThenBy(token => token.Token)
+                .ThenBy(token => token.TokenId),
+            "user_desc" => tokens
+                .OrderByDescending(token => token.Username)
+                .ThenBy(token => token.Token)
+                .ThenBy(token => token.TokenId),
+            "product_asc" => tokens
+                .OrderBy(token => token.ProductName)
+                .ThenBy(token => token.Token)
+                .ThenBy(token => token.TokenId),
+            "product_desc" => tokens
+                .OrderByDescending(token => token.ProductName)
+                .ThenBy(token => token.Token)
+                .ThenBy(token => token.TokenId),
+            _ => tokens
+                .OrderBy(token => token.TokenId)
+        };
 
         var filteredTokens = tokens.ToList();
         var totalItems = filteredTokens.Count;

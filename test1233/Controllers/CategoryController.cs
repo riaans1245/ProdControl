@@ -10,11 +10,13 @@ public class CategoryController(IUserStore userStore) : AppController(userStore)
 {
     private readonly IUserStore _userStore = userStore;
 
-private const int PageSize = 10;
+    private const int PageSize = 10;
 
-   public IActionResult Index(string searchString, int page = 1)
+    public IActionResult Index(string searchString, string sortOrder = "", int page = 1)
     {
         ViewData["CurrentSearch"] = searchString;
+        ViewData["CurrentSort"] = sortOrder;
+        ViewData["NameSort"] = sortOrder == "name_asc" ? "name_desc" : "name_asc";
 
         var categories = from u in _userStore.GetAllCategories()
                     select u;
@@ -25,6 +27,19 @@ private const int PageSize = 10;
             categories = categories.Where(u =>
                 u.Name.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase));
         }
+
+        categories = sortOrder switch
+        {
+            "name_asc" => categories
+                .OrderBy(category => category.Name)
+                .ThenBy(category => category.Id),
+            "name_desc" => categories
+                .OrderByDescending(category => category.Name)
+                .ThenBy(category => category.Id),
+            _ => categories
+                .OrderBy(category => category.Name)
+                .ThenBy(category => category.Id)
+        };
 
         var filteredcategories = categories.ToList();
         var totalItems = filteredcategories.Count;

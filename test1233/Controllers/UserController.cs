@@ -13,9 +13,13 @@ public class UserController(IUserStore userStore, IWebHostEnvironment webHostEnv
     private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
     private const int PageSize = 10;
 
-    public IActionResult Index(string searchString, int page = 1)
+    public IActionResult Index(string searchString, string sortOrder = "", int page = 1)
     {
         ViewData["CurrentSearch"] = searchString;
+        ViewData["CurrentSort"] = sortOrder;
+        ViewData["SurnameSort"] = sortOrder == "surname_asc" ? "surname_desc" : "surname_asc";
+        ViewData["EmailSort"] = sortOrder == "email_asc" ? "email_desc" : "email_asc";
+        ViewData["CellSort"] = sortOrder == "cell_asc" ? "cell_desc" : "cell_asc";
 
         var users = from u in _userStore.GetAllUsers()
                     select u;
@@ -29,6 +33,38 @@ public class UserController(IUserStore userStore, IWebHostEnvironment webHostEnv
                 u.Username.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
                 u.EmailAddress.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase));
         }
+
+        users = sortOrder switch
+        {
+            "surname_asc" => users
+                .OrderBy(u => u.Surname)
+                .ThenBy(u => u.Name)
+                .ThenBy(u => u.Id),
+            "surname_desc" => users
+                .OrderByDescending(u => u.Surname)
+                .ThenBy(u => u.Name)
+                .ThenBy(u => u.Id),
+            "email_asc" => users
+                .OrderBy(u => u.EmailAddress)
+                .ThenBy(u => u.Name)
+                .ThenBy(u => u.Id),
+            "email_desc" => users
+                .OrderByDescending(u => u.EmailAddress)
+                .ThenBy(u => u.Name)
+                .ThenBy(u => u.Id),
+            "cell_asc" => users
+                .OrderBy(u => u.CellNo)
+                .ThenBy(u => u.Name)
+                .ThenBy(u => u.Id),
+            "cell_desc" => users
+                .OrderByDescending(u => u.CellNo)
+                .ThenBy(u => u.Name)
+                .ThenBy(u => u.Id),
+            _ => users
+                .OrderBy(u => u.Name)
+                .ThenBy(u => u.Surname)
+                .ThenBy(u => u.Id)
+        };
 
         var filteredUsers = users.ToList();
         var totalItems = filteredUsers.Count;

@@ -10,9 +10,12 @@ public class NotificationController(IUserStore userStore) : AppController(userSt
     private readonly IUserStore _userStore = userStore;
     private const int PageSize = 10;
 
-    public IActionResult Index(string searchString, int page = 1)
+    public IActionResult Index(string searchString, string sortOrder = "", int page = 1)
     {
         ViewData["CurrentSearch"] = searchString;
+        ViewData["CurrentSort"] = sortOrder;
+        ViewData["NotificationSort"] = sortOrder == "notification_asc" ? "notification_desc" : "notification_asc";
+        ViewData["UserSort"] = sortOrder == "user_asc" ? "user_desc" : "user_asc";
 
         var notifications = from notification in _userStore.GetAllNotifications()
                             select notification;
@@ -23,6 +26,28 @@ public class NotificationController(IUserStore userStore) : AppController(userSt
             notifications = notifications.Where(notification =>
                 notification.UserName.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase));
         }
+
+        notifications = sortOrder switch
+        {
+            "notification_asc" => notifications
+                .OrderBy(notification => notification.Notification)
+                .ThenBy(notification => notification.UserName)
+                .ThenBy(notification => notification.NotificationId),
+            "notification_desc" => notifications
+                .OrderByDescending(notification => notification.Notification)
+                .ThenBy(notification => notification.UserName)
+                .ThenBy(notification => notification.NotificationId),
+            "user_asc" => notifications
+                .OrderBy(notification => notification.UserName)
+                .ThenBy(notification => notification.Notification)
+                .ThenBy(notification => notification.NotificationId),
+            "user_desc" => notifications
+                .OrderByDescending(notification => notification.UserName)
+                .ThenBy(notification => notification.Notification)
+                .ThenBy(notification => notification.NotificationId),
+            _ => notifications
+                .OrderBy(notification => notification.NotificationId)
+        };
 
         var filteredNotifications = notifications.ToList();
         var totalItems = filteredNotifications.Count;

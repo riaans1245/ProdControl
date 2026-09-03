@@ -670,9 +670,9 @@ body {
 }
 
 .admin-block-card .left-nav-gallery-icon {
-  width: 22px;
-  height: 22px;
-  flex: 0 0 22px;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
   margin-top: 0;
 }
 
@@ -806,10 +806,10 @@ body {
 
 .left-nav-gallery-icon {
   display: block;
-  width: 18px;
-  height: 18px;
-  flex: 0 0 18px;
-  border-radius: 0.35rem;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  border-radius: 0.45rem;
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
@@ -846,6 +846,10 @@ body {
 }
 
 .left-nav-gallery-card-roles .left-nav-gallery-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3.5 18.5 6v5.7c0 4-2.6 7.4-6.5 8.8-3.9-1.4-6.5-4.8-6.5-8.8V6z' fill='%234d8d96'/%3E%3Cpath d='M9 11.2h6M9 14.3h4.2' stroke='%23eefbfd' stroke-width='1.8' stroke-linecap='round'/%3E%3Ccircle cx='15.9' cy='8.8' r='1.4' fill='%2386b8bf'/%3E%3C/svg%3E");
+}
+
+.left-nav-gallery-card-reports .left-nav-gallery-icon {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3l2.2 4.4 4.8.7-3.5 3.4.8 4.8-4.3-2.3-4.3 2.3.8-4.8L5 8.1l4.8-.7z' fill='%237764c5'/%3E%3Crect x='7' y='17.5' width='10' height='2.5' rx='1.2' fill='%23b29ae2'/%3E%3C/svg%3E");
 }
 

@@ -3,7 +3,28 @@
 @{
     ViewData["Title"] = "Products";
     var currentSearch = ViewData["CurrentSearch"] as string ?? string.Empty;
+    var currentSort = ViewData["CurrentSort"] as string ?? string.Empty;
+    var productSort = ViewData["ProductSort"] as string ?? "product_asc";
+    var priceSort = ViewData["PriceSort"] as string ?? "price_asc";
+    var categorySort = ViewData["CategorySort"] as string ?? "category_asc";
 }
+
+<style>
+    .sort-header-link {
+        display: inline;
+        padding: 0;
+        border-radius: 0;
+        color: #817d7d !important;
+        font-weight: 600;
+        line-height: inherit;
+        vertical-align: baseline;
+    }
+
+    .sort-header-link:hover,
+    .sort-header-link:focus {
+        color: #0c062b !important;
+    }
+</style>
 
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -22,6 +43,7 @@
         <div class="col-auto">
             <button asp-action="Index" type="submit" class="btn search-action-button">Search</button>
         </div>
+        <input type="hidden" name="sortOrder" value="@currentSort" />
         <div class="col-auto">
             <a asp-action="Index" class="btn btn-outline-secondary clear-action-button">Clear</a>
         </div>
@@ -43,9 +65,24 @@
                         <thead>
                             <tr>
                                 @* <th>Id</th> *@
-                                <th>Product</th>
-                                <th>Price</th>
-                                <th>Category</th>
+                                <th>
+                                    <a class="sort-header-link text-decoration-none"
+                                       asp-action="Index"
+                                       asp-route-searchString="@currentSearch"
+                                       asp-route-sortOrder="@productSort">Product</a>
+                                </th>
+                                <th>
+                                    <a class="sort-header-link text-decoration-none"
+                                       asp-action="Index"
+                                       asp-route-searchString="@currentSearch"
+                                       asp-route-sortOrder="@priceSort">Price</a>
+                                </th>
+                                <th>
+                                    <a class="sort-header-link text-decoration-none"
+                                       asp-action="Index"
+                                       asp-route-searchString="@currentSearch"
+                                       asp-route-sortOrder="@categorySort">Category</a>
+                                </th>
                                 <th class="text-end">Actions</th>
                             </tr>
                         </thead>
@@ -72,16 +109,28 @@
                 <nav aria-label="Product pagination">
                     <ul class="pagination mb-0">
                         <li class="page-item @(Model.HasPreviousPage ? string.Empty : "disabled")">
-                            <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageNumber - 1)">Previous</a>
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-page="@(Model.PageNumber - 1)"
+                               asp-route-sortOrder="@currentSort"
+                               asp-route-searchString="@currentSearch">Previous</a>
                         </li>
                         @for (var pageNumber = 1; pageNumber <= Model.TotalPages; pageNumber++)
                         {
                             <li class="page-item @(pageNumber == Model.PageNumber ? "active" : string.Empty)">
-                                <a class="page-link" asp-action="Index" asp-route-page="@pageNumber">@pageNumber</a>
+                                <a class="page-link"
+                                   asp-action="Index"
+                                   asp-route-page="@pageNumber"
+                                   asp-route-sortOrder="@currentSort"
+                                   asp-route-searchString="@currentSearch">@pageNumber</a>
                             </li>
                         }
                         <li class="page-item @(Model.HasNextPage ? string.Empty : "disabled")">
-                            <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageNumber + 1)">Next</a>
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-page="@(Model.PageNumber + 1)"
+                               asp-route-sortOrder="@currentSort"
+                               asp-route-searchString="@currentSearch">Next</a>
                         </li>
                     </ul>
                 </nav>

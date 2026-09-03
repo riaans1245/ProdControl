@@ -12,9 +12,13 @@ public class ProductController(IUserStore userStore) : AppController(userStore)
     private readonly IUserStore _userStore = userStore;
     private const int PageSize = 10;
 
-    public IActionResult Index(string searchString, int page = 1)
+    public IActionResult Index(string searchString, string sortOrder = "", int page = 1)
     {
         ViewData["CurrentSearch"] = searchString;
+        ViewData["CurrentSort"] = sortOrder;
+        ViewData["ProductSort"] = sortOrder == "product_asc" ? "product_desc" : "product_asc";
+        ViewData["PriceSort"] = sortOrder == "price_asc" ? "price_desc" : "price_asc";
+        ViewData["CategorySort"] = sortOrder == "category_asc" ? "category_desc" : "category_asc";
 
         var product = from u in _userStore.GetAllProducts()
                     select u;
@@ -26,6 +30,37 @@ public class ProductController(IUserStore userStore) : AppController(userStore)
                 u.Name.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
                 u.CategoryName.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase));
         }
+
+        product = sortOrder switch
+        {
+            "product_asc" => product
+                .OrderBy(u => u.Name)
+                .ThenBy(u => u.CategoryName)
+                .ThenBy(u => u.Id),
+            "product_desc" => product
+                .OrderByDescending(u => u.Name)
+                .ThenBy(u => u.CategoryName)
+                .ThenBy(u => u.Id),
+            "price_asc" => product
+                .OrderBy(u => u.Price)
+                .ThenBy(u => u.Name)
+                .ThenBy(u => u.Id),
+            "price_desc" => product
+                .OrderByDescending(u => u.Price)
+                .ThenBy(u => u.Name)
+                .ThenBy(u => u.Id),
+            "category_asc" => product
+                .OrderBy(u => u.CategoryName)
+                .ThenBy(u => u.Name)
+                .ThenBy(u => u.Id),
+            "category_desc" => product
+                .OrderByDescending(u => u.CategoryName)
+                .ThenBy(u => u.Name)
+                .ThenBy(u => u.Id),
+            _ => product
+                .OrderBy(u => u.Name)
+                .ThenBy(u => u.Id)
+        };
 
         var filteredUsers = product.ToList();
         var totalItems = filteredUsers.Count;

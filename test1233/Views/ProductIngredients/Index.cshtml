@@ -3,11 +3,31 @@
 @{
     ViewData["Title"] = "Product ingredients";
     var currentSearch = ViewData["CurrentSearch"] as string ?? string.Empty;
+    var currentSort = ViewData["CurrentSort"] as string ?? string.Empty;
+    var productSort = ViewData["ProductSort"] as string ?? "product_asc";
+    var ingredientsSort = ViewData["IngredientsSort"] as string ?? "ingredients_asc";
     var pageNumber = ViewData["PageNumber"] as int? ?? 1;
     var totalPages = ViewData["TotalPages"] as int? ?? 1;
     var hasPreviousPage = pageNumber > 1;
     var hasNextPage = pageNumber < totalPages;
 }
+
+<style>
+    .sort-header-link {
+        display: inline;
+        padding: 0;
+        border-radius: 0;
+        color: #817d7d !important;
+        font-weight: 600;
+        line-height: inherit;
+        vertical-align: baseline;
+    }
+
+    .sort-header-link:hover,
+    .sort-header-link:focus {
+        color: #0c062b !important;
+    }
+</style>
 
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -26,6 +46,7 @@
         <div class="col-auto">
             <button asp-action="Index" type="submit" class="btn search-action-button">Search</button>
         </div>
+        <input type="hidden" name="sortOrder" value="@currentSort" />
         <div class="col-auto">
             <a asp-action="Index" class="btn btn-outline-secondary clear-action-button">Clear</a>
         </div>
@@ -45,8 +66,18 @@
                     <table class="table table-striped align-middle mb-0">
                         <thead>
                             <tr>
-                                <th>Product</th>
-                                <th>Ingredients</th>
+                                <th>
+                                    <a class="sort-header-link text-decoration-none"
+                                       asp-action="Index"
+                                       asp-route-searchString="@currentSearch"
+                                       asp-route-sortOrder="@productSort">Product</a>
+                                </th>
+                                <th>
+                                    <a class="sort-header-link text-decoration-none"
+                                       asp-action="Index"
+                                       asp-route-searchString="@currentSearch"
+                                       asp-route-sortOrder="@ingredientsSort">Ingredients</a>
+                                </th>
                                 <th class="text-end">Actions</th>
                             </tr>
                         </thead>
@@ -71,16 +102,28 @@
                 <nav aria-label="Product ingredients pagination">
                     <ul class="pagination mb-0">
                         <li class="page-item @(hasPreviousPage ? string.Empty : "disabled")">
-                            <a class="page-link" asp-action="Index" asp-route-searchString="@currentSearch" asp-route-page="@(pageNumber - 1)">Previous</a>
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-searchString="@currentSearch"
+                               asp-route-sortOrder="@currentSort"
+                               asp-route-page="@(pageNumber - 1)">Previous</a>
                         </li>
                         @for (var currentPage = 1; currentPage <= totalPages; currentPage++)
                         {
                             <li class="page-item @(currentPage == pageNumber ? "active" : string.Empty)">
-                                <a class="page-link" asp-action="Index" asp-route-searchString="@currentSearch" asp-route-page="@currentPage">@currentPage</a>
+                                <a class="page-link"
+                                   asp-action="Index"
+                                   asp-route-searchString="@currentSearch"
+                                   asp-route-sortOrder="@currentSort"
+                                   asp-route-page="@currentPage">@currentPage</a>
                             </li>
                         }
                         <li class="page-item @(hasNextPage ? string.Empty : "disabled")">
-                            <a class="page-link" asp-action="Index" asp-route-searchString="@currentSearch" asp-route-page="@(pageNumber + 1)">Next</a>
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-searchString="@currentSearch"
+                               asp-route-sortOrder="@currentSort"
+                               asp-route-page="@(pageNumber + 1)">Next</a>
                         </li>
                     </ul>
                 </nav>

@@ -8,7 +8,7 @@ public class SuggestionController(IUserStore userStore) : AppController(userStor
     private readonly IUserStore _userStore = userStore;
     private const int PageSize = 10;
 
-    public IActionResult Index(string searchString, int page = 1)
+    public IActionResult Index(string searchString, string sortOrder = "", int page = 1)
     {
         var currentUser = GetCurrentUser();
         if (currentUser is null)
@@ -17,6 +17,9 @@ public class SuggestionController(IUserStore userStore) : AppController(userStor
         }
         
         ViewData["CurrentSearch"] = searchString;
+        ViewData["CurrentSort"] = sortOrder;
+        ViewData["SuggestionFromSort"] = sortOrder == "from_asc" ? "from_desc" : "from_asc";
+        ViewData["SuggestionSort"] = sortOrder == "suggestion_asc" ? "suggestion_desc" : "suggestion_asc";
 
          var suggestions = from suggestion in _userStore.GetAllSuggestions()
                            select suggestion;
@@ -28,6 +31,28 @@ public class SuggestionController(IUserStore userStore) : AppController(userStor
                  (suggestion.MyName ?? string.Empty).Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
                  suggestion.Suggestion.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase));
          }
+
+         suggestions = sortOrder switch
+         {
+             "from_asc" => suggestions
+                 .OrderBy(suggestion => suggestion.MyName ?? string.Empty)
+                 .ThenBy(suggestion => suggestion.Suggestion)
+                 .ThenBy(suggestion => suggestion.SuggestId),
+             "from_desc" => suggestions
+                 .OrderByDescending(suggestion => suggestion.MyName ?? string.Empty)
+                 .ThenBy(suggestion => suggestion.Suggestion)
+                 .ThenBy(suggestion => suggestion.SuggestId),
+             "suggestion_asc" => suggestions
+                 .OrderBy(suggestion => suggestion.Suggestion)
+                 .ThenBy(suggestion => suggestion.MyName ?? string.Empty)
+                 .ThenBy(suggestion => suggestion.SuggestId),
+             "suggestion_desc" => suggestions
+                 .OrderByDescending(suggestion => suggestion.Suggestion)
+                 .ThenBy(suggestion => suggestion.MyName ?? string.Empty)
+                 .ThenBy(suggestion => suggestion.SuggestId),
+             _ => suggestions
+                 .OrderBy(suggestion => suggestion.SuggestId)
+         };
 
          var filteredSuggestions = suggestions.ToList();
          var totalItems = filteredSuggestions.Count;

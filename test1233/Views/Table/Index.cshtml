@@ -3,9 +3,31 @@
 
 @{
     ViewData["Title"] = "Table Booking";
+    var currentSort = ViewData["CurrentSort"] as string ?? string.Empty;
+    var tableNameSort = ViewData["TableNameSort"] as string ?? "name_asc";
+    var tableNumberSort = ViewData["TableNumberSort"] as string ?? "number_asc";
+    var userSort = ViewData["UserSort"] as string ?? "user_asc";
+    var bookedForSort = ViewData["BookedForSort"] as string ?? "bookedfor_asc";
     string FormatBookingDate(DateTime? value) =>
         value.HasValue ? value.Value.ToString("dd MMM yyyy HH:mm") : "Not booked";
 }
+
+<style>
+    .sort-header-link {
+        display: inline;
+        padding: 0;
+        border-radius: 0;
+        color: #817d7d !important;
+        font-weight: 600;
+        line-height: inherit;
+        vertical-align: baseline;
+    }
+
+    .sort-header-link:hover,
+    .sort-header-link:focus {
+        color: #0c062b !important;
+    }
+</style>
 
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -31,10 +53,18 @@
                     <table class="table table-striped align-middle mb-0">
                         <thead>
                             <tr>
-                                <th>Table Name</th>
-                                <th>Table Number</th>
-                                <th>User</th>
-                                <th>Booked For</th>
+                                <th>
+                                    <a class="sort-header-link text-decoration-none" asp-action="Index" asp-route-sortOrder="@tableNameSort">Table Name</a>
+                                </th>
+                                <th>
+                                    <a class="sort-header-link text-decoration-none" asp-action="Index" asp-route-sortOrder="@tableNumberSort">Table Number</a>
+                                </th>
+                                <th>
+                                    <a class="sort-header-link text-decoration-none" asp-action="Index" asp-route-sortOrder="@userSort">User</a>
+                                </th>
+                                <th>
+                                    <a class="sort-header-link text-decoration-none" asp-action="Index" asp-route-sortOrder="@bookedForSort">Booked For</a>
+                                </th>
                                 <th class="text-end">Actions</th>
                             </tr>
                         </thead>
@@ -54,6 +84,37 @@
                             }
                         </tbody>
                     </table>
+                </div>
+            }
+            @if (Model.TotalPages > 1)
+            {
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <span class="text-muted small">Page @Model.PageNumber of @Model.TotalPages</span>
+                    <nav aria-label="Table pagination">
+                        <ul class="pagination mb-0">
+                            <li class="page-item @(Model.HasPreviousPage ? string.Empty : "disabled")">
+                                <a class="page-link"
+                                   asp-action="Index"
+                                   asp-route-page="@(Model.PageNumber - 1)"
+                                   asp-route-sortOrder="@currentSort">Previous</a>
+                            </li>
+                            @for (var pageNumber = 1; pageNumber <= Model.TotalPages; pageNumber++)
+                            {
+                                <li class="page-item @(pageNumber == Model.PageNumber ? "active" : string.Empty)">
+                                    <a class="page-link"
+                                       asp-action="Index"
+                                       asp-route-page="@pageNumber"
+                                       asp-route-sortOrder="@currentSort">@pageNumber</a>
+                                </li>
+                            }
+                            <li class="page-item @(Model.HasNextPage ? string.Empty : "disabled")">
+                                <a class="page-link"
+                                   asp-action="Index"
+                                   asp-route-page="@(Model.PageNumber + 1)"
+                                   asp-route-sortOrder="@currentSort">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             }
         </div>

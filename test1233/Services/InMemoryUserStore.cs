@@ -594,7 +594,30 @@ lock (_lock)
                 Name = product.Name,
                 Price = NormalizePrice(product.Price),
                 CategoryId = product.CategoryId,
-                CategoryName = product.CategoryName
+                CategoryName = product.CategoryName,
+                ThumbsUpCount = product.ThumbsUpCount,
+                ThumbsDownCount = product.ThumbsDownCount
+            })
+            .ToList()
+            .AsReadOnly();
+        }
+    }
+
+     public IReadOnlyCollection<AppProduct> GetRatedProducts()
+    {
+        lock (_lock)
+        {
+           return _products
+            .OrderBy(product => product.Id)
+            .Select(product => new AppProduct
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = NormalizePrice(product.Price),
+                CategoryId = product.CategoryId,
+                CategoryName = product.CategoryName,
+                ThumbsUpCount = product.ThumbsUpCount,
+                ThumbsDownCount = product.ThumbsDownCount
             })
             .ToList()
             .AsReadOnly();
@@ -641,7 +664,9 @@ lock (_lock)
                     Name = product.Name,
                     Price = NormalizePrice(product.Price),
                     CategoryId = product.CategoryId,
-                    CategoryName = product.CategoryName
+                    CategoryName = product.CategoryName,
+                    ThumbsUpCount = product.ThumbsUpCount,
+                    ThumbsDownCount = product.ThumbsDownCount
                 };
         }
     }
@@ -732,7 +757,9 @@ public AppProductIngredience? GetProducIngredById(int id)
                 Name = product.Name,
                 Price = NormalizePrice(product.Price),
                 CategoryId = product.CategoryId,
-                CategoryName = product.CategoryName
+                CategoryName = product.CategoryName,
+                ThumbsUpCount = product.ThumbsUpCount,
+                ThumbsDownCount = product.ThumbsDownCount
             });
         }
     }
@@ -1092,6 +1119,31 @@ public void SuggestionCreate(AppSuggestion suggest)
             existingProduct.Price = NormalizePrice(product.Price);
             existingProduct.CategoryId = product.CategoryId;
             existingProduct.CategoryName = product.CategoryName;
+            existingProduct.ThumbsUpCount = product.ThumbsUpCount;
+            existingProduct.ThumbsDownCount = product.ThumbsDownCount;
+            return true;
+        }
+    }
+
+    public bool RateProduct(int productId, bool isPositive)
+    {
+        lock (_lock)
+        {
+            var product = _products.FirstOrDefault(item => item.Id == productId);
+            if (product is null)
+            {
+                return false;
+            }
+
+            if (isPositive)
+            {
+                product.ThumbsUpCount++;
+            }
+            else
+            {
+                product.ThumbsDownCount++;
+            }
+
             return true;
         }
     }

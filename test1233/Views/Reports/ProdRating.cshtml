@@ -1,0 +1,44 @@
+@model IReadOnlyCollection<test1233.Models.AppProduct>
+
+@{
+    ViewData["Title"] = "Product Report";
+    Layout = "~/Views/Shared/_ReportLayout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">Product Rating Report</h1>
+            <p class="text-muted mb-0">Products reted by their popularity.</p>
+        </div>
+        <a asp-action="ExportProducts" class="btn btn-success">Export to Excel</a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Product</th>
+                            <th>Thumbs-Up Count</th>
+                            <th>Thumbs-Down Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var product in Model)
+                    {
+                        <tr>
+                            <td>@product.Id</td>
+                            <td>@product.Name</td>
+                            <td>@product.ThumbsUpCount</td>
+                            <td>@product.ThumbsDownCount</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

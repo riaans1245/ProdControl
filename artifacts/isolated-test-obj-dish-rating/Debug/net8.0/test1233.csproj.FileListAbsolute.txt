@@ -1,0 +1,9 @@
+C:\Users\riaan.strydom\Documents\test\artifacts\isolated-test-obj-dish-rating\Debug\net8.0\test1233.csproj.AssemblyReference.cache
+C:\Users\riaan.strydom\Documents\test\artifacts\isolated-test-obj-dish-rating\Debug\net8.0\test1233.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\riaan.strydom\Documents\test\artifacts\isolated-test-obj-dish-rating\Debug\net8.0\test1233.AssemblyInfoInputs.cache
+C:\Users\riaan.strydom\Documents\test\artifacts\isolated-test-obj-dish-rating\Debug\net8.0\test1233.AssemblyInfo.cs
+C:\Users\riaan.strydom\Documents\test\artifacts\isolated-test-obj-dish-rating\Debug\net8.0\test1233.csproj.CoreCompileInputs.cache
+C:\Users\riaan.strydom\Documents\test\artifacts\isolated-test-obj-dish-rating\Debug\net8.0\test1233.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\riaan.strydom\Documents\test\artifacts\isolated-test-obj-dish-rating\Debug\net8.0\test1233.RazorAssemblyInfo.cache
+C:\Users\riaan.strydom\Documents\test\artifacts\isolated-test-obj-dish-rating\Debug\net8.0\test1233.RazorAssemblyInfo.cs
+C:\Users\riaan.strydom\Documents\test\artifacts\isolated-test-obj-dish-rating\Debug\net8.0\test1233.sourcelink.json

@@ -11,4 +11,8 @@ public class AppProduct
     public int CategoryId { get; set; }
 
     public required string CategoryName { get; set; }
+
+    public int ThumbsUpCount { get; set; }
+
+    public int ThumbsDownCount { get; set; }
 }

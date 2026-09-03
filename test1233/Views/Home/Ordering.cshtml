@@ -29,6 +29,66 @@
         color: rgba(244, 255, 255, 0.72);
         opacity: 0.75;
     }
+
+    .dish-rating-panel {
+        display: flex;
+        gap: 0.85rem;
+        margin-top: 0.9rem;
+    }
+
+    .dish-rating-form {
+        margin: 0;
+    }
+
+    .dish-rating-button {
+        border: 0;
+        background: transparent;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.3rem;
+        color: #526270;
+    }
+
+    .dish-rating-button:hover,
+    .dish-rating-button:focus {
+        color: #17324d;
+    }
+
+    .dish-rating-count {
+        font-size: 0.72rem;
+        font-weight: 700;
+        line-height: 1;
+        color: #5f6977;
+        min-height: 0.85rem;
+    }
+
+    .dish-rating-icon {
+        width: 1.75rem;
+        height: 1.75rem;
+        border-radius: 999px;
+        background-color: #eef2f7;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 1rem 1rem;
+        transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    .dish-rating-button:hover .dish-rating-icon,
+    .dish-rating-button:focus .dish-rating-icon {
+        transform: translateY(-1px);
+    }
+
+    .dish-rating-up .dish-rating-icon {
+        background-color: #e6f5eb;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23146c43' d='M10 21h7a2 2 0 0 0 2-1.6l1-5.5a2 2 0 0 0-2-2.4h-4V6.8A1.8 1.8 0 0 0 12.2 5L7 11v10h3Z'/%3E%3Cpath fill='%23146c43' d='M4 11h2v10H4z'/%3E%3C/svg%3E");
+    }
+
+    .dish-rating-down .dish-rating-icon {
+        background-color: #fdebec;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23c45b65' d='M14 3H7a2 2 0 0 0-2 1.6l-1 5.5a2 2 0 0 0 2 2.4h4v4.7A1.8 1.8 0 0 0 11.8 19L17 13V3h-3Z'/%3E%3Cpath fill='%23c45b65' d='M18 3h2v10h-2z'/%3E%3C/svg%3E");
+    }
 </style>
 
 <div class="container py-4">
@@ -54,12 +114,9 @@
                 @foreach (var product in Model.Products)
                 {
                     <div class="col-md-6">
-                        <div class="card h-100 shadow-sm border-0">
+                            <div class="card h-100 shadow-sm border-0">
                             <div class="card-body d-flex flex-column">
                                 <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
-                                <form method="post">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="productId" value="@product.Id" />
                                     <div>
                                         <div class="text-muted small text-uppercase">@product.CategoryName</div>
                                         <hr />
@@ -68,8 +125,27 @@
                                         <a class="left-nav-gallery-card left-nav-gallery-card-product-ingredients" asp-route-id="@product.Id" asp-controller="ProductIngredientUsers" asp-action="Index">
                                                 <span class="left-nav-gallery-label">Check Ingredients - </span>
                                         </a> 
+                                        <div class="dish-rating-panel">
+                                            <form asp-action="RateDish" method="post" class="dish-rating-form">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="productId" value="@product.Id" />
+                                                <input type="hidden" name="isPositive" value="true" />
+                                                <button type="submit" class="dish-rating-button dish-rating-up" title="Thumbs up">
+                                                    <span class="dish-rating-count">@product.ThumbsUpCount</span>
+                                                    <span class="dish-rating-icon" aria-hidden="true"></span>
+                                                </button>
+                                            </form>
+                                            <form asp-action="RateDish" method="post" class="dish-rating-form">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="productId" value="@product.Id" />
+                                                <input type="hidden" name="isPositive" value="false" />
+                                                <button type="submit" class="dish-rating-button dish-rating-down" title="Thumbs down">
+                                                    <span class="dish-rating-count">@product.ThumbsDownCount</span>
+                                                    <span class="dish-rating-icon" aria-hidden="true"></span>
+                                                </button>
+                                            </form>
+                                        </div>
                                     </div>
-                                </form>
                                     <div class="fw-bold ordering-turquoise-text">@product.Price.ToString("C")</div>
                                 </div>
 
@@ -156,3 +232,21 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const scrollKey = "ordering-scroll-position";
+        const savedScrollPosition = sessionStorage.getItem(scrollKey);
+
+        if (savedScrollPosition !== null) {
+            window.scrollTo(0, Number(savedScrollPosition));
+            sessionStorage.removeItem(scrollKey);
+        }
+
+        document.querySelectorAll("form").forEach(function (form) {
+            form.addEventListener("submit", function () {
+                sessionStorage.setItem(scrollKey, String(window.scrollY));
+            });
+        });
+    });
+</script>

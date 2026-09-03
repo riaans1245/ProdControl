@@ -1,0 +1,331 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = test1233
+build_property.RootNamespace = test1233
+build_property.ProjectDir = C:\Users\riaan.strydom\Documents\test\test1233\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\riaan.strydom\Documents\test\test1233
+build_property._RazorSourceGeneratorDebug = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Account/AccessDenied.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxBY2Nlc3NEZW5pZWQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Account/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Account/Register.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Category/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2F0ZWdvcnlcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Category/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2F0ZWdvcnlcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Category/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2F0ZWdvcnlcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Category/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2F0ZWdvcnlcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Home/Admin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxBZG1pbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Home/ContactUs.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxDb250YWN0VXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Home/ManageMenu.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxNYW5hZ2VNZW51LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Home/Menu.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxNZW51LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Home/Ordering.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxPcmRlcmluZy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Home/Privacy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Home/Private.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Notification/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTm90aWZpY2F0aW9uXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Notification/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTm90aWZpY2F0aW9uXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Notification/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTm90aWZpY2F0aW9uXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Notification/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTm90aWZpY2F0aW9uXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/ProductIngredients/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdEluZ3JlZGllbnRzXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/ProductIngredients/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdEluZ3JlZGllbnRzXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/ProductIngredients/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdEluZ3JlZGllbnRzXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/ProductIngredients/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdEluZ3JlZGllbnRzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/ProductIngredientUsers/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdEluZ3JlZGllbnRVc2Vyc1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Product/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdFxDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Product/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdFxEZWxldGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Product/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdFxFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Product/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdFxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Reports/Categories.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0c1xDYXRlZ29yaWVzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Reports/Contactus.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0c1xDb250YWN0dXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Reports/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0c1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Reports/Notifications.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0c1xOb3RpZmljYXRpb25zLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Reports/Products.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0c1xQcm9kdWN0cy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Reports/Roles.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0c1xSb2xlcy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Reports/Sales.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0c1xTYWxlcy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Reports/Suggestion.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0c1xTdWdnZXN0aW9uLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Reports/Tables.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0c1xUYWJsZXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Reports/Tokens.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0c1xUb2tlbnMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Reports/Users.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0c1xVc2Vycy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Riaan/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmlhYW5cSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Role/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm9sZVxDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Role/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm9sZVxEZWxldGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Role/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm9sZVxFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Role/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm9sZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Shared/_LayoutUsers.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXRVc2Vycy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Shared/_ReportLayout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9SZXBvcnRMYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Suggestion/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3VnZ2VzdGlvblxDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Suggestion/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3VnZ2VzdGlvblxEZWxldGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Suggestion/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3VnZ2VzdGlvblxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Suggestion/Select.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3VnZ2VzdGlvblxTZWxlY3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/TableBooking/BookMe.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGFibGVCb29raW5nXEJvb2tNZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/TableBooking/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGFibGVCb29raW5nXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Table/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGFibGVcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Table/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGFibGVcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Table/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGFibGVcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Table/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGFibGVcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Token/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVG9rZW5cQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Token/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVG9rZW5cRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Token/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVG9rZW5cRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Token/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVG9rZW5cSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Token/Used.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVG9rZW5cVXNlZC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/UserNavigation/Use.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlck5hdmlnYXRpb25cVXNlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/UserNavigation/UserBookMe.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlck5hdmlnYXRpb25cVXNlckJvb2tNZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/UserNavigation/UserNotificationDelete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlck5hdmlnYXRpb25cVXNlck5vdGlmaWNhdGlvbkRlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/UserNavigation/UserNotificationsList.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlck5hdmlnYXRpb25cVXNlck5vdGlmaWNhdGlvbnNMaXN0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/UserNavigation/UserOrderList.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlck5hdmlnYXRpb25cVXNlck9yZGVyTGlzdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/UserNavigation/UserOrderPlace.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlck5hdmlnYXRpb25cVXNlck9yZGVyUGxhY2UuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/UserNavigation/UserOrderTable.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlck5hdmlnYXRpb25cVXNlck9yZGVyVGFibGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/UserNavigation/UserTokenList.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlck5hdmlnYXRpb25cVXNlclRva2VuTGlzdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/User/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/User/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxEZWxldGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/User/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/User/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/riaan.strydom/Documents/test/test1233/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-9km959dwiu

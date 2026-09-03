@@ -105,11 +105,15 @@ public interface IUserStore
 
     bool ProductNameExists(string productName, int categoryId, int? excludeProductId = null);
 
+    bool RateProduct(int productId, bool isPositive);
+
     bool ProductIngredNameExists(string prodIngredienceName, int prodIngredId, int? excludeProdIngredId = null);
 
     bool TokenNameExists(string tokenName, int userId, int? excludeTokenId = null);
 
     IReadOnlyCollection<AppProduct> GetAllProducts();
+
+    IReadOnlyCollection<AppProduct> GetRatedProducts();
 
     AppProductIngredience? GetProductIngredienceById(int id);
 

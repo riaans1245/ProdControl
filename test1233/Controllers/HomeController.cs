@@ -81,6 +81,32 @@ public class HomeController(IUserStore userStore, IWebHostEnvironment environmen
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
+    public IActionResult RateDish(int productId, bool isPositive)
+    {
+        var currentUser = GetCurrentUser();
+        if (currentUser is null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var rated = _userStore.RateProduct(productId, isPositive);
+        if (!rated)
+        {
+            TempData["OrderingMessage"] = "The selected dish could not be rated.";
+            return RedirectToAction(nameof(Ordering));
+        }
+
+        var product = _userStore.GetProductById(productId);
+        TempData["OrderingMessage"] = product is null
+            ? "Dish rating saved."
+            : $"{product.Name} received a {(isPositive ? "thumbs up" : "thumbs down")}.";
+
+        return RedirectToAction(nameof(Ordering));
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public IActionResult RemoveFromCart(int productId)
     {
         var currentUser = GetCurrentUser();

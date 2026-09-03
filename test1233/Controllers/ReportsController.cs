@@ -31,6 +31,11 @@ public class ReportsController(IUserStore userStore) : AppController(userStore)
         return View(_userStore.GetAllProducts());
     }
 
+    public IActionResult ProdRating()
+    {
+        return View(_userStore.GetRatedProducts());
+    }
+
     public IActionResult Categories()
     {
         return View(_userStore.GetAllCategories());

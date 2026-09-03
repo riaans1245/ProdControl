@@ -160,6 +160,23 @@ public class InMemoryUserStoreTests
         Assert.Equal(token.Token, usedToken!.Token);
     }
 
+    [Fact]
+    public void RateProduct_IncrementsThumbCounts()
+    {
+        var store = new InMemoryUserStore();
+        var product = store.GetAllProducts().First();
+
+        var liked = store.RateProduct(product.Id, true);
+        var disliked = store.RateProduct(product.Id, false);
+        var savedProduct = store.GetProductById(product.Id);
+
+        Assert.True(liked);
+        Assert.True(disliked);
+        Assert.NotNull(savedProduct);
+        Assert.Equal(1, savedProduct!.ThumbsUpCount);
+        Assert.Equal(1, savedProduct.ThumbsDownCount);
+    }
+
     private static AppProduct CreateProduct(string name, decimal price, int categoryId, string categoryName, int id = 0)
     {
         var product = new AppProduct

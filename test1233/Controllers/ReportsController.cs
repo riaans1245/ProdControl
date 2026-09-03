@@ -198,7 +198,7 @@ public class ReportsController(IUserStore userStore) : AppController(userStore)
         return CreateExcelFile(workbook, "UserReport.xlsx");
     }
 
-     public IActionResult ExportRatingProducts()
+     public IActionResult ExportProducts()
      {
          using var workbook = new XLWorkbook();
          var worksheet = workbook.Worksheets.Add("Products");
@@ -218,19 +218,18 @@ public class ReportsController(IUserStore userStore) : AppController(userStore)
              worksheet.Cell(row, 4).Value = product.CategoryName;
              row++;
          }
-
-         return CreateExcelFile(workbook, "ProductReport.xlsx");
+            return CreateExcelFile(workbook, "ProductReport.xlsx");
      }
 
-     public IActionResult ExportProducts()
+     public IActionResult ExportRatingProducts ()
     {
         using var workbook = new XLWorkbook();
         var worksheet = workbook.Worksheets.Add("Products");
 
         worksheet.Cell(1, 1).Value = "Id";
         worksheet.Cell(1, 2).Value = "Product";
-        worksheet.Cell(1, 3).Value = "Price";
-        worksheet.Cell(1, 4).Value = "Category";
+        worksheet.Cell(1, 3).Value = "Thumbs-Up";
+        worksheet.Cell(1, 4).Value = "Thumbs-Down";
 
         var products = _userStore.GetAllProducts();
         var row = 2;
@@ -238,12 +237,12 @@ public class ReportsController(IUserStore userStore) : AppController(userStore)
         {
             worksheet.Cell(row, 1).Value = product.Id;
             worksheet.Cell(row, 2).Value = product.Name;
-            worksheet.Cell(row, 3).Value = product.Price;
-            worksheet.Cell(row, 4).Value = product.CategoryName;
+            worksheet.Cell(row, 3).Value = product.ThumbsUpCount;
+            worksheet.Cell(row, 4).Value = product.ThumbsDownCount;
             row++;
         }
 
-        return CreateExcelFile(workbook, "ProductReport.xlsx");
+        return CreateExcelFile(workbook, "ProductRatingReport.xlsx");
     }
 
     public IActionResult ExportCategories()

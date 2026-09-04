@@ -311,6 +311,18 @@ public class InMemoryUserStore : IUserStore
         }
     }
 
+    public IReadOnlyCollection<AppReceipt> GetAllReceipts()
+    {
+        lock (_lock)
+        {
+            return _receipts
+                .OrderByDescending(receipt => receipt.PaidAtUtc)
+                .Select(CloneReceipt)
+                .ToList()
+                .AsReadOnly();
+        }
+    }
+
     public IReadOnlyCollection<AppNotification> GetAllNotifications()
     {
         lock (_lock)
@@ -919,6 +931,7 @@ public AppProductIngredience? GetProducIngredById(int id)
                 AppliedTokens = (appliedTokens ?? Array.Empty<AppReceiptAppliedToken>())
                     .Select(token => new AppReceiptAppliedToken
                     {
+                        OrderId = token.OrderId,
                         TokenId = token.TokenId,
                         Token = token.Token,
                         ProductId = token.ProductId,
@@ -1486,6 +1499,7 @@ public void SuggestionCreate(AppSuggestion suggest)
             AppliedTokens = receipt.AppliedTokens
                 .Select(token => new AppReceiptAppliedToken
                 {
+                    OrderId = token.OrderId,
                     TokenId = token.TokenId,
                     Token = token.Token,
                     ProductId = token.ProductId,

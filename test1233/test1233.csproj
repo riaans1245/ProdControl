@@ -14,4 +14,15 @@
     <PackageReference Include="ClosedXML" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="artifacts\**\*.cs" />
+    <Compile Remove="..\artifacts\**\*.cs" />
+    <Content Remove="artifacts\**" />
+    <Content Remove="..\artifacts\**" />
+    <EmbeddedResource Remove="artifacts\**" />
+    <EmbeddedResource Remove="..\artifacts\**" />
+    <None Remove="artifacts\**" />
+    <None Remove="..\artifacts\**" />
+  </ItemGroup>
+
 </Project>

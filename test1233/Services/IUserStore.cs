@@ -41,6 +41,8 @@ public interface IUserStore
 
     AppReceipt? GetLatestReceiptForUser(int userId);
 
+    IReadOnlyCollection<AppReceipt> GetAllReceipts();
+
     IReadOnlyCollection<AppSuggestion> GetAllSuggestions();
 
     IReadOnlyCollection<AppNotification> GetAllNotifications();

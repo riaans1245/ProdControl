@@ -49,6 +49,14 @@
             });
         }
 
+        function formatCurrency(value) {
+            const numericValue = Number(value ?? 0);
+            return numericValue.toLocaleString("en-NZ", {
+                style: "currency",
+                currency: "NZD"
+            });
+        }
+
         function LoginScreen() {
             return (
                 <div className="dashboard-shell">
@@ -196,6 +204,7 @@
 
             const usedTokens = data?.usedTokens ?? [];
             const issuedTokens = data?.issuedTokens ?? [];
+            const currentOrders = data?.currentOrders ?? [];
             const latestToken = filteredUsedTokens[0] ?? data?.latestUsedToken;
 
             return (
@@ -232,6 +241,22 @@
                         <article className="dashboard-summary-card summary-rose">
                             <p>Latest Sent</p>
                             <strong>{formatDate(data.summary.latestTokenSentAtUtc)}</strong>
+                        </article>
+                        <article className="dashboard-summary-card summary-slate">
+                            <p>Open Orders</p>
+                            <strong>{data.summary.currentOpenOrderCount}</strong>
+                        </article>
+                        <article className="dashboard-summary-card summary-copper">
+                            <p>Paid Orders</p>
+                            <strong>{data.summary.paidOrderCount}</strong>
+                        </article>
+                        <article className="dashboard-summary-card summary-teal">
+                            <p>People With Orders</p>
+                            <strong>{data.summary.peopleWithOrders}</strong>
+                        </article>
+                        <article className="dashboard-summary-card summary-olive">
+                            <p>Booked Tables</p>
+                            <strong>{data.summary.bookedTableCount}</strong>
                         </article>
                     </section>
 
@@ -300,6 +325,131 @@
                     <section className="dashboard-panel">
                         <div className="dashboard-panel-head">
                             <div>
+                                <p className="dashboard-kicker">Orders And Tables</p>
+                                <h2>Paid, open, and booked table details per person</h2>
+                            </div>
+                            <span className="dashboard-pill">{currentOrders.length} people</span>
+                        </div>
+                        {currentOrders.length === 0 ? (
+                            <div className="dashboard-empty">There are no orders or booked tables to show right now.</div>
+                        ) : (
+                            <div className="dashboard-person-grid">
+                                {currentOrders.map((person) => (
+                                    <article className="dashboard-person-card" key={person.userId}>
+                                        <div className="dashboard-person-head">
+                                            <div>
+                                                <h3>{person.userFullName || person.username}</h3>
+                                                <p>{String.fromCharCode(64)}{person.username}</p>
+                                            </div>
+                                            <span className="dashboard-product-badge">{person.userRole || "User"}</span>
+                                        </div>
+                                        <div className="dashboard-person-meta">
+                                            <span>{person.userEmailAddress || "No email"}</span>
+                                            <span>{person.userCellNo || "No cell number"}</span>
+                                        </div>
+                                        <div className="dashboard-person-meta">
+                                            <span>{person.hasTableBooking ? `${person.tableBookings.length} booked table(s)` : "No table booking"}</span>
+                                        </div>
+                                        <div className="dashboard-person-stats">
+                                            <div><strong>{person.totalOrders}</strong><span>Total Orders</span></div>
+                                            <div><strong>{person.totalOpenOrders}</strong><span>Open Orders</span></div>
+                                            <div><strong>{person.totalPaidOrders}</strong><span>Paid Orders</span></div>
+                                            <div><strong>{person.totalItems}</strong><span>Items</span></div>
+                                            <div><strong>{formatCurrency(person.totalValue)}</strong><span>Total Value</span></div>
+                                        </div>
+                                        {person.hasTableBooking ? (
+                                            <div className="dashboard-booking-list">
+                                                {person.tableBookings.map((table) => (
+                                                    <div className="dashboard-booking-card" key={table.tableId}>
+                                                        <strong>{table.tableName}</strong>
+                                                        <span>Table #{table.tableNumber}</span>
+                                                        <span>{formatDate(table.bookedForUtc)}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : null}
+                                        <div className="dashboard-order-stack">
+                                            {person.orders.map((order) => (
+                                                <div className="dashboard-order-card" key={order.orderId}>
+                                                    <div className="dashboard-order-head">
+                                                        <div className="dashboard-order-title">
+                                                            <strong>Order #{order.orderId}</strong>
+                                                            <span className={`dashboard-status-badge ${order.isPaid ? "is-paid" : "is-open"}`}>{order.paymentStatus}</span>
+                                                        </div>
+                                                        <span>{formatDate(order.placedAtUtc)}</span>
+                                                    </div>
+                                                    <div className="dashboard-order-summary">
+                                                        <span>{order.itemCount} items</span>
+                                                        <span>{formatCurrency(order.orderTotal)}</span>
+                                                    </div>
+                                                    {order.appliedTokens.length > 0 ? (
+                                                        <div className="dashboard-order-discount">
+                                                            <span>Receipt {order.receiptNumber || "-"}</span>
+                                                            <span>Token discount {formatCurrency(order.tokenDiscountTotal * -1)}</span>
+                                                            <strong>Reduced total {formatCurrency(order.reducedOrderTotal)}</strong>
+                                                        </div>
+                                                    ) : null}
+                                                    <div className="dashboard-table-wrap">
+                                                        <table className="dashboard-table dashboard-table-compact">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Product</th>
+                                                                    <th>Category</th>
+                                                                    <th>Qty</th>
+                                                                    <th>Price</th>
+                                                                    <th>Line Total</th>
+                                                                    <th>Token</th>
+                                                                    <th>Reduced Price</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {order.items.map((item, index) => (
+                                                                    <tr key={`${order.orderId}-${item.productId}-${index}`}>
+                                                                        <td>{item.name}</td>
+                                                                        <td>{item.categoryName}</td>
+                                                                        <td>{item.quantity}</td>
+                                                                        <td>{formatCurrency(item.price)}</td>
+                                                                        <td>{formatCurrency(item.lineTotal)}</td>
+                                                                        <td>
+                                                                            {item.appliedTokens.length === 0 ? (
+                                                                                <span>-</span>
+                                                                            ) : (
+                                                                                <div className="dashboard-token-stack">
+                                                                                    {item.appliedTokens.map((token) => (
+                                                                                        <span className="dashboard-token-badge" key={`${order.orderId}-${token.tokenId}`}>
+                                                                                            {token.token}
+                                                                                        </span>
+                                                                                    ))}
+                                                                                </div>
+                                                                            )}
+                                                                        </td>
+                                                                        <td>
+                                                                            {item.tokenDiscount > 0 ? (
+                                                                                <div className="dashboard-reduced-price">
+                                                                                    <span className="dashboard-reduced-discount">{formatCurrency(item.tokenDiscount * -1)}</span>
+                                                                                    <strong>{formatCurrency(item.reducedLineTotal)}</strong>
+                                                                                </div>
+                                                                            ) : (
+                                                                                <span>{formatCurrency(item.lineTotal)}</span>
+                                                                            )}
+                                                                        </td>
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </article>
+                                ))}
+                            </div>
+                        )}
+                    </section>
+
+                    <section className="dashboard-panel">
+                        <div className="dashboard-panel-head">
+                            <div>
                                 <p className="dashboard-kicker">API Activity</p>
                                 <h2>Used token records</h2>
                             </div>
@@ -314,6 +464,10 @@
                                         <tr>
                                             <th>Record Id</th>
                                             <th>User</th>
+                                            <th>Full Name</th>
+                                            <th>Email</th>
+                                            <th>Cell</th>
+                                            <th>Role</th>
                                             <th>Token</th>
                                             <th>Product</th>
                                             <th>Sent At</th>
@@ -323,7 +477,11 @@
                                         {filteredUsedTokens.map((row) => (
                                             <tr key={row.id}>
                                                 <td>{row.id}</td>
-                                                <td>{row.username}</td> 
+                                                <td>{row.username}</td>
+                                                <td>{row.userFullName || "-"}</td>
+                                                <td>{row.userEmailAddress || "-"}</td>
+                                                <td>{row.userCellNo || "-"}</td>
+                                                <td>{row.userRole || "-"}</td>
                                                 <td>{row.token}</td>
                                                 <td><span className="dashboard-product-badge">{row.productName || "No product"}</span></td>
                                                 <td>{formatDate(row.sentAtUtc)}</td>
@@ -352,6 +510,10 @@
                                         <tr>
                                             <th>Token Id</th>
                                             <th>User</th>
+                                            <th>Full Name</th>
+                                            <th>Email</th>
+                                            <th>Cell</th>
+                                            <th>Role</th>
                                             <th>Token</th>
                                             <th>Product</th>
                                             <th>TOKEN IS USED</th>
@@ -362,6 +524,10 @@
                                             <tr key={row.tokenId}>
                                                 <td>{row.tokenId}</td>
                                                 <td>{row.username}</td>
+                                                <td>{row.userFullName || "-"}</td>
+                                                <td>{row.userEmailAddress || "-"}</td>
+                                                <td>{row.userCellNo || "-"}</td>
+                                                <td>{row.userRole || "-"}</td>
                                                 <td>{row.token}</td>
                                                 <td><span className="dashboard-product-badge">{row.productName || "No product"}</span></td>
                                                 <td>{row.hasBeenSent ? "Yes" : "No"}</td>
@@ -557,6 +723,10 @@
         .summary-green { background: linear-gradient(135deg, #193d34 0%, #3b8363 100%); }
         .summary-amber { background: linear-gradient(135deg, #5a3a16 0%, #b37938 100%); }
         .summary-rose { background: linear-gradient(135deg, #5a2f4c 0%, #956286 100%); }
+        .summary-slate { background: linear-gradient(135deg, #1d2f45 0%, #486786 100%); }
+        .summary-copper { background: linear-gradient(135deg, #5b341d 0%, #b46f40 100%); }
+        .summary-teal { background: linear-gradient(135deg, #183d42 0%, #3d8c96 100%); }
+        .summary-olive { background: linear-gradient(135deg, #39421c 0%, #8a9a42 100%); }
 
         .dashboard-panel-head {
             display: flex;
@@ -685,6 +855,172 @@
             border-radius: 1rem;
             background: rgba(8, 18, 27, 0.78);
             color: #b8cada;
+        }
+
+        .dashboard-person-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .dashboard-person-card,
+        .dashboard-order-card {
+            border: 1px solid rgba(92, 123, 149, 0.4);
+            border-radius: 1rem;
+            padding: 1rem;
+            background: rgba(8, 18, 27, 0.68);
+        }
+
+        .dashboard-person-head,
+        .dashboard-order-head,
+        .dashboard-order-summary,
+        .dashboard-person-meta {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .dashboard-person-head h3,
+        .dashboard-order-card strong {
+            margin: 0;
+            color: #f2f8fd;
+        }
+
+        .dashboard-person-head p,
+        .dashboard-person-meta,
+        .dashboard-order-summary {
+            color: #abc0d3;
+            margin: 0;
+        }
+
+        .dashboard-person-meta {
+            margin-top: 0.65rem;
+        }
+
+        .dashboard-person-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.75rem;
+            margin-top: 0.9rem;
+        }
+
+        .dashboard-person-stats div {
+            border-radius: 0.9rem;
+            padding: 0.85rem;
+            background: rgba(15, 30, 42, 0.9);
+            border: 1px solid rgba(92, 123, 149, 0.32);
+        }
+
+        .dashboard-person-stats strong {
+            display: block;
+            font-size: 1.15rem;
+            color: #f7fbff;
+        }
+
+        .dashboard-person-stats span {
+            color: #abc0d3;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .dashboard-order-stack {
+            display: grid;
+            gap: 0.85rem;
+            margin-top: 1rem;
+        }
+
+        .dashboard-order-discount {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+            padding: 0.75rem 0.85rem;
+            border-radius: 0.9rem;
+            background: rgba(17, 37, 32, 0.92);
+            border: 1px solid rgba(103, 151, 122, 0.3);
+            color: #d8efe2;
+        }
+
+        .dashboard-booking-list {
+            display: grid;
+            gap: 0.75rem;
+            margin-top: 0.9rem;
+        }
+
+        .dashboard-booking-card {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            border-radius: 0.9rem;
+            padding: 0.85rem;
+            background: rgba(17, 37, 32, 0.92);
+            border: 1px solid rgba(103, 151, 122, 0.3);
+            color: #d8efe2;
+        }
+
+        .dashboard-order-title {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            flex-wrap: wrap;
+        }
+
+        .dashboard-status-badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: 0.2rem 0.6rem;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .dashboard-status-badge.is-paid {
+            background: rgba(73, 166, 121, 0.18);
+            color: #9ff0be;
+            border: 1px solid rgba(73, 166, 121, 0.35);
+        }
+
+        .dashboard-status-badge.is-open {
+            background: rgba(223, 157, 71, 0.18);
+            color: #ffd998;
+            border: 1px solid rgba(223, 157, 71, 0.35);
+        }
+
+        .dashboard-token-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+        }
+
+        .dashboard-token-badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: 0.24rem 0.6rem;
+            background: rgba(73, 166, 121, 0.18);
+            color: #9ff0be;
+            border: 1px solid rgba(73, 166, 121, 0.35);
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .dashboard-reduced-price {
+            display: grid;
+            gap: 0.15rem;
+        }
+
+        .dashboard-reduced-discount {
+            color: #9ff0be;
+            font-size: 0.78rem;
+        }
+
+        .dashboard-table-compact {
+            min-width: 560px;
         }
 
         .dashboard-table-wrap {

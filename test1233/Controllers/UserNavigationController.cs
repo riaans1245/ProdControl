@@ -493,10 +493,7 @@ public class UserNavigationController(IUserStore userStore, ITokenApiClient toke
         public int RemainingQuantity { get; set; }
     }
 
-    private sealed class AppReceiptAppliedTokenPreview : AppReceiptAppliedToken
-    {
-        public int OrderId { get; init; }
-    }
+    private sealed class AppReceiptAppliedTokenPreview : AppReceiptAppliedToken;
 
      public IActionResult UserOrderTable()
     {

@@ -27,8 +27,9 @@
         window.eatsDashboardInitialState = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(initialState));
     </script>
     <script type="text/babel">
-        const { useEffect, useMemo, useState } = React;
+        const { useEffect, useMemo, useRef, useState } = React;
         const initialState = window.eatsDashboardInitialState;
+        const AUTO_REFRESH_SECONDS = 30;
 
         function formatDate(value) {
             if (!value) {
@@ -121,38 +122,63 @@
             const [query, setQuery] = useState("");
             const [dateFrom, setDateFrom] = useState("");
             const [dateTo, setDateTo] = useState("");
+            const [secondsUntilRefresh, setSecondsUntilRefresh] = useState(AUTO_REFRESH_SECONDS);
+            const [isRefreshing, setIsRefreshing] = useState(false);
+            const [lastRefreshAt, setLastRefreshAt] = useState("");
+            const refreshTimerRef = useRef(null);
 
-            useEffect(() => {
-                let cancelled = false;
-
-                async function load() {
-                    try {
-                        const response = await fetch(initialState.dashboardDataUrl, {
-                            headers: { "Accept": "application/json" }
-                        });
-
-                        if (!response.ok) {
-                            throw new Error("The token dashboard could not be loaded.");
-                        }
-
-                        const payload = await response.json();
-                        if (!cancelled) {
-                            setData(payload);
-                        }
-                    } catch (loadError) {
-                        if (!cancelled) {
-                            setError(loadError instanceof Error ? loadError.message : "The token dashboard could not be loaded.");
-                        }
-                    } finally {
-                        if (!cancelled) {
-                            setLoading(false);
-                        }
-                    }
+            async function loadDashboardData(isAutoRefresh = false) {
+                if (isAutoRefresh) {
+                    setIsRefreshing(true);
                 }
 
-                load();
+                try {
+                    const response = await fetch(initialState.dashboardDataUrl, {
+                        headers: { "Accept": "application/json" }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("The token dashboard could not be loaded.");
+                    }
+
+                    const payload = await response.json();
+                    setData(payload);
+                    setError("");
+                    setLastRefreshAt(payload.generatedAtUtc || new Date().toISOString());
+                    setSecondsUntilRefresh(AUTO_REFRESH_SECONDS);
+                } catch (loadError) {
+                    setError(loadError instanceof Error ? loadError.message : "The token dashboard could not be loaded.");
+                } finally {
+                    setLoading(false);
+                    if (isAutoRefresh) {
+                        setIsRefreshing(false);
+                    }
+                }
+            }
+
+            useEffect(() => {
+                let isActive = true;
+
+                loadDashboardData();
+                refreshTimerRef.current = window.setInterval(() => {
+                    setSecondsUntilRefresh((currentValue) => {
+                        if (currentValue <= 1) {
+                            if (isActive) {
+                                loadDashboardData(true);
+                            }
+
+                            return AUTO_REFRESH_SECONDS;
+                        }
+
+                        return currentValue - 1;
+                    });
+                }, 1000);
+
                 return () => {
-                    cancelled = true;
+                    isActive = false;
+                    if (refreshTimerRef.current) {
+                        window.clearInterval(refreshTimerRef.current);
+                    }
                 };
             }, []);
 
@@ -221,7 +247,8 @@
                         <div className="dashboard-meta">
                             <div><strong>Admin:</strong> {data.currentUser}</div>
                             <div><strong>Updated:</strong> {formatDate(data.generatedAtUtc)}</div>
-                          
+                            <div><strong>Refresh:</strong> {isRefreshing ? "Refreshing now" : `Refreshing in ${secondsUntilRefresh}s`}</div>
+                            <div><strong>Last pull:</strong> {formatDate(lastRefreshAt || data.generatedAtUtc)}</div>
                         </div>
                     </section>
 

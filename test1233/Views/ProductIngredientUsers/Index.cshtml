@@ -2,12 +2,45 @@
 
 @{
     ViewData["Title"] = "Product ingredients";
+    var ingredientsList = Model.ProdIngredienceName
+        .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 }
+
+<style>
+    .ingredient-gallery-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+        list-style: disc;
+        margin: 0;
+        padding-left: 1.4rem;
+    }
+
+    .ingredient-gallery-card {
+        padding-left: 0.25rem;
+    }
+
+    .ingredient-gallery-card::marker {
+        color: #16756f;
+        font-size: 1.1rem;
+    }
+
+    .ingredient-gallery-card-content {
+        display: block;
+        border: 1px solid rgba(22, 117, 111, 0.18);
+        border-radius: 0.5rem;
+        background: #fff;
+        box-shadow: 0 0.35rem 1rem rgba(12, 6, 43, 0.08);
+        padding: 1rem 1.1rem;
+        font-weight: 600;
+        color: #0c062b;
+    }
+</style>
 
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 mb-1">Product Ingredients</h1>
+            <h1 class="h3 mb-1">Selected Ingredients</h1>
             <p class="text-muted mb-0">Ingredient details for <strong>@Model.ProductName</strong>.</p>
         </div>
         <a asp-controller="Home" asp-action="Ordering" class="btn btn-outline-secondary">Back to Ordering</a>
@@ -15,7 +48,7 @@
 
     <div class="card shadow-sm border-0">
         <div class="card-body">
-            @if (string.IsNullOrWhiteSpace(Model.ProdIngredienceName))
+            @if (ingredientsList.Length == 0)
             {
                 <div class="text-muted">
                     No ingredient details are available yet for <strong>@Model.ProductName</strong>.
@@ -23,10 +56,14 @@
             }
             else
             {
-                <div class="rounded-4 border p-4 bg-light">
-                    <div class="small text-muted text-uppercase mb-2">Ingredients</div>
-                    <div class="fs-5">@Model.ProdIngredienceName</div>
-                </div>
+                <ul class="ingredient-gallery-list">
+                    @foreach (var ingredient in ingredientsList)
+                    {
+                        <li class="ingredient-gallery-card">
+                            <span class="ingredient-gallery-card-content">@ingredient</span>
+                        </li>
+                    }
+                </ul>
             }
         </div>
     </div>

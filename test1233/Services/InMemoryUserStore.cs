@@ -126,11 +126,6 @@ public class InMemoryUserStore : IUserStore
 
     ];
 
-    // private readonly List<AppProductIngredience> _productsIngred =
-    // [
-
-    // ];
-
     private readonly List<AppUser> _users =
     [
         new AppUser
@@ -175,6 +170,11 @@ public class InMemoryUserStore : IUserStore
         return UsernameExists(username, null);
     }
 
+    public bool EmailAddressExists(string emailAddress)
+    {
+        return EmailAddressExists(emailAddress, null);
+    }
+
     public bool UsernameExists(string username, int? excludeUserId)
     {
         lock (_lock)
@@ -183,11 +183,6 @@ public class InMemoryUserStore : IUserStore
                 user.Id != excludeUserId &&
                 string.Equals(user.Username, username, StringComparison.OrdinalIgnoreCase));
         }
-    }
-
-    public bool EmailAddressExists(string emailAddress)
-    {
-        return EmailAddressExists(emailAddress, null);
     }
 
     public bool EmailAddressExists(string emailAddress, int? excludeUserId)

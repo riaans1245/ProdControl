@@ -80,6 +80,11 @@ public class NotificationController(IUserStore userStore) : AppController(userSt
     [ValidateAntiForgeryToken]
     public IActionResult Create(NotifiFormViewModel model)
     {
+        if (model.AllUsers)
+        {
+            ModelState.Remove(nameof(model.UserId));
+        }
+
         if (!ModelState.IsValid)
         {
             model.AvailableUsers = GetUserSelectList();
@@ -98,18 +103,23 @@ public class NotificationController(IUserStore userStore) : AppController(userSt
 
             foreach (var appUser in users)
             {
-                _userStore.CreateNotification(new AppNotification
+                if (appUser.Username != "--Please Select--")
                 {
-                    Notification = model.Notification.Trim(),
-                    UserId = appUser.Id,
-                    UserName = appUser.Username
-                });
+                    _userStore.CreateNotification(new AppNotification
+                    {
+                        Notification = model.Notification.Trim(),
+                        UserId = appUser.Id,
+                        UserName = appUser.Username
+                    });
+                }
             }
 
             return RedirectToAction(nameof(Index));
         }
 
-        var user = _userStore.GetUserById(model.UserId);
+        var user = model.UserId.HasValue
+            ? _userStore.GetUserById(model.UserId.Value)
+            : null;
          if (user is null)
          {
              ModelState.AddModelError(nameof(model.UserId), "Please choose a valid user.");
@@ -166,7 +176,9 @@ public class NotificationController(IUserStore userStore) : AppController(userSt
             return NotFound();
         }
 
-        var user = _userStore.GetUserById(model.UserId);
+        var user = model.UserId.HasValue
+            ? _userStore.GetUserById(model.UserId.Value)
+            : null;
         if (user is null)
         {
             ModelState.AddModelError(nameof(model.UserId), "Please choose a valid user.");

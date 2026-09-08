@@ -220,6 +220,7 @@ public class ProductController(IUserStore userStore) : AppController(userStore)
     {
         return _userStore.GetAllCategories()
             .Select(category => new SelectListItem(category.Name, category.Id.ToString()))
+            .Prepend(new SelectListItem("-- Please Select--", "0"))
             .ToList();
     }
 }

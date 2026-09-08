@@ -17,7 +17,7 @@
                 <div class="mb-3">
                     <label asp-for="ProductId" class="form-label"></label>
                     <select asp-for="ProductId" asp-items="Model.AvailableProducts" class="form-select">
-                        <option value="">Select a product</option>
+                        <option value="">--Please Select--</option>
                     </select>
                     <span asp-validation-for="ProductId" class="text-danger"></span>
                 </div>

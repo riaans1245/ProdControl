@@ -21,13 +21,17 @@
 
                 <div class="mb-4">
                     <label asp-for="UserId" class="form-label"></label>
-                    <select asp-for="UserId" asp-items="Model.AvailableUsers" class="form-select"></select>
+                    <select asp-for="UserId" asp-items="Model.AvailableUsers" class="form-select">
+                        <option value="">--Please Select--</option>
+                    </select>
                     <span asp-validation-for="UserId" class="text-danger"></span>
                 </div>
 
                 <div class="mb-4">
                     <label asp-for="ProductId" class="form-label"></label>
-                    <select asp-for="ProductId" asp-items="Model.AvailableProducts" class="form-select"></select>
+                    <select asp-for="ProductId" asp-items="Model.AvailableProducts" class="form-select">
+                        <option value="">--Please Select--</option>
+                    </select>
                     <span asp-validation-for="ProductId" class="text-danger"></span>
                 </div>
 

@@ -89,7 +89,7 @@ public class UserController(IUserStore userStore, IWebHostEnvironment webHostEnv
     {
         return View(new UserCreateViewModel
         {
-            RoleId = 2,
+            //RoleId = 2,
             AvailableRoles = GetRoleSelectList()
         });
     }
@@ -277,9 +277,14 @@ public class UserController(IUserStore userStore, IWebHostEnvironment webHostEnv
 
     private IReadOnlyCollection<SelectListItem> GetRoleSelectList()
     {
+        // return _userStore.GetAllRoles()
+        //     .Select(role => new SelectListItem(role.Name, role.Id.ToString()))
+        //     .ToList();
+
         return _userStore.GetAllRoles()
-            .Select(role => new SelectListItem(role.Name, role.Id.ToString()))
-            .ToList();
+        .Select(role => new SelectListItem(role.Name, role.Id.ToString()))
+        .Prepend(new SelectListItem("-- Please Select--", "0"))
+        .ToList();
     }
 
     private string? SaveProfileImage(IFormFile? profileImage)

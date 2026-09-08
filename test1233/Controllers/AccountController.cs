@@ -74,7 +74,11 @@ public class AccountController(IUserStore userStore, IWebHostEnvironment webHost
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(RegisterViewModel model)
+
     {
+        model.RoleId = 2;
+        ModelState.Remove(nameof(model.RoleId));
+
         if (!ModelState.IsValid)
         {
             return View(model);

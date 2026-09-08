@@ -26,7 +26,9 @@
 
                 <div class="mb-4" id="user-select-wrapper">
                     <label asp-for="UserId" class="form-label"></label>
-                    <select asp-for="UserId" asp-items="Model.AvailableUsers" class="form-select"></select>
+                    <select asp-for="UserId" asp-items="Model.AvailableUsers" class="form-select">
+                        <option value="">--Please Select--</option>
+                    </select>
                     <span asp-validation-for="UserId" class="text-danger"></span>
                 </div>
             

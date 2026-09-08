@@ -38,9 +38,9 @@ public class UserCreateViewModel
     [Compare(nameof(Password), ErrorMessage = "Passwords do not match.")]
     public string ConfirmPassword { get; set; } = string.Empty;
 
-    [Required]
+    [Range(1, int.MaxValue, ErrorMessage = "Please choose a valid role.")]
     [Display(Name = "Role")]
-    public int RoleId { get; set; } = 2;
+    public int RoleId { get; set; }
 
     [Display(Name = "Profile picture")]
     public IFormFile? ProfileImage { get; set; }

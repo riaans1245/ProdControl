@@ -1014,21 +1014,6 @@ public void SuggestionCreate(AppSuggestion suggest)
          }
     }
 
-    public void CreateNotification(AppNotification notification)
-    {
-        lock (_lock)
-        {
-               var nextId = _notifi.Count == 0 ? 1 : _notifi.Max(item => item.NotificationId) + 1;
-            _notifi.Add(new AppNotification
-            {
-                 NotificationId = nextId,
-                 Notification = notification.Notification,
-                 UserId = notification.UserId,
-                 UserName = notification.UserName
-             });
-        }
-    }
-
     public bool UpdateToken(AppTokens tokens)
     {
         lock (_lock)
@@ -1045,6 +1030,43 @@ public void SuggestionCreate(AppSuggestion suggest)
             existingToken.ProductId = tokens.ProductId;
             existingToken.ProductName = tokens.ProductName;
             return true;
+        }
+    }
+
+////////////////
+ 
+  public IReadOnlyCollection<AppTables> GetAllTables()
+    {
+        lock (_lock)
+        {
+            return _table
+                .OrderBy(table => table.TableId)
+                .Select(table => new AppTables
+                {
+                    TableId = table.TableId,
+                    TableName = table.TableName,
+                    TableNumber = table.TableNumber,
+                    UserId = table.UserId,
+                    Username = string.IsNullOrWhiteSpace(table.Username) ? "Not Booked" : table.Username,
+                    BookedForUtc = table.BookedForUtc
+                })
+                .ToList()
+                .AsReadOnly();
+        }
+    }
+
+     public void CreateNotification(AppNotification notification)
+    {
+        lock (_lock)
+        {
+               var nextId = _notifi.Count == 0 ? 1 : _notifi.Max(item => item.NotificationId) + 1;
+            _notifi.Add(new AppNotification
+            {
+                 NotificationId = nextId,
+                 Notification = notification.Notification,
+                 UserId = notification.UserId,
+                 UserName = notification.UserName
+             });
         }
     }
 
@@ -1065,6 +1087,44 @@ public void SuggestionCreate(AppSuggestion suggest)
         }
     }
 
+public bool DeleteNotification(int id)
+    {
+        lock (_lock)
+        {
+            var notifi = _notifi.FirstOrDefault(item => item.NotificationId == id);
+            if (notifi is null)
+            {
+                return false;
+            }
+
+            _notifi.Remove(notifi);
+            return true;
+        }
+    }
+
+    /////////////////
+     
+         public bool UpdateTable(AppTables tables)
+    {
+        lock (_lock)
+        {
+            var existingTables = _table.FirstOrDefault(item => item.TableId == tables.TableId);
+            if (existingTables is null)
+            {
+                return false;
+            }
+
+            existingTables.TableName = tables.TableName;
+            existingTables.TableNumber = tables.TableNumber;
+            existingTables.UserId = tables.UserId;
+            existingTables.Username = tables.Username;
+            existingTables.BookedForUtc = tables.BookedForUtc;
+
+            return true;
+        }
+    }
+
+
     public bool DeleteToken(int id)
     {
         lock (_lock)
@@ -1076,21 +1136,6 @@ public void SuggestionCreate(AppSuggestion suggest)
             }
 
             _tokens.Remove(token);
-            return true;
-        }
-    }
-
-    public bool DeleteNotification(int id)
-    {
-        lock (_lock)
-        {
-            var notifi = _notifi.FirstOrDefault(item => item.NotificationId == id);
-            if (notifi is null)
-            {
-                return false;
-            }
-
-            _notifi.Remove(notifi);
             return true;
         }
     }
@@ -1322,26 +1367,6 @@ public void SuggestionCreate(AppSuggestion suggest)
         }
     }
 
-    public bool UpdateTable(AppTables tables)
-    {
-        lock (_lock)
-        {
-            var existingTables = _table.FirstOrDefault(item => item.TableId == tables.TableId);
-            if (existingTables is null)
-            {
-                return false;
-            }
-
-            existingTables.TableName = tables.TableName;
-            existingTables.TableNumber = tables.TableNumber;
-            existingTables.UserId = tables.UserId;
-            existingTables.Username = tables.Username;
-            existingTables.BookedForUtc = tables.BookedForUtc;
-
-            return true;
-        }
-    }
-
     public bool DeleteRole(int id)
     {
         lock (_lock)
@@ -1395,26 +1420,6 @@ public void SuggestionCreate(AppSuggestion suggest)
                 .ToList()
                 .AsReadOnly();
 
-        }
-    }
-
-    public IReadOnlyCollection<AppTables> GetAllTables()
-    {
-        lock (_lock)
-        {
-            return _table
-                .OrderBy(table => table.TableId)
-                .Select(table => new AppTables
-                {
-                    TableId = table.TableId,
-                    TableName = table.TableName,
-                    TableNumber = table.TableNumber,
-                    UserId = table.UserId,
-                    Username = string.IsNullOrWhiteSpace(table.Username) ? "Not Booked" : table.Username,
-                    BookedForUtc = table.BookedForUtc
-                })
-                .ToList()
-                .AsReadOnly();
         }
     }
 

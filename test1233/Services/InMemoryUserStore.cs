@@ -68,11 +68,11 @@ public class InMemoryUserStore : IUserStore
 
     private readonly List<AppCategory> _categories =
     [
-        new AppCategory { Id = 1, Name = "Breakfast" },
-        new AppCategory { Id = 2, Name = "Mains" },
-        new AppCategory { Id = 3, Name = "Specials" },
-        new AppCategory { Id = 4, Name = "Sides" },
-        new AppCategory { Id = 5, Name = "Drinks" }
+        new AppCategory { Id = 1, Name = "Breakfast", Description = "Breakfast meals served to start the day." },
+        new AppCategory { Id = 2, Name = "Mains", Description = "Main meals and hearty favourites." },
+        new AppCategory { Id = 3, Name = "Specials", Description = "Featured dishes and limited-time offers." },
+        new AppCategory { Id = 4, Name = "Sides", Description = "Extras and side dishes to add to a meal." },
+        new AppCategory { Id = 5, Name = "Drinks", Description = "Hot and cold beverages." }
     ];
 
     private readonly List<AppRole> _roles =
@@ -459,7 +459,8 @@ public class InMemoryUserStore : IUserStore
                 .Select(category => new AppCategory
                 {
                     Id = category.Id,
-                    Name = category.Name
+                    Name = category.Name,
+                    Description = category.Description
                 })
                 .ToList()
                 .AsReadOnly();
@@ -500,7 +501,8 @@ public class InMemoryUserStore : IUserStore
                 : new AppCategory
                 {
                     Id = category.Id,
-                    Name = category.Name
+                    Name = category.Name,
+                    Description = category.Description
                 };
         }
     }
@@ -513,7 +515,8 @@ public class InMemoryUserStore : IUserStore
             _categories.Add(new AppCategory
             {
                 Id = nextId,
-                Name = category.Name
+                Name = category.Name,
+                Description = category.Description
             });
         }
     }
@@ -530,6 +533,7 @@ public class InMemoryUserStore : IUserStore
             }
 
             existingCategory.Name = category.Name;
+            existingCategory.Description = category.Description;
             return true;
         }
     }

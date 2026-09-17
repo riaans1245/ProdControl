@@ -60,6 +60,35 @@ public class CategoryController(IUserStore userStore) : AppController(userStore)
         });
     }
 
+    public IActionResult Relation()
+    {
+        var productsByCategory = _userStore.GetAllProducts()
+            .ToLookup(product => product.CategoryId);
+
+        var categories = _userStore.GetAllCategories()
+            .OrderBy(category => category.Name)
+            .Select(category =>
+            {
+                var products = productsByCategory[category.Id]
+                    .OrderBy(product => product.Name)
+                    .ToList()
+                    .AsReadOnly();
+
+                return new CategoryListItemViewModel
+                {
+                    Id = category.Id,
+                    CatName = category.Name,
+                    CatDescription = category.Description,
+                    ProductCount = products.Count,
+                    Products = products
+                };
+            })
+            .ToList()
+            .AsReadOnly();
+
+        return View(categories);
+    }
+
 
 
     public IActionResult Create()
@@ -84,7 +113,8 @@ public class CategoryController(IUserStore userStore) : AppController(userStore)
 
         _userStore.CreateCategory(new AppCategory
         {
-            Name = model.Name.Trim()
+            Name = model.Name.Trim(),
+            Description = model.Description.Trim()
         });
 
         return RedirectToAction(nameof(Index));
@@ -101,7 +131,8 @@ public class CategoryController(IUserStore userStore) : AppController(userStore)
         return View(new CategoryFormViewModel
         {
             Id = category.Id,
-            Name = category.Name
+            Name = category.Name,
+            Description = category.Description
         });
     }
 
@@ -129,7 +160,8 @@ public class CategoryController(IUserStore userStore) : AppController(userStore)
         _userStore.UpdateCategory(new AppCategory
         {
             Id = model.Id,
-            Name = model.Name.Trim()
+            Name = model.Name.Trim(),
+            Description = model.Description.Trim()
         });
 
         return RedirectToAction(nameof(Index));

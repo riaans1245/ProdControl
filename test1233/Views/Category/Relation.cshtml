@@ -1,0 +1,163 @@
+@model IReadOnlyCollection<test1233.Models.CategoryListItemViewModel>
+
+@{
+    ViewData["Title"] = "Products per Category";
+}
+
+<style>
+    .category-name-wrapper {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        margin-top: 0.65rem;
+    }
+
+    .category-product-count {
+        position: absolute;
+        top: -0.85rem;
+        right: -1.2rem;
+        min-width: 1.25rem;
+        height: 1.25rem;
+        padding: 0 0.3rem;
+        border-radius: 999px;
+        background: #ffffff;
+        color: #1f5961;
+        font-size: 0.72rem;
+        font-weight: 700;
+        line-height: 1.25rem;
+        text-align: center;
+        box-shadow: 0 0 0 1px rgba(77, 141, 150, 0.55);
+        border: 0;
+        cursor: pointer;
+    }
+
+    .category-product-count:hover,
+    .category-product-count:focus {
+        background: #1f5961;
+        color: #ffffff;
+        outline: none;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">Products per Category</h1>
+            <p class="text-muted mb-0">The number shows how many products belong to each category.</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary clear-action-button">Back to Categories</a>
+    </div>
+
+    @if (Model.Count == 0)
+    {
+        <div class="alert alert-info">No categories are available.</div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle mb-0">
+                        <thead>
+                            <tr>
+                                @* <th>Id</th> *@
+                                <th>Category Name</th>
+                                <th>Category Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var category in Model)
+                            {
+                                <tr>
+                                    @* <td>@category.Id</td> *@
+                                    <td>
+                                        <span class="category-name-wrapper">
+                                            @category.CatName
+                                            <button type="button"
+                                                    class="category-product-count"
+                                                    title="Show @category.CatName products"
+                                                    aria-label="Show @category.ProductCount products in @category.CatName"
+                                                    aria-controls="category-products-@category.Id"
+                                                    aria-expanded="false"
+                                                    data-category-products-button="@category.Id">
+                                                @category.ProductCount
+                                            </button>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @(string.IsNullOrWhiteSpace(category.CatDescription)
+                                            ? "No description available."
+                                            : category.CatDescription)
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4" data-category-products-container>
+            @foreach (var category in Model)
+            {
+                <section id="category-products-@category.Id"
+                         class="card shadow-sm border-0 d-none"
+                         data-category-products-panel="@category.Id">
+                    <div class="card-body">
+                        <h2 class="h4 mb-3">Products in @category.CatName</h2>
+
+                        @if (category.Products.Count == 0)
+                        {
+                            <div class="text-muted">No products are linked to this category.</div>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-striped align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Product Name</th>
+                                            <th class="text-end">Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var product in category.Products)
+                                        {
+                                            <tr>
+                                                <td>@product.Name</td>
+                                                <td class="text-end">@product.Price.ToString("C")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                </section>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll("[data-category-products-button]").forEach(button => {
+            button.addEventListener("click", () => {
+                const categoryId = button.dataset.categoryProductsButton;
+
+                document.querySelectorAll("[data-category-products-panel]").forEach(panel => {
+                    panel.classList.toggle("d-none", panel.dataset.categoryProductsPanel !== categoryId);
+                });
+
+                document.querySelectorAll("[data-category-products-button]").forEach(categoryButton => {
+                    categoryButton.setAttribute(
+                        "aria-expanded",
+                        categoryButton.dataset.categoryProductsButton === categoryId ? "true" : "false");
+                });
+
+                document.querySelector(`[data-category-products-panel="${categoryId}"]`)
+                    ?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            });
+        });
+    </script>
+}

@@ -10,4 +10,8 @@ public class CategoryFormViewModel
     [StringLength(100)]
     [Display(Name = "Category name")]
     public string Name { get; set; } = string.Empty;
+
+    [StringLength(500)]
+    [Display(Name = "Category description")]
+    public string Description { get; set; } = string.Empty;
 }

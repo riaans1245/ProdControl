@@ -13,6 +13,11 @@ public class HomeController(IUserStore userStore, IWebHostEnvironment environmen
 
     public IActionResult Index()
     {
+        if (User.IsInRole("Admin"))
+        {
+            return AdminDashboardView();
+        }
+
         return View();
     }
 
@@ -174,7 +179,7 @@ public class HomeController(IUserStore userStore, IWebHostEnvironment environmen
     [Authorize(Roles = "Admin")]
     public IActionResult Admin()
     {
-        return View();
+        return AdminDashboardView();
     }
 
     public IActionResult ContactUs()
@@ -396,6 +401,15 @@ public class HomeController(IUserStore userStore, IWebHostEnvironment environmen
 
         return _userStore.GetAllUsers()
             .FirstOrDefault(user => string.Equals(user.Username, username, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private IActionResult AdminDashboardView()
+    {
+        ViewData["Title"] = "Eats Dashboard";
+        ViewData["DashboardLoginError"] = TempData["DashboardLoginError"];
+        ViewData["UseAdminLayout"] = true;
+
+        return View("~/Views/Riaan/Index.cshtml");
     }
 
 }

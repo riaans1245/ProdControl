@@ -1259,21 +1259,43 @@ body {
     right: -0.5rem;
   }
 
-  /* Full screen blocker pane properties configuration */
+  /* Dark semi-transparent background that blocks clicking anything underneath */
 .loader-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.85); /* Slightly transparent white canvas backdrop */
-    z-index: 9999; /* Higher than any Bootstrap navbar or modal overlay elements */
+    background-color: rgba(0, 0, 0, 0.6); /* 60% opacity dark background */
+    z-index: 9999; /* Higher than everything else on the webpage */
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
 }
 
-.loader-container {
+/* Centers the spinner wheel and text */
+.loader-content {
     text-align: center;
+}
+
+/* The physical rotating circle design */
+.spinner-circle {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto;
+    border: 5px solid rgba(255, 255, 255, 0.2); /* Light transparent circle */
+    border-top: 5px solid #ffc107;             /* Yellow color edge matching warnings/updates */
+    border-radius: 50%;
+    animation: spinGlobally 1s linear infinite;
+}
+
+@keyframes spinGlobally {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Bootstrap helper fallback to hide elements */
+.d-none {
+    display: none !important;
 }
 }

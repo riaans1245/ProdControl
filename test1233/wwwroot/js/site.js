@@ -1,17 +1,14 @@
-// 1. SHOW SPINNER: Trigger overlay when user submits any data or navigates away
-window.addEventListener("beforeunload", function () {
-    var loader = document.getElementById("page-loader");
-    if (loader) {
-        loader.classList.remove("d-none"); // Removes Bootstrap's 'display: none' utility class
-    }
-});
-
-// 2. HIDE SPINNER: Handle page caching edge cases (e.g. clicking the browser Back button)
-window.addEventListener("pageshow", function (event) {
-    if (event.persisted) {
-        var loader = document.getElementById("page-loader");
-        if (loader) {
-            loader.classList.add("d-none"); // Hides it if browser pulled layout memory out of cache history
+    $(document).ready(function () {
+    // 1. Automatically show the loader whenever ANY form in the app is submitted
+    $('form').on('submit', function () {
+        // If the form inputs are valid, show the full-screen spinner overlay
+        if ($(this).valid()) {
+            $('#global-loader').removeClass('d-none');
         }
-    }
+    });
+
+    // 2. Automatically show the loader if they click direct links that might take time
+    $('.show-loader-link').on('click', function () {
+        $('#global-loader').removeClass('d-none');
+    });
 });

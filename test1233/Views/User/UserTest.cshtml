@@ -1,0 +1,95 @@
+@model test1233.Models.UserCreateViewModel
+@{
+    ViewData["Title"] = "Test - Sign In or Register";
+}
+
+<div class="container mt-5">
+    <div class="row card-group shadow-lg rounded overflow-hidden">
+        
+        <!-- LEFT PANEL: LOGIN FORM -->
+        <div class="col-md-5 p-5 bg-white border-end">
+            <h3 class="mb-4 text-primary font-weight-bold">Returning Users</h3>
+            <p class="text-muted small">Log in to view your dashboard and check updates.</p>
+            <hr />
+
+            <form asp-action="LoginSubmit" method="post">
+                @Html.AntiForgeryToken()
+                
+                <div class="mb-3">
+                    <label asp-for="Username" class="form-label font-weight-bold">Email Address</label>
+                    <input asp-for="Username" class="form-control" type="email" />
+                    <span asp-validation-for="Username" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label font-weight-bold">Password</label>
+                    <input asp-for="Password" class="form-control" type="password" />
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3 form-check">
+                    <input asp-for="ConfirmPassword" class="form-check-input" />
+                    <label asp-for="ConfirmPassword" class="form-check-label">Keep me signed in</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2">Sign In</button>
+            </form>
+        </div>
+
+        <!-- RIGHT PANEL: REGISTRATION FORM -->
+        <div class="col-md-7 p-5 bg-light">
+            <h3 class="mb-4 text-success font-weight-bold">Create an Account</h3>
+            <p class="text-muted small">Register yourself for instant profile management.</p>
+            <hr />
+
+            <form asp-action="RegisterSubmit" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Name" class="form-label font-weight-bold">First Name</label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Surname" class="form-label font-weight-bold">Surname</label>
+                        <input asp-for="Surname" class="form-control" />
+                        <span asp-validation-for="Surname" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="EmailAddress" class="form-label font-weight-bold">Email Address</label>
+                        <input asp-for="EmailAddress" class="form-control" type="email" />
+                        <span asp-validation-for="EmailAddress" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="CellNo" class="form-label font-weight-bold">Cell Number</label>
+                        <input asp-for="CellNo" class="form-control" />
+                        <span asp-validation-for="CellNo" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Username" class="form-label font-weight-bold">Residential Address</label>
+                    <input asp-for="Username" class="form-control" />
+                    <span asp-validation-for="Username" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Password" class="form-label font-weight-bold">Choose Password</label>
+                    <input asp-for="Password" class="form-control" type="password" />
+                    <span asp-validation-for= "Password" class="text-danger small"></span>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100 py-2">Complete Registration</button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

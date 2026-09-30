@@ -323,4 +323,13 @@ public class UserController(IUserStore userStore, IWebHostEnvironment webHostEnv
             System.IO.File.Delete(fullPath);
         }
     }
+
+     public IActionResult UserTest()
+    {
+        return View(new UserCreateViewModel
+        {
+            //RoleId = 2,
+            AvailableRoles = GetRoleSelectList()
+        });
+    }
 }

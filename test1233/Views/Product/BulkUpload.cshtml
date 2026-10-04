@@ -1,0 +1,59 @@
+@model test1233.Models.ProdBulkUploadViewModel
+
+@{ ViewData["Title"] = "Bulk Product Import"; }
+
+<div class="container-fluid p-2">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            @* <li class="breadcrumb-item"><a asp-action="Index">Products</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Bulk Upload</li> *@
+            <a asp-action="Index" class="btn btn-outline-secondary clear-action-button">Back</a>
+        </ol>
+    </nav>
+
+    <h2 class="mb-4">📥 Bulk Product Import wizard</h2>
+
+    <div class="row g-4">
+        <!-- Main Form Entry panel -->
+        <div class="col-md-7">
+            <div class="card shadow-sm border-0 bg-white p-4 rounded-3 h-100">
+                <form asp-action="BulkUpload" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    
+                    <div class="form-group mb-4">
+                        <label asp-for="CsvFile" class="form-label fw-semibold fs-5"></label>
+                        <input asp-for="CsvFile" type="file" accept=".csv" class="form-control form-control-lg" />
+                        <span asp-validation-for="CsvFile" class="text-danger small"></span>
+                        <div class="form-text mt-2 text-muted">Upload a comma-separated value file structure matching the template matrix.</div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn search-action-button">Upload and Parse</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Formatting guide panel -->
+        <div class="col-md-5">
+            <div class="card shadow-sm border-0 bg-light p-4 rounded-3 h-100">
+                <h5 class="fw-bold mb-3 text-dark">📋 Required CSV Layout Mapping</h5>
+                <p class="small text-muted mb-3">Your spreadsheet template file headers and column arrays must follow this exact order layout configuration:</p>
+                
+                <div class="bg-dark text-light p-3 rounded font-monospace small mb-3 select-all">
+                    ProdName,ProdCost,CatId<br />
+                    iPhone 15 Pro Max,1999.00,1<br />
+                    Samsung Galaxy S24,1499.50,1<br />
+                    Ergonomic Mesh Chair,349.00,2
+                </div>
+
+                <ul class="small text-secondary ps-3">
+                    <li class="mb-1"><strong>Column 1 (ProdName):</strong> String text description values. Avoid adding commas inside the item names.</li>
+                    <li class="mb-1"><strong>Column 2 (ProdCost):</strong> Standard decimal prices. Do not include currency symbols ($).</li>
+                    <li class="mb-1"><strong>Column 3 (CatId):</strong> Must match a numerical identity key currently living in your <strong>Category</strong> table.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,6 +1,8 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.VisualBasic.FileIO;
 using test1233.Models;
 using test1233.Services;
 
@@ -223,4 +225,134 @@ public class ProductController(IUserStore userStore) : AppController(userStore)
             .Prepend(new SelectListItem("-- Please Select--", "0"))
             .ToList();
     }
+
+    public IActionResult BulkUpload()
+    {
+        return View(new ProdBulkUploadViewModel());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult BulkUpload(ProdBulkUploadViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var csvFile = model.CsvFile!;
+        if (!string.Equals(Path.GetExtension(csvFile.FileName), ".csv", StringComparison.OrdinalIgnoreCase))
+        {
+            ModelState.AddModelError(nameof(model.CsvFile), "Please upload a valid CSV file.");
+            return View(model);
+        }
+
+        var categories = _userStore.GetAllCategories().ToDictionary(category => category.Id);
+        var productsToCreate = new List<AppProduct>();
+        var importedProductKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var skippedRowsCount = 0;
+
+        try
+        {
+            using var parser = new TextFieldParser(csvFile.OpenReadStream())
+            {
+                TextFieldType = FieldType.Delimited,
+                HasFieldsEnclosedInQuotes = true,
+                TrimWhiteSpace = true
+            };
+            parser.SetDelimiters(",");
+
+            var headers = parser.EndOfData ? null : parser.ReadFields();
+            if (!HasExpectedHeaders(headers))
+            {
+                ModelState.AddModelError(nameof(model.CsvFile), "The CSV header must be ProdName,ProdCost,CatId.");
+                return View(model);
+            }
+
+            while (!parser.EndOfData)
+            {
+                string[]? columns;
+                try
+                {
+                    columns = parser.ReadFields();
+                }
+                catch (MalformedLineException)
+                {
+                    skippedRowsCount++;
+                    continue;
+                }
+
+                if (columns is null || columns.All(string.IsNullOrWhiteSpace))
+                {
+                    continue;
+                }
+
+                if (columns.Length != 3 ||
+                    string.IsNullOrWhiteSpace(columns[0]) ||
+                    !decimal.TryParse(columns[1], NumberStyles.Number, CultureInfo.InvariantCulture, out var price) ||
+                    price < 0 ||
+                    !int.TryParse(columns[2], NumberStyles.Integer, CultureInfo.InvariantCulture, out var categoryId) ||
+                    !categories.TryGetValue(categoryId, out var category))
+                {
+                    skippedRowsCount++;
+                    continue;
+                }
+
+                var name = columns[0].Trim();
+                var productKey = $"{categoryId}\0{name}";
+                if (_userStore.ProductNameExists(name, categoryId) || !importedProductKeys.Add(productKey))
+                {
+                    skippedRowsCount++;
+                    continue;
+                }
+
+                productsToCreate.Add(new AppProduct
+                {
+                    Name = name,
+                    Price = price,
+                    CategoryId = categoryId,
+                    CategoryName = category.Name
+                });
+            }
+        }
+        catch (IOException)
+        {
+            ModelState.AddModelError(nameof(model.CsvFile), "The CSV file could not be read. Please try again.");
+            return View(model);
+        }
+        catch (MalformedLineException)
+        {
+            ModelState.AddModelError(nameof(model.CsvFile), "The CSV header is malformed.");
+            return View(model);
+        }
+
+        foreach (var product in productsToCreate)
+        {
+            _userStore.CreateProduct(product);
+        }
+
+        if (productsToCreate.Count == 0)
+        {
+            TempData["ErrorMessage"] = "No valid new products were found in the uploaded file.";
+        }
+        else
+        {
+            var confirmation = $"Successfully imported {productsToCreate.Count} product(s).";
+            TempData["SuccessMessage"] = skippedRowsCount == 0
+                ? confirmation
+                : $"{confirmation} {skippedRowsCount} row(s) were skipped because they were invalid or duplicated.";
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    private static bool HasExpectedHeaders(string[]? headers)
+    {
+        string[] expectedHeaders = ["ProdName", "ProdCost", "CatId"];
+        return headers is not null &&
+               headers.Length == expectedHeaders.Length &&
+               headers.Zip(expectedHeaders).All(pair =>
+                   string.Equals(pair.First.Trim(), pair.Second, StringComparison.OrdinalIgnoreCase));
+    }
+
 }

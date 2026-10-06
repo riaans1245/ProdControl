@@ -738,7 +738,6 @@ public AppProductIngredience? GetProducIngredById(int id)
         }
     }
 
-
     public AppNotification? GetNotificationById(int id)
     {
         lock (_lock)
@@ -752,6 +751,27 @@ public AppProductIngredience? GetProducIngredById(int id)
                     Notification = notifi.Notification,
                     UserId = notifi.UserId,
                     UserName = notifi.UserName
+                };
+        }
+    }
+
+    //AppNotification? GetDelContactUsById(int id);
+
+
+    public ContactUs? GetDelContactUsById(int id)
+    {
+        lock (_lock)
+        {
+            var Cont = _contactUs.FirstOrDefault(item => item.Id == id);
+            return Cont is null
+                ? null
+                : new ContactUs
+                {
+                    Id = Cont.Id,
+                    Name = Cont.Name,
+                    Surname = Cont.Surname,
+                    CellNo = Cont.CellNo,
+                    EmailAddress = Cont.EmailAddress
                 };
         }
     }
@@ -1105,6 +1125,23 @@ public bool DeleteNotification(int id)
             return true;
         }
     }
+
+    public bool DeleteContactUs(int id)
+    {
+        lock (_lock)
+        {
+            var cont = _contactUs.FirstOrDefault(item => item.Id == id);
+            if (cont is null)
+            {
+                return false;
+            }
+
+            _contactUs.Remove(cont);
+            return true;
+        }
+    }
+
+    //DeleteContactUs
 
     /////////////////
      

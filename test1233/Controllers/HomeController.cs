@@ -306,7 +306,7 @@ public class HomeController(IUserStore userStore, IWebHostEnvironment environmen
         var menus = GetMenus();
         var activeMenu = menus.FirstOrDefault(menu => menu.IsSelected) ?? (menus.Count > 0 ? menus[0] : null);
 
-        if (activeMenu?.IsSelected == false)
+        if (activeMenu?.IsSelected is false)
         {
             activeMenu.IsSelected = true;
         }

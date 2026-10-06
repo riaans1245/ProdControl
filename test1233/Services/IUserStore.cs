@@ -75,6 +75,8 @@ public interface IUserStore
 
     bool DeleteNotification(int id);
 
+    bool DeleteContactUs(int id);
+
     bool DeleteBooking(int id);
 
     AppUser? GetUserById(int id);
@@ -132,6 +134,8 @@ public interface IUserStore
     AppNotification? GetDelNotificationById(int id);
 
     AppNotification? GetNotificationById(int id);
+
+    ContactUs? GetDelContactUsById(int id);
 
     void CreateProduct(AppProduct product);
 

@@ -201,7 +201,7 @@ public class NotificationController(IUserStore userStore) : AppController(userSt
         return RedirectToAction(nameof(Index));
     }
 
-     public IActionResult Delete(int id)
+    public IActionResult Delete(int id)
     {
         var notifi = _userStore.GetDelNotificationById(id);
         if (notifi is null)
@@ -212,7 +212,7 @@ public class NotificationController(IUserStore userStore) : AppController(userSt
         return View(notifi);
     }
 
-     [HttpPost, ActionName("Delete")]
+    [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public IActionResult DeleteConfirmed(int notificationId)
     {

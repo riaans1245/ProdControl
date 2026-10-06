@@ -1,4 +1,4 @@
-﻿@inject test1233.Services.IUserStore UserStore
+﻿@* @inject test1233.Services.IUserStore UserStore *@
 
 <!DOCTYPE html>
 <html lang="en">
@@ -192,6 +192,12 @@
                                 asp-controller="Table" title="My Table" aria-label="My Table" asp-action="Index">
                                 <span class="left-nav-gallery-icon" aria-hidden="true"></span>
                                 <span class="left-nav-gallery-label">Tables</span>
+                            </a>
+
+                            <a class="left-nav-gallery-card left-nav-gallery-card-contact-us" 
+                                asp-controller="ContactUs" title="Contact Us" aria-label="Contact Us" asp-action="ContactUs">
+                                <span class="left-nav-gallery-icon" aria-hidden="true"></span>
+                                <span class="left-nav-gallery-label">Contact Us</span>
                             </a>
                         </div>
                     </div>

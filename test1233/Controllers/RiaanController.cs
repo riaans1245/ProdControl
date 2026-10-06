@@ -106,6 +106,20 @@ public class RiaanController(ICalculationService calculationService, IUserStore 
             .ThenBy(token => token.Username)
             .ToList();
 
+        var notifications = _userStore.GetAllNotifications()
+            .OrderByDescending(notification => notification.NotificationId)
+            .Select(notification => new
+            {
+                notification.NotificationId,
+                notification.Notification,
+                notification.UserId,
+                notification.UserName,
+                UserFullName = users.TryGetValue(notification.UserId, out var user)
+                    ? $"{user.Name} {user.Surname}".Trim()
+                    : notification.UserName
+            })
+            .ToList();
+
         var bookedTablesByUser = _userStore.GetAllTables()
             .Where(table => table.UserId > 0 && !string.IsNullOrWhiteSpace(table.Username))
             .GroupBy(table => table.UserId)
@@ -121,6 +135,24 @@ public class RiaanController(ICalculationService calculationService, IUserStore 
                         table.BookedForUtc
                     })
                     .ToList());
+
+        var bookedTables = _userStore.GetAllTables()
+            .Where(table => table.UserId > 0 && !string.IsNullOrWhiteSpace(table.Username))
+            .OrderBy(table => table.BookedForUtc ?? DateTime.MaxValue)
+            .ThenBy(table => table.TableNumber)
+            .Select(table => new
+            {
+                table.TableId,
+                table.TableName,
+                table.TableNumber,
+                table.UserId,
+                table.Username,
+                UserFullName = users.TryGetValue(table.UserId, out var user)
+                    ? $"{user.Name} {user.Surname}".Trim()
+                    : table.Username,
+                table.BookedForUtc
+            })
+            .ToList();
 
         var receiptsByOrderId = _userStore.GetAllReceipts()
             .SelectMany(receipt => receipt.OrderIds.Select(orderId => new { orderId, receipt }))
@@ -258,11 +290,14 @@ public class RiaanController(ICalculationService calculationService, IUserStore 
                 peopleWithCurrentOrders = orderPeople.Count(person => person.TotalOpenOrders > 0),
                 bookedTableCount = bookedTablesByUser.Sum(group => group.Value.Count),
                 peopleWithBookedTables = bookedTablesByUser.Count,
+                notifications = notifications.Count,
                 latestTokenSentAtUtc = usedTokens.FirstOrDefault()?.SentAtUtc
             },
             activityEndpoint = Url.Action("GetUsedTokens", "TokenApi"),
             issuedTokens,
             usedTokens,
+            notifications,
+            bookedTables,
             currentOrders = orderPeople,
             latestUsedToken = usedTokens.FirstOrDefault()
         });

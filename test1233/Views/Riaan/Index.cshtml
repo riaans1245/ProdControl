@@ -275,6 +275,8 @@
 
             const usedTokens = data?.usedTokens ?? [];
             const issuedTokens = data?.issuedTokens ?? [];
+            const notifications = data?.notifications ?? [];
+            const bookedTables = data?.bookedTables ?? [];
             const currentOrders = data?.currentOrders ?? [];
             const latestToken = filteredUsedTokens[0] ?? data?.latestUsedToken;
 
@@ -329,6 +331,10 @@
                         <article className="dashboard-summary-card summary-olive">
                             <p>Booked Tables</p>
                             <strong>{data.summary.bookedTableCount}</strong>
+                        </article>
+                        <article className="dashboard-summary-card summary-blue">
+                            <p>Notifications</p>
+                            <strong>{data.summary.notifications}</strong>
                         </article>
                     </section>
 
@@ -441,8 +447,84 @@
                     <section className="dashboard-panel">
                         <div className="dashboard-panel-head">
                             <div>
-                                <p className="dashboard-kicker">Orders And Tables</p>
-                                <h2>Paid, open, and booked table details per person</h2>
+                                <p className="dashboard-kicker">Notifications</p>
+                                <h2>All notifications</h2>
+                            </div>
+                            <span className="dashboard-pill">{notifications.length} records</span>
+                        </div>
+                        {notifications.length === 0 ? (
+                            <div className="dashboard-empty">There are no notifications to show right now.</div>
+                        ) : (
+                            <div className="dashboard-table-wrap">
+                                <table className="dashboard-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Id</th>
+                                            <th>Recipient</th>
+                                            <th>User Name</th>
+                                            <th>Notification</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {notifications.map((notification) => (
+                                            <tr key={notification.notificationId}>
+                                                <td>{notification.notificationId}</td>
+                                                <td>{notification.userFullName || notification.userName || "-"}</td>
+                                                <td>{notification.userName || "-"}</td>
+                                                <td>{notification.notification}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </section>
+
+                    <section className="dashboard-panel">
+                        <div className="dashboard-panel-head">
+                            <div>
+                                <p className="dashboard-kicker">Booked Tables</p>
+                                <h2>Current table bookings</h2>
+                            </div>
+                            <span className="dashboard-pill">{bookedTables.length} bookings</span>
+                        </div>
+                        {bookedTables.length === 0 ? (
+                            <div className="dashboard-empty">There are no booked tables to show right now.</div>
+                        ) : (
+                            <div className="dashboard-table-wrap">
+                                <table className="dashboard-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Booking Id</th>
+                                            <th>User</th>
+                                            <th>User Name</th>
+                                            <th>Table</th>
+                                            <th>Table Number</th>
+                                            <th>Booked For</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {bookedTables.map((table) => (
+                                            <tr key={table.tableId}>
+                                                <td>{table.tableId}</td>
+                                                <td>{table.userFullName || table.username || "-"}</td>
+                                                <td>{table.username || "-"}</td>
+                                                <td>{table.tableName}</td>
+                                                <td>{table.tableNumber}</td>
+                                                <td>{formatDate(table.bookedForUtc)}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </section>
+
+                    <section className="dashboard-panel">
+                        <div className="dashboard-panel-head">
+                            <div>
+                                <p className="dashboard-kicker">Orders</p>
+                                <h2>Paid and open order details per person</h2>
                             </div>
                             <span className="dashboard-pill">{currentOrders.length} people</span>
                         </div>

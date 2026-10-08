@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Collections.ObjectModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using test1233.Models;
@@ -317,11 +318,11 @@ public class HomeController(IUserStore userStore, IWebHostEnvironment environmen
         return model;
     }
 
-    private IReadOnlyList<MenuListItemViewModel> GetMenus()
+    private ReadOnlyCollection<MenuListItemViewModel> GetMenus()
     {
         var imagesFolder = Path.Combine(_environment.WebRootPath, "images");
         var menuHistoryFolder = Path.Combine(imagesFolder, "menu-history");
-        var menus = new List<MenuListItemViewModel>();
+        List<MenuListItemViewModel> menus = [];
         var selectedMenuPath = ReadSelectedMenuPath();
 
         if (Directory.Exists(menuHistoryFolder))
@@ -403,7 +404,7 @@ public class HomeController(IUserStore userStore, IWebHostEnvironment environmen
             .FirstOrDefault(user => string.Equals(user.Username, username, StringComparison.OrdinalIgnoreCase));
     }
 
-    private IActionResult AdminDashboardView()
+    private ViewResult AdminDashboardView()
     {
         ViewData["Title"] = "Eats Dashboard";
         ViewData["DashboardLoginError"] = TempData["DashboardLoginError"];

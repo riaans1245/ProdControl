@@ -89,6 +89,15 @@
         background-color: #fdebec;
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23c45b65' d='M14 3H7a2 2 0 0 0-2 1.6l-1 5.5a2 2 0 0 0 2 2.4h4v4.7A1.8 1.8 0 0 0 11.8 19L17 13V3h-3Z'/%3E%3Cpath fill='%23c45b65' d='M18 3h2v10h-2z'/%3E%3C/svg%3E");
     }
+
+    .product-thumbnail {
+        width: 88px;
+        height: 64px;
+        margin-top: 0.5rem;
+        border-radius: 0.5rem;
+        object-fit: cover;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.12);
+    }
 </style>
 
 <div class="container py-4">
@@ -110,21 +119,73 @@
 
     <div class="row g-4">
         <div class="col-lg-8">
-            <div class="row g-3">
-                @foreach (var product in Model.Products)
+            @{
+                var productCategories = Model.Products
+                    .GroupBy(product => string.IsNullOrWhiteSpace(product.CategoryName) ? "Uncategorized" : product.CategoryName)
+                    .ToList();
+            }
+
+            @if (productCategories.Count == 0)
+            {
+                <div class="alert alert-light border mb-0" role="status">No products are available to order right now.</div>
+            }
+            else
+            {
+                <ul class="nav nav-tabs mb-3" id="product-category-tabs" role="tablist">
+                    @for (var categoryIndex = 0; categoryIndex < productCategories.Count; categoryIndex++)
+                    {
+                        var category = productCategories[categoryIndex];
+                        var tabId = $"category-tab-{categoryIndex}";
+                        var panelId = $"category-panel-{categoryIndex}";
+
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link @(categoryIndex == 0 ? "active" : null)"
+                                    id="@tabId"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#@panelId"
+                                    type="button"
+                                    role="tab"
+                                    aria-controls="@panelId"
+                                    aria-selected="@(categoryIndex == 0 ? "true" : "false")">
+                                @category.Key
+                            </button>
+                        </li>
+                    }
+                </ul>
+
+                <div class="tab-content" id="product-category-tab-content">
+                    @for (var categoryIndex = 0; categoryIndex < productCategories.Count; categoryIndex++)
+                    {
+                        var category = productCategories[categoryIndex];
+                        var tabId = $"category-tab-{categoryIndex}";
+                        var panelId = $"category-panel-{categoryIndex}";
+
+                        <div class="tab-pane fade @(categoryIndex == 0 ? "show active" : null)"
+                             id="@panelId"
+                             role="tabpanel"
+                             aria-labelledby="@tabId"
+                             tabindex="0">
+                            <div class="row g-3">
+                                @foreach (var product in category)
                 {
+                    var thumbnailFileName = product.CategoryName?.Trim().ToLowerInvariant() switch
+                    {
+                        "breakfast" => "breakfast.png",
+                        "mains" => "mains.png",
+                        "sides" => "sides.png",
+                        "drinks" => "drinks.png",
+                        _ => "specials.png"
+                    };
+
                     <div class="col-md-6">
-                            <div class="card h-100 shadow-sm border-0">
+                        <div class="card h-100 shadow-sm border-0">
                             <div class="card-body d-flex flex-column">
                                 <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
                                     <div>
-                                        <div class="text-muted small text-uppercase">@product.CategoryName</div>
-                                        <hr />
-                                            <h2 class="h5 mb-1">@product.Name</h2> 
-                                        <hr />  
+                                        <h2 class="h5 mb-1">@product.Name</h2>
                                         <a class="left-nav-gallery-card left-nav-gallery-card-product-ingredients" asp-route-id="@product.Id" asp-controller="ProductIngredientUsers" asp-action="Index">
-                                                <span class="left-nav-gallery-label">Check Ingredients - </span>
-                                        </a> 
+                                            <span class="left-nav-gallery-label">Check Ingredients - </span>
+                                        </a>
                                         <div class="dish-rating-panel">
                                             <form asp-action="RateDish" method="post" class="dish-rating-form">
                                                 @Html.AntiForgeryToken()
@@ -146,7 +207,12 @@
                                             </form>
                                         </div>
                                     </div>
-                                    <div class="fw-bold ordering-turquoise-text">@product.Price.ToString("C")</div>
+                                    <div class="text-end">
+                                        <div class="fw-bold ordering-turquoise-text">@product.Price.ToString("C")</div>
+                                        <img class="product-thumbnail"
+                                             src="~/images/product-thumbnails/@thumbnailFileName"
+                                             alt="@product.Name thumbnail" />
+                                    </div>
                                 </div>
 
                                 <form asp-action="AddToCart" method="post" class="mt-auto d-flex flex-wrap align-items-end gap-2">
@@ -167,7 +233,11 @@
                         </div>
                     </div>
                 }
-            </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
         </div>
 
         <div class="col-lg-4">
@@ -236,12 +306,30 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const scrollKey = "ordering-scroll-position";
+        const categoryTabKey = "ordering-active-category-tab";
         const savedScrollPosition = sessionStorage.getItem(scrollKey);
+        const savedCategoryTab = sessionStorage.getItem(categoryTabKey);
+
+        if (savedCategoryTab !== null) {
+            const categoryTab = document.getElementById(savedCategoryTab);
+
+            if (categoryTab !== null) {
+                categoryTab.click();
+            }
+
+            sessionStorage.removeItem(categoryTabKey);
+        }
 
         if (savedScrollPosition !== null) {
             window.scrollTo(0, Number(savedScrollPosition));
             sessionStorage.removeItem(scrollKey);
         }
+
+        document.querySelectorAll("#product-category-tabs [data-bs-toggle='tab']").forEach(function (tab) {
+            tab.addEventListener("shown.bs.tab", function (event) {
+                sessionStorage.setItem(categoryTabKey, event.target.id);
+            });
+        });
 
         document.querySelectorAll("form").forEach(function (form) {
             form.addEventListener("submit", function () {

@@ -275,7 +275,7 @@ public class UserController(IUserStore userStore, IWebHostEnvironment webHostEnv
         };
     }
 
-    private IReadOnlyCollection<SelectListItem> GetRoleSelectList()
+    private List<SelectListItem> GetRoleSelectList()
     {
         // return _userStore.GetAllRoles()
         //     .Select(role => new SelectListItem(role.Name, role.Id.ToString()))

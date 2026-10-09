@@ -30,6 +30,15 @@
         opacity: 0.75;
     }
 
+    #product-category-tabs .nav-link {
+        color: #6c757d;
+    }
+
+    #product-category-tabs .nav-link:hover,
+    #product-category-tabs .nav-link:focus {
+        color: #495057;
+    }
+
     .dish-rating-panel {
         display: flex;
         gap: 0.85rem;
@@ -168,12 +177,34 @@
                             <div class="row g-3">
                                 @foreach (var product in category)
                 {
-                    var thumbnailFileName = product.CategoryName?.Trim().ToLowerInvariant() switch
+                    var thumbnailFileName = product.Name.Trim().ToLowerInvariant() switch
                     {
-                        "breakfast" => "breakfast.png",
-                        "mains" => "mains.png",
-                        "sides" => "sides.png",
-                        "drinks" => "drinks.png",
+                        "toast" => "toast.png",
+                        "chips" => "chips.png",
+                        "tomato" => "tomato.png",
+                        "bacon" => "bacon.png",
+                        "egg" => "egg.png",
+                        "scrambled egg on toast" => "scrambled-egg-on-toast.png",
+                        "english break fast" => "english-breakfast.png",
+                        "egg benedict" => "eggs-benedict.png",
+                        "avo on toast" => "avo-on-toast.png",
+                        "steak egg and chips" => "steak-egg-and-chips.png",
+                        "t-bone steak and chips" => "t-bone-steak-and-chips.png",
+                        "pork belly" => "pork-belly.png",
+                        "chicken burger" => "chicken-burger.png",
+                        "beef burger" => "beef-burger.png",
+                        "lisagne" => "lasagne.png",
+                        "lamb chops" => "lamb-chops.png",
+                        "flat white" => "flat-white.png",
+                        "cuppochino" => "cuppochino.png",
+                        "americano" => "americano.png",
+                        "chia latte" => "chia-latte.png",
+                        "coke" => "coke.png",
+                        "sprite" => "sprite.png",
+                        "orangejuice" => "orange-juice.png",
+                        "fish and chips" => "fish-and-chips.png",
+                        "buffalo wings" => "buffalo-wings.png",
+                        "black coffee" => "black-coffee.png",
                         _ => "specials.png"
                     };
 

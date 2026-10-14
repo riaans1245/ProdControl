@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Configuration.UserSecrets;
 using test1233.Models;
 using test1233.Services;
 
@@ -15,75 +16,60 @@ public class UserController(IUserStore userStore, IWebHostEnvironment webHostEnv
 
     public IActionResult Index(string searchString, string sortOrder = "", int page = 1)
     {
+        var users = _userStore.GetAllUsers();
+
+        ViewBag.TotalUsers = users.Count;
+        ViewBag.AdminCount = users.Count(u => u.Role == "Admin");
+        ViewBag.UserCount = users.Count(u => u.Role != "Admin");
+        ViewBag.MissingAvatars = users.Count(u => string.IsNullOrEmpty(u.ProfileImagePath));
+
         ViewData["CurrentSearch"] = searchString;
         ViewData["CurrentSort"] = sortOrder;
+        ViewData["NameSort"] = sortOrder == "name_asc" ? "name_desc" : "name_asc";
         ViewData["SurnameSort"] = sortOrder == "surname_asc" ? "surname_desc" : "surname_asc";
         ViewData["EmailSort"] = sortOrder == "email_asc" ? "email_desc" : "email_asc";
         ViewData["CellSort"] = sortOrder == "cell_asc" ? "cell_desc" : "cell_asc";
 
-        var users = from u in _userStore.GetAllUsers()
-                    select u;
+        IEnumerable<AppUser> filteredUsers = users;
 
         if (!string.IsNullOrWhiteSpace(searchString))
         {
             var normalizedSearch = searchString.Trim();
-            users = users.Where(u =>
+            filteredUsers = filteredUsers.Where(u =>
                 u.Name.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
                 u.Surname.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
                 u.Username.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
                 u.EmailAddress.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase));
         }
 
-        users = sortOrder switch
+        filteredUsers = sortOrder switch
         {
-            "surname_asc" => users
-                .OrderBy(u => u.Surname)
-                .ThenBy(u => u.Name)
-                .ThenBy(u => u.Id),
-            "surname_desc" => users
-                .OrderByDescending(u => u.Surname)
-                .ThenBy(u => u.Name)
-                .ThenBy(u => u.Id),
-            "email_asc" => users
-                .OrderBy(u => u.EmailAddress)
-                .ThenBy(u => u.Name)
-                .ThenBy(u => u.Id),
-            "email_desc" => users
-                .OrderByDescending(u => u.EmailAddress)
-                .ThenBy(u => u.Name)
-                .ThenBy(u => u.Id),
-            "cell_asc" => users
-                .OrderBy(u => u.CellNo)
-                .ThenBy(u => u.Name)
-                .ThenBy(u => u.Id),
-            "cell_desc" => users
-                .OrderByDescending(u => u.CellNo)
-                .ThenBy(u => u.Name)
-                .ThenBy(u => u.Id),
-            _ => users
-                .OrderBy(u => u.Name)
-                .ThenBy(u => u.Surname)
-                .ThenBy(u => u.Id)
+            "name_asc" => filteredUsers.OrderBy(u => u.Name).ThenBy(u => u.Surname).ThenBy(u => u.Id),
+            "name_desc" => filteredUsers.OrderByDescending(u => u.Name).ThenBy(u => u.Surname).ThenBy(u => u.Id),
+            "surname_asc" => filteredUsers.OrderBy(u => u.Surname).ThenBy(u => u.Name).ThenBy(u => u.Id),
+            "surname_desc" => filteredUsers.OrderByDescending(u => u.Surname).ThenBy(u => u.Name).ThenBy(u => u.Id),
+            "email_asc" => filteredUsers.OrderBy(u => u.EmailAddress).ThenBy(u => u.Name).ThenBy(u => u.Id),
+            "email_desc" => filteredUsers.OrderByDescending(u => u.EmailAddress).ThenBy(u => u.Name).ThenBy(u => u.Id),
+            "cell_asc" => filteredUsers.OrderBy(u => u.CellNo).ThenBy(u => u.Name).ThenBy(u => u.Id),
+            "cell_desc" => filteredUsers.OrderByDescending(u => u.CellNo).ThenBy(u => u.Name).ThenBy(u => u.Id),
+            _ => filteredUsers.OrderBy(u => u.Name).ThenBy(u => u.Surname).ThenBy(u => u.Id)
         };
 
-        var filteredUsers = users.ToList();
-        var totalItems = filteredUsers.Count;
+        var userList = filteredUsers.ToList();
+        var totalItems = userList.Count;
         var totalPages = totalItems == 0 ? 1 : (int)Math.Ceiling(totalItems / (double)PageSize);
-        var pageNumber = Math.Min(Math.Max(1, page), totalPages);
-        var items = filteredUsers
-            .Skip((pageNumber - 1) * PageSize)
-            .Take(PageSize)
-            .ToList()
-            .AsReadOnly();
+        var pageNumber = Math.Clamp(page, 1, totalPages);
 
         return View(new PagedListViewModel<AppUser>
         {
-            Items = items,
+            Items = userList.Skip((pageNumber - 1) * PageSize).Take(PageSize).ToList().AsReadOnly(),
             PageNumber = pageNumber,
             PageSize = PageSize,
             TotalItems = totalItems
         });
     }
+
+    
 
     public IActionResult Create()
     {

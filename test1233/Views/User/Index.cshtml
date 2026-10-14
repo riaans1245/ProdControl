@@ -1,9 +1,10 @@
 @model test1233.Models.PagedListViewModel<test1233.Models.AppUser>
 
-@{
-    ViewData["Title"] = "Users";
+@{ 
+    ViewData["Title"] = "User Directory";
     var currentSearch = ViewData["CurrentSearch"] as string ?? string.Empty;
     var currentSort = ViewData["CurrentSort"] as string ?? string.Empty;
+    var nameSort = ViewData["NameSort"] as string ?? "name_asc";
     var surnameSort = ViewData["SurnameSort"] as string ?? "surname_asc";
     var emailSort = ViewData["EmailSort"] as string ?? "email_asc";
     var cellSort = ViewData["CellSort"] as string ?? "cell_asc";
@@ -26,6 +27,68 @@
     }
 </style>
 
+<h2 class="my-4 fw-bold text-dark">System Users Registry</h2>
+
+<!-- ================= STATS TRACKING BOX ROW ================= -->
+<div class="row g-3 mb-4">
+    <!-- Card 1: Total Users -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm rounded-3 h-100 bg-white border-start border-4">
+            <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-uppercase text-muted small fw-bold tracking-wider mb-1">Total Users</h6>
+                    <h2 class="m-0 fw-bold text-dark">@ViewBag.TotalUsers</h2>
+                </div>
+                <div class="fs-1 text-primary opacity-50">👥</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 2: Administrators -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm rounded-3 h-100 bg-white border-start border-4">
+            <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-uppercase text-muted small fw-bold tracking-wider mb-1">System Admins</h6>
+                    <h2 class="m-0 fw-bold text-dark">@ViewBag.AdminCount</h2>
+                </div>
+                <div class="fs-1 text-danger opacity-50">🛡️</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 3: Regular Public Users -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm rounded-3 h-100 bg-white border-start border-4">
+            <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-uppercase text-muted small fw-bold tracking-wider mb-1">Public Accounts</h6>
+                    <h2 class="m-0 fw-bold text-dark">@ViewBag.UserCount</h2>
+                </div>
+                <div class="fs-1 text-success opacity-50">💻</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 4: Missing System Data Profiles -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm rounded-3 h-100 bg-white border-start border-4">
+            <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-uppercase text-muted small fw-bold tracking-wider mb-1">Missing Avatars</h6>
+                    <h2 class="m-0 fw-bold text-dark">@ViewBag.MissingAvatars</h2>
+                </div>
+                <div class="fs-1 text-warning opacity-50">📸</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Data Export Buttons and Data Table element starts below here -->
+<div class="mb-3">
+    <!-- Keep your exact table code and JavaScript initialization script blocks here -->
+</div>
+
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -41,10 +104,10 @@
     <form method="get" class="row g-2 align-items-end mb-4">
         <div class="col-sm-8 col-md-6 col-lg-4">
             <label for="searchString" class="form-label">Search users</label>
-            <input id="searchString" name="searchString" value="@currentSearch" class="form-control" placeholder="Search by name, surname, username, or email" />     
+            <input id="searchString" name="searchString" value="@currentSearch" class="form-control" placeholder="Search by name, surname, username, or email" />
         </div>
         <div class="col-auto">
-            <button asp-action="Index" type="submit" class="btn search-action-button">Search</button>
+            <button type="submit" class="btn search-action-button">Search</button>
         </div>
         <input type="hidden" name="sortOrder" value="@currentSort" />
         <div class="col-auto">
@@ -66,7 +129,12 @@
                     <table class="table table-striped align-middle mb-0">
                         <thead>
                             <tr>
-                                <th>Name</th>
+                                <th>
+                                    <a class="sort-header-link text-decoration-none"
+                                       asp-action="Index"
+                                       asp-route-searchString="@currentSearch"
+                                       asp-route-sortOrder="@nameSort">Name</a>
+                                </th>
                                 <th>
                                     <a class="sort-header-link text-decoration-none"
                                        asp-action="Index"
@@ -88,6 +156,7 @@
                                 <th>User name</th>
                                 <th>Password</th>
                                 <th>Role</th>
+                                <th>Profile</th>
                                 <th class="text-end">Actions</th>
                             </tr>
                         </thead>
@@ -102,6 +171,22 @@
                                 <td>@user.Username</td>
                                 <td>@user.Password</td>
                                 <td>@($"{user.RoleId} - {user.Role}")</td>
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(user.ProfileImagePath))
+                                    {
+                                        <img src="@user.ProfileImagePath"
+                                             alt="@user.Name @user.Surname profile image"
+                                             class="rounded-circle object-fit-cover"
+                                             width="42"
+                                             height="42" />
+                                    }
+                                    else
+                                    {
+                                        <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-light text-muted"
+                                              style="width: 42px; height: 42px;"
+                                              aria-label="No profile image">—</span>
+                                    }
+                                </td>
                                 <td class="text-end">
                                     <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-outline-secondary grid-action-button">Edit</a>
                                     <a asp-action="Delete" asp-route-id="@user.Id" class="btn btn-sm btn-outline-danger grid-action-button">Delete</a>
@@ -117,28 +202,16 @@
                     <nav aria-label="User pagination">
                         <ul class="pagination mb-0">
                             <li class="page-item @(Model.HasPreviousPage ? string.Empty : "disabled")">
-                                <a class="page-link"
-                                   asp-action="Index"
-                                   asp-route-page="@(Model.PageNumber - 1)"
-                                   asp-route-sortOrder="@currentSort"
-                                   asp-route-searchString="@currentSearch">Previous</a>
+                                <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageNumber - 1)" asp-route-sortOrder="@currentSort" asp-route-searchString="@currentSearch">Previous</a>
                             </li>
                             @for (var pageNumber = 1; pageNumber <= Model.TotalPages; pageNumber++)
                             {
                                 <li class="page-item @(pageNumber == Model.PageNumber ? "active" : string.Empty)">
-                                    <a class="page-link"
-                                       asp-action="Index"
-                                       asp-route-page="@pageNumber"
-                                       asp-route-sortOrder="@currentSort"
-                                       asp-route-searchString="@currentSearch">@pageNumber</a>
+                                    <a class="page-link" asp-action="Index" asp-route-page="@pageNumber" asp-route-sortOrder="@currentSort" asp-route-searchString="@currentSearch">@pageNumber</a>
                                 </li>
                             }
                             <li class="page-item @(Model.HasNextPage ? string.Empty : "disabled")">
-                                <a class="page-link"
-                                   asp-action="Index"
-                                   asp-route-page="@(Model.PageNumber + 1)"
-                                   asp-route-sortOrder="@currentSort"
-                                   asp-route-searchString="@currentSearch">Next</a>
+                                <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageNumber + 1)" asp-route-sortOrder="@currentSort" asp-route-searchString="@currentSearch">Next</a>
                             </li>
                         </ul>
                     </nav>
@@ -147,3 +220,5 @@
         </div>
     </div>
 </div>
+
+

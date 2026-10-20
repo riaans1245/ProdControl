@@ -175,6 +175,11 @@
                 <div class="card-body">
                     <p class="text-uppercase small fw-semibold mb-2 public-section-kicker">Payment Summary</p>
                     <h2 class="h4 mb-3">Ready to pay</h2>
+                    <div class="border rounded-3 p-3 mb-3 bg-light">
+                        <div class="d-flex justify-content-between"><span>Existing loyalty points</span><strong>@Model.Loyalty.AvailablePoints</strong></div>
+                        <div class="d-flex justify-content-between text-success"><span>Points from this payment</span><strong>+@Model.LoyaltyPointsToEarn</strong></div>
+                        <div class="d-flex justify-content-between"><span>Points after payment</span><strong>@Model.LoyaltyPointsAfterPayment</strong></div>
+                    </div>
 
                     @if (!hasPendingOrders)
                     {
@@ -286,6 +291,7 @@
                                     <tr>
                                         <th>Item</th>
                                         <th class="text-end">Qty</th>
+                                        <th class="text-end">Points</th>
                                         <th class="text-end">Total</th>
                                     </tr>
                                 </thead>
@@ -300,6 +306,7 @@
                                                     <div class="small text-muted">@item.CategoryName</div>
                                                 </td>
                                                 <td class="text-end">@item.Quantity</td>
+                                                <td class="text-end text-success">@(item.Quantity * item.LoyaltyPoints)</td>
                                                 <td class="text-end">@((item.Quantity * item.Price).ToString("C"))</td>
                                             </tr>
                                         }
@@ -329,6 +336,10 @@
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Subtotal</span>
                                 <strong>@Model.TotalValue.ToString("C")</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2 text-success">
+                                <span>Loyalty points earned</span>
+                                <strong>+@Model.LoyaltyPointsToEarn</strong>
                             </div>
                             <div class="d-flex justify-content-between mb-2 text-success @(Model.SelectedTokenDiscount > 0 ? string.Empty : "d-none")"
                                  data-slip-token-discount-row>
@@ -370,6 +381,7 @@
                                     <tr>
                                         <th>Item</th>
                                         <th class="text-end">Qty</th>
+                                        <th class="text-end">Points</th>
                                         <th class="text-end">Total</th>
                                     </tr>
                                 </thead>
@@ -382,6 +394,7 @@
                                                 <div class="small text-muted">@item.CategoryName</div>
                                             </td>
                                             <td class="text-end">@item.Quantity</td>
+                                            <td class="text-end text-success">@(item.Quantity * item.LoyaltyPoints)</td>
                                             <td class="text-end">@((item.Quantity * item.Price).ToString("C"))</td>
                                         </tr>
                                     }
@@ -404,6 +417,10 @@
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Total items</span>
                                 <strong>@latestReceipt.Items.Sum(item => item.Quantity)</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2 text-success">
+                                <span>Loyalty points earned</span>
+                                <strong>+@latestReceipt.LoyaltyPointsEarned</strong>
                             </div>
                             @if (latestReceipt.AppliedTokens.Count > 0)
                             {

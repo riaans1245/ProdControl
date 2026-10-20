@@ -19,6 +19,7 @@ builder.Services
     });
 builder.Services.AddSingleton<IUserStore, InMemoryUserStore>();
 builder.Services.AddScoped<ITokenApiClient, TokenApiClient>();
+builder.Services.AddSingleton<ILoyaltyVoucherEmailSender, LoyaltyVoucherEmailSender>();
 
 var app = builder.Build();
 

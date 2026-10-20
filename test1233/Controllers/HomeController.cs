@@ -77,6 +77,7 @@ public class HomeController(IUserStore userStore, IWebHostEnvironment environmen
             Name = product.Name,
             CategoryName = product.CategoryName,
             Price = product.Price,
+            LoyaltyPoints = product.LoyaltyPoints,
             Quantity = quantity
         });
 

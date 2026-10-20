@@ -15,6 +15,14 @@ public class AppReceipt
     public List<AppReceiptItem> Items { get; set; } = [];
 
     public List<AppReceiptAppliedToken> AppliedTokens { get; set; } = [];
+
+    public int LoyaltyPointsEarned { get; set; }
+
+    public int LoyaltyPointsBefore { get; set; }
+
+    public int LoyaltyPointsAfter { get; set; }
+
+    public List<string> IssuedVoucherCodes { get; set; } = [];
 }
 
 public class AppReceiptItem
@@ -24,6 +32,8 @@ public class AppReceiptItem
     public string CategoryName { get; set; } = string.Empty;
 
     public decimal Price { get; set; }
+
+    public int LoyaltyPoints { get; set; }
 
     public int Quantity { get; set; }
 }

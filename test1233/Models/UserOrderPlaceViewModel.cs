@@ -10,6 +10,8 @@ public class UserOrderPlaceViewModel
 
     public IReadOnlyCollection<int> SelectedTokenIds { get; init; } = Array.Empty<int>();
 
+    public LoyaltySummary Loyalty { get; init; } = new();
+
     public int TotalItems => PendingOrders
         .SelectMany(order => order.Items)
         .Sum(item => item.Quantity);
@@ -23,6 +25,10 @@ public class UserOrderPlaceViewModel
         .Sum(token => token.DiscountAmount);
 
     public decimal TotalDue => Math.Max(0m, TotalValue - SelectedTokenDiscount);
+
+    public int LoyaltyPointsToEarn => PendingOrders.SelectMany(order => order.Items).Sum(item => item.Quantity * item.LoyaltyPoints);
+
+    public int LoyaltyPointsAfterPayment => (Loyalty.AvailablePoints + LoyaltyPointsToEarn) % 100;
 }
 
 public class OrderPaymentTokenOptionViewModel

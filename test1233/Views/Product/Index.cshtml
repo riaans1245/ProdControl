@@ -96,6 +96,7 @@
                                        asp-route-searchString="@currentSearch"
                                        asp-route-sortOrder="@categorySort">Category</a>
                                 </th>
+                                <th>Loyalty points</th>
                                 <th class="text-end">Actions</th>
                             </tr>
                         </thead>
@@ -107,6 +108,7 @@
                                 <td>@product.Name</td>
                                 <td>@product.Price.ToString("C")</td>
                                 <td>@product.CategoryName</td>
+                                <td>@product.LoyaltyPoints</td>
                                 <td class="text-end">
                                     <a asp-action="Edit" asp-route-id="@product.Id" class="btn btn-sm btn-outline-secondary grid-action-button">Edit</a>
                                     <a asp-action="Delete" asp-route-id="@product.Id" class="btn btn-sm btn-outline-danger grid-action-button">Delete</a>

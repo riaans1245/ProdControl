@@ -123,6 +123,7 @@ public class ProductController(IUserStore userStore) : AppController(userStore)
         {
             Name = model.Name.Trim(),
             Price = model.Price,
+            LoyaltyPoints = model.LoyaltyPoints,
             CategoryId = category!.Id,
             CategoryName = category.Name
         });
@@ -143,6 +144,7 @@ public class ProductController(IUserStore userStore) : AppController(userStore)
             Id = product.Id,
             Name = product.Name,
             Price = product.Price,
+            LoyaltyPoints = product.LoyaltyPoints,
             CategoryId = product.CategoryId,
             AvailableCategories = GetCategorySelectList()
         });
@@ -186,6 +188,7 @@ public class ProductController(IUserStore userStore) : AppController(userStore)
             Id = model.Id,
             Name = model.Name.Trim(),
             Price = model.Price,
+            LoyaltyPoints = model.LoyaltyPoints,
             CategoryId = category!.Id,
             CategoryName = category.Name
         });

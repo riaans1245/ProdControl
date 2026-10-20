@@ -87,6 +87,7 @@
                                 <th>Quantity</th>
                                 <th>Unit Price</th>
                                 <th>Price</th>
+                                <th>Points</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -100,6 +101,7 @@
                                     <td>@row.Quantity</td>
                                     <td>@row.Price.ToString("C")</td>
                                     <td>@row.LineTotal.ToString("C")</td>
+                                    <td>@(row.Quantity * row.LoyaltyPoints)</td>
                                 </tr>
                             }
                         </tbody>
@@ -147,7 +149,8 @@
                 <div class="small text-muted">Items waiting for payment</div>
                 <div class="fw-semibold">
                     <span>@Model.PendingOrderCount</span> item(s),
-                    <span>@Model.PendingOrderTotal.ToString("C")</span>
+                    <span>@Model.PendingOrderTotal.ToString("C")</span>,
+                    <span class="text-success">@Model.PendingOrderPoints loyalty points</span>
                 </div>
             </div>
             <a asp-action="UserOrderPlace"

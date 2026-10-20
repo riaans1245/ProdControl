@@ -278,6 +278,7 @@
             const notifications = data?.notifications ?? [];
             const bookedTables = data?.bookedTables ?? [];
             const currentOrders = data?.currentOrders ?? [];
+            const loyaltyCustomers = data?.loyaltyCustomers ?? [];
             const latestToken = filteredUsedTokens[0] ?? data?.latestUsedToken;
 
             return (
@@ -335,6 +336,18 @@
                         <article className="dashboard-summary-card summary-blue">
                             <p>Notifications</p>
                             <strong>{data.summary.notifications}</strong>
+                        </article>
+                        <article className="dashboard-summary-card summary-green">
+                            <p>Loyalty Points Earned</p>
+                            <strong>{data.summary.loyaltyPointsReceived}</strong>
+                        </article>
+                        <article className="dashboard-summary-card summary-amber">
+                            <p>$20 Vouchers Issued</p>
+                            <strong>{data.summary.loyaltyVouchersIssued}</strong>
+                        </article>
+                        <article className="dashboard-summary-card summary-teal">
+                            <p>Points Remaining</p>
+                            <strong>{data.summary.loyaltyPointsOutstanding}</strong>
                         </article>
                     </section>
 
@@ -736,7 +749,33 @@
                         )}
                     </section>
 
-                    
+                                        <section className="dashboard-panel">
+                        <div className="dashboard-panel-head">
+                            <div>
+                                <p className="dashboard-kicker">Loyalty</p>
+                                <h2>Customer loyalty progress</h2>
+                            </div>
+                        </div>
+                        {loyaltyCustomers.length > 0 ? (
+                            <div className="dashboard-table-wrap">
+                                <table className="dashboard-table">
+                                    <thead><tr><th>Customer</th><th>Email</th><th>Points received</th><th>Vouchers</th><th>Points left</th></tr></thead>
+                                    <tbody>
+                                        {loyaltyCustomers.map((customer) => (
+                                            <tr key={customer.id}>
+                                                <td>{customer.username}</td>
+                                                <td>{customer.emailAddress}</td>
+                                                <td>{customer.totalPointsReceived}</td>
+                                                <td>{customer.vouchersReceived}</td>
+                                                <td>{customer.pointsLeft}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ) : <p className="dashboard-empty">No loyalty activity yet.</p>}
+                    </section>
+
                 </div>
             );
         }

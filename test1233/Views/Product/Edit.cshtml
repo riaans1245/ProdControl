@@ -26,6 +26,12 @@
                     <span asp-validation-for="Price" class="text-danger"></span>
                 </div>
 
+                <div class="mb-3">
+                    <label asp-for="LoyaltyPoints" class="form-label"></label>
+                    <input asp-for="LoyaltyPoints" class="form-control" type="number" min="0" step="1" />
+                    <span asp-validation-for="LoyaltyPoints" class="text-danger"></span>
+                </div>
+
                 <div class="mb-4">
                     <label asp-for="CategoryId" class="form-label"></label>
                     <select asp-for="CategoryId" asp-items="Model.AvailableCategories" class="form-select"></select>

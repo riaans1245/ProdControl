@@ -240,6 +240,7 @@
                                     </div>
                                     <div class="text-end">
                                         <div class="fw-bold ordering-turquoise-text">@product.Price.ToString("C")</div>
+                                        <div class="small text-success fw-semibold">Earn @product.LoyaltyPoints points</div>
                                         <img class="product-thumbnail"
                                              src="~/images/product-thumbnails/@thumbnailFileName"
                                              alt="@product.Name thumbnail" />
@@ -297,6 +298,7 @@
                                             <div class="fw-semibold">@item.Name</div>
                                             <div class="small text-muted">@item.CategoryName</div>
                                             <div class="small text-muted">@item.Quantity x @item.Price.ToString("C")</div>
+                                            <div class="small text-success">Earn @(item.Quantity * item.LoyaltyPoints) points</div>
                                         </div>
                                         <div class="text-end">
                                             <div class="fw-semibold">@((item.Quantity * item.Price).ToString("C"))</div>

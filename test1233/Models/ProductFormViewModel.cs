@@ -20,5 +20,9 @@ public class ProductFormViewModel
     [Display(Name = "Price ($)")]
     public decimal Price { get; set; }
 
+    [Range(1, 1000)]
+    [Display(Name = "Loyalty points")]
+    public int LoyaltyPoints { get; set; }
+
     public IReadOnlyCollection<SelectListItem> AvailableCategories { get; set; } = Array.Empty<SelectListItem>();
 }

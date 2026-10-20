@@ -106,6 +106,8 @@ public class InMemoryUserStore : IUserStore
 
     ];
 
+    private readonly Dictionary<int, int> _loyaltyPointsByUser = [];
+
     private readonly List<ContactUs> _contactUs =
     [
 
@@ -144,6 +146,34 @@ public class InMemoryUserStore : IUserStore
     ];
 
     private readonly object _lock = new();
+
+    public InMemoryUserStore()
+    {
+        EnsureLoyaltyPoints();
+    }
+
+    private void EnsureLoyaltyPoints()
+    {
+        foreach (var product in _products.Where(product => product.LoyaltyPoints <= 0))
+        {
+            product.LoyaltyPoints = DefaultLoyaltyPoints(product.Price);
+        }
+
+        foreach (var item in _cartItems.Where(item => item.LoyaltyPoints <= 0))
+        {
+            item.LoyaltyPoints = _products.FirstOrDefault(product => product.Id == item.ProductId)?.LoyaltyPoints
+                ?? DefaultLoyaltyPoints(item.Price);
+        }
+
+        foreach (var item in _orders.Where(order => !order.IsPaid).SelectMany(order => order.Items).Where(item => item.LoyaltyPoints <= 0))
+        {
+            item.LoyaltyPoints = _products.FirstOrDefault(product => product.Id == item.ProductId)?.LoyaltyPoints
+                ?? DefaultLoyaltyPoints(item.Price);
+        }
+    }
+
+    private static int DefaultLoyaltyPoints(decimal price) =>
+        Math.Max(1, decimal.ToInt32(decimal.Round(price, 0, MidpointRounding.AwayFromZero)));
 
     private static decimal NormalizePrice(decimal price)
     {
@@ -252,6 +282,7 @@ public class InMemoryUserStore : IUserStore
     {
         lock (_lock)
         {
+            EnsureLoyaltyPoints();
             return _cartItems
                 .Where(item => item.UserId == userId)
                 .OrderBy(item => item.Name)
@@ -262,6 +293,7 @@ public class InMemoryUserStore : IUserStore
                     Name = item.Name,
                     CategoryName = item.CategoryName,
                     Price = item.Price,
+                    LoyaltyPoints = item.LoyaltyPoints,
                     Quantity = item.Quantity
                 })
                 .ToList()
@@ -284,6 +316,7 @@ public class InMemoryUserStore : IUserStore
     {
         lock (_lock)
         {
+            EnsureLoyaltyPoints();
             return _orders
                 .Where(order => order.UserId == userId && !order.IsPaid)
                 .OrderByDescending(order => order.PlacedAtUtc)
@@ -303,6 +336,14 @@ public class InMemoryUserStore : IUserStore
                 .FirstOrDefault();
 
             return receipt is null ? null : CloneReceipt(receipt);
+        }
+    }
+
+    public LoyaltySummary GetLoyaltySummary(int userId)
+    {
+        lock (_lock)
+        {
+            return new LoyaltySummary { AvailablePoints = _loyaltyPointsByUser.GetValueOrDefault(userId) };
         }
     }
 
@@ -596,6 +637,7 @@ lock (_lock)
     {
         lock (_lock)
         {
+            EnsureLoyaltyPoints();
            return _products
             //.Where(product => product.CategoryId != 4)
             .OrderBy(product => product.Id)
@@ -604,6 +646,7 @@ lock (_lock)
                 Id = product.Id,
                 Name = product.Name,
                 Price = NormalizePrice(product.Price),
+                LoyaltyPoints = product.LoyaltyPoints,
                 CategoryId = product.CategoryId,
                 CategoryName = product.CategoryName,
                 ThumbsUpCount = product.ThumbsUpCount,
@@ -625,6 +668,7 @@ lock (_lock)
                 Id = product.Id,
                 Name = product.Name,
                 Price = NormalizePrice(product.Price),
+                LoyaltyPoints = product.LoyaltyPoints,
                 CategoryId = product.CategoryId,
                 CategoryName = product.CategoryName,
                 ThumbsUpCount = product.ThumbsUpCount,
@@ -666,6 +710,7 @@ lock (_lock)
     {
         lock (_lock)
         {
+            EnsureLoyaltyPoints();
             var product = _products.FirstOrDefault(item => item.Id == id);
             return product is null
                 ? null
@@ -844,6 +889,7 @@ public AppProductIngredience? GetProducIngredById(int id)
                     Name = cartItem.Name,
                     CategoryName = cartItem.CategoryName,
                     Price = cartItem.Price,
+                    LoyaltyPoints = cartItem.LoyaltyPoints,
                     Quantity = cartItem.Quantity
                 });
 
@@ -853,6 +899,7 @@ public AppProductIngredience? GetProducIngredById(int id)
             existingItem.Name = cartItem.Name;
             existingItem.CategoryName = cartItem.CategoryName;
             existingItem.Price = cartItem.Price;
+            existingItem.LoyaltyPoints = cartItem.LoyaltyPoints;
             existingItem.Quantity = cartItem.Quantity;
         }
     }
@@ -899,6 +946,7 @@ public AppProductIngredience? GetProducIngredById(int id)
                         Name = item.Name,
                         CategoryName = item.CategoryName,
                         Price = item.Price,
+                        LoyaltyPoints = item.LoyaltyPoints,
                         Quantity = item.Quantity
                     })
                     .ToList()
@@ -915,6 +963,7 @@ public AppProductIngredience? GetProducIngredById(int id)
     {
         lock (_lock)
         {
+            EnsureLoyaltyPoints();
             var pendingOrders = _orders
                 .Where(order => order.UserId == userId && !order.IsPaid)
                 .OrderBy(order => order.OrderId)
@@ -930,6 +979,14 @@ public AppProductIngredience? GetProducIngredById(int id)
                 order.IsPaid = true;
             }
 
+            var loyaltyPointsEarned = pendingOrders.SelectMany(order => order.Items)
+                .Sum(item => item.Quantity * item.LoyaltyPoints);
+            var loyaltyPointsBefore = _loyaltyPointsByUser.GetValueOrDefault(userId);
+            var loyaltyPointsAfterEarning = loyaltyPointsBefore + loyaltyPointsEarned;
+            var voucherCount = loyaltyPointsAfterEarning / 100;
+            var loyaltyPointsAfter = loyaltyPointsAfterEarning % 100;
+            _loyaltyPointsByUser[userId] = loyaltyPointsAfter;
+
             var receipt = new AppReceipt
             {
                 UserId = userId,
@@ -944,6 +1001,7 @@ public AppProductIngredience? GetProducIngredById(int id)
                         Name = item.Name,
                         CategoryName = item.CategoryName,
                         Price = item.Price,
+                        LoyaltyPoints = item.LoyaltyPoints,
                         Quantity = item.Quantity
                     })
                     .ToList(),
@@ -957,6 +1015,12 @@ public AppProductIngredience? GetProducIngredById(int id)
                         ProductName = token.ProductName,
                         DiscountAmount = NormalizePrice(token.DiscountAmount)
                     })
+                    .ToList(),
+                LoyaltyPointsEarned = loyaltyPointsEarned,
+                LoyaltyPointsBefore = loyaltyPointsBefore,
+                LoyaltyPointsAfter = loyaltyPointsAfter,
+                IssuedVoucherCodes = Enumerable.Range(1, voucherCount)
+                    .Select(number => $"LOYALTY-{paidAtUtc:yyyyMMdd}-{userId:D4}-{number}")
                     .ToList()
             };
 
@@ -1211,6 +1275,7 @@ public bool DeleteNotification(int id)
 
             existingProduct.Name = product.Name;
             existingProduct.Price = NormalizePrice(product.Price);
+            existingProduct.LoyaltyPoints = product.LoyaltyPoints;
             existingProduct.CategoryId = product.CategoryId;
             existingProduct.CategoryName = product.CategoryName;
             existingProduct.ThumbsUpCount = product.ThumbsUpCount;
@@ -1513,6 +1578,7 @@ public bool DeleteNotification(int id)
                     Name = item.Name,
                     CategoryName = item.CategoryName,
                     Price = item.Price,
+                    LoyaltyPoints = item.LoyaltyPoints,
                     Quantity = item.Quantity
                 })
                 .ToList()
@@ -1534,6 +1600,7 @@ public bool DeleteNotification(int id)
                     Name = item.Name,
                     CategoryName = item.CategoryName,
                     Price = item.Price,
+                    LoyaltyPoints = item.LoyaltyPoints,
                     Quantity = item.Quantity
                 })
                 .ToList(),
@@ -1547,7 +1614,11 @@ public bool DeleteNotification(int id)
                     ProductName = token.ProductName,
                     DiscountAmount = token.DiscountAmount
                 })
-                .ToList()
+                .ToList(),
+            LoyaltyPointsEarned = receipt.LoyaltyPointsEarned,
+            LoyaltyPointsBefore = receipt.LoyaltyPointsBefore,
+            LoyaltyPointsAfter = receipt.LoyaltyPointsAfter,
+            IssuedVoucherCodes = receipt.IssuedVoucherCodes.ToList()
         };
     }
 }

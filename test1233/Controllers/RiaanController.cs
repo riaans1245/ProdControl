@@ -154,7 +154,8 @@ public class RiaanController(ICalculationService calculationService, IUserStore 
             })
             .ToList();
 
-        var receiptsByOrderId = _userStore.GetAllReceipts()
+        var receipts = _userStore.GetAllReceipts();
+        var receiptsByOrderId = receipts
             .SelectMany(receipt => receipt.OrderIds.Select(orderId => new { orderId, receipt }))
             .GroupBy(item => item.orderId)
             .ToDictionary(
@@ -272,6 +273,25 @@ public class RiaanController(ICalculationService calculationService, IUserStore 
             .ThenBy(person => person.UserFullName)
             .ToList();
 
+        var loyaltyCustomers = users.Values
+            .OrderBy(user => user.Username)
+            .Select(user =>
+            {
+                var userReceipts = receipts.Where(receipt => receipt.UserId == user.Id).ToList();
+                return new
+                {
+                    user.Id,
+                    user.Username,
+                    user.EmailAddress,
+                    TotalPointsReceived = userReceipts.Sum(receipt => receipt.LoyaltyPointsEarned),
+                    VouchersReceived = userReceipts.Sum(receipt => receipt.IssuedVoucherCodes.Count),
+                    PointsLeft = _userStore.GetLoyaltySummary(user.Id).AvailablePoints
+                };
+            })
+            .OrderByDescending(user => user.TotalPointsReceived)
+            .ThenBy(user => user.Username)
+            .ToList();
+
         return Json(new
         {
             generatedAtUtc = DateTime.UtcNow,
@@ -291,12 +311,16 @@ public class RiaanController(ICalculationService calculationService, IUserStore 
                 bookedTableCount = bookedTablesByUser.Sum(group => group.Value.Count),
                 peopleWithBookedTables = bookedTablesByUser.Count,
                 notifications = notifications.Count,
-                latestTokenSentAtUtc = usedTokens.FirstOrDefault()?.SentAtUtc
+                latestTokenSentAtUtc = usedTokens.FirstOrDefault()?.SentAtUtc,
+                loyaltyPointsReceived = loyaltyCustomers.Sum(user => user.TotalPointsReceived),
+                loyaltyVouchersIssued = loyaltyCustomers.Sum(user => user.VouchersReceived),
+                loyaltyPointsOutstanding = loyaltyCustomers.Sum(user => user.PointsLeft)
             },
             activityEndpoint = Url.Action("GetUsedTokens", "TokenApi"),
             issuedTokens,
             usedTokens,
             notifications,
+            loyaltyCustomers,
             bookedTables,
             currentOrders = orderPeople,
             latestUsedToken = usedTokens.FirstOrDefault()

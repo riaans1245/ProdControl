@@ -8,6 +8,8 @@ public class AppProduct
 
     public decimal Price { get; internal set; }
 
+    public int LoyaltyPoints { get; set; }
+
     public int CategoryId { get; set; }
 
     public required string CategoryName { get; set; }

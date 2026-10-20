@@ -10,10 +10,11 @@ using DocumentFormat.OpenXml.Office2010.Excel;
 namespace test1233.Controllers;
 
 
-public class UserNavigationController(IUserStore userStore, ITokenApiClient tokenApiClient) : AppController(userStore)
+public class UserNavigationController(IUserStore userStore, ITokenApiClient tokenApiClient, ILoyaltyVoucherEmailSender loyaltyVoucherEmailSender) : AppController(userStore)
 {
     private readonly IUserStore _userStore = userStore;
     private readonly ITokenApiClient _tokenApiClient = tokenApiClient;
+    private readonly ILoyaltyVoucherEmailSender _loyaltyVoucherEmailSender = loyaltyVoucherEmailSender;
     private const int PageSize = 10;
 
 
@@ -155,7 +156,8 @@ public class UserNavigationController(IUserStore userStore, ITokenApiClient toke
                 Name = item.Name,
                 CategoryName = item.CategoryName,
                 Quantity = item.Quantity,
-                Price = item.Price
+                Price = item.Price,
+                LoyaltyPoints = item.LoyaltyPoints
             }));
 
         if (!string.IsNullOrWhiteSpace(searchString))
@@ -208,6 +210,10 @@ public class UserNavigationController(IUserStore userStore, ITokenApiClient toke
             .SelectMany(order => order.Items)
             .Sum(item => item.Quantity * item.Price);
 
+        var pendingOrderPoints = pendingOrders
+            .SelectMany(order => order.Items)
+            .Sum(item => item.Quantity * item.LoyaltyPoints);
+
         return View(new UserOrderListViewModel
         {
             Orders = new PagedListViewModel<UserOrderRowViewModel>
@@ -222,7 +228,8 @@ public class UserNavigationController(IUserStore userStore, ITokenApiClient toke
             NameSortOrder = sortOrder == "name_asc" ? "name_desc" : "name_asc",
             CategorySortOrder = sortOrder == "category_asc" ? "category_desc" : "category_asc",
             PendingOrderCount = pendingOrderCount,
-            PendingOrderTotal = pendingOrderTotal
+            PendingOrderTotal = pendingOrderTotal,
+            PendingOrderPoints = pendingOrderPoints
         });
     }
 
@@ -275,12 +282,18 @@ public class UserNavigationController(IUserStore userStore, ITokenApiClient toke
             }
         }
 
-        TempData["OrderPlaceMessage"] = $"Payment recorded successfully. Receipt {receipt.ReceiptNumber} was generated.";
+        var emailedVoucherCount = receipt.IssuedVoucherCodes.Count(voucherCode => _loyaltyVoucherEmailSender.TrySend(currentUser, voucherCode));
+        var voucherMessage = receipt.IssuedVoucherCodes.Count == 0
+            ? string.Empty
+            : $" A $20 loyalty voucher has been issued: {string.Join(", ", receipt.IssuedVoucherCodes)}. " +
+              (emailedVoucherCount == receipt.IssuedVoucherCodes.Count ? "It has been emailed to you." : "Email delivery is pending.");
+        TempData["OrderPlaceMessage"] = $"Payment recorded successfully. You earned {receipt.LoyaltyPointsEarned} loyalty points and now have {receipt.LoyaltyPointsAfter} points.{voucherMessage} Receipt {receipt.ReceiptNumber} was generated.";
         return View("UserOrderPlace", new UserOrderPlaceViewModel
         {
             PendingOrders = _userStore.GetPendingOrdersForUser(currentUser.Id),
             LatestReceipt = receipt,
-            SelectedTokenIds = Array.Empty<int>()
+            SelectedTokenIds = Array.Empty<int>(),
+            Loyalty = _userStore.GetLoyaltySummary(currentUser.Id)
         });
     }
 
@@ -412,6 +425,7 @@ public class UserNavigationController(IUserStore userStore, ITokenApiClient toke
             PendingOrders = pendingOrders,
             EligibleTokens = BuildEligibleTokenOptions(currentUser, pendingOrders),
             LatestReceipt = _userStore.GetLatestReceiptForUser(currentUser.Id)
+            ,Loyalty = _userStore.GetLoyaltySummary(currentUser.Id)
         };
     }
 

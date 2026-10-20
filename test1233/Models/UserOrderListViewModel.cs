@@ -16,6 +16,8 @@ public class UserOrderListViewModel
 
     public decimal PendingOrderTotal { get; init; }
 
+    public int PendingOrderPoints { get; init; }
+
     public bool HasOrders => PendingOrderCount > 0;
 }
 
@@ -32,6 +34,8 @@ public class UserOrderRowViewModel
     public int Quantity { get; init; }
 
     public decimal Price { get; init; }
+
+    public int LoyaltyPoints { get; init; }
 
     public decimal LineTotal => Quantity * Price;
 }

@@ -269,7 +269,7 @@ public class UserController(IUserStore userStore, IWebHostEnvironment webHostEnv
 
         return _userStore.GetAllRoles()
         .Select(role => new SelectListItem(role.Name, role.Id.ToString()))
-        .Prepend(new SelectListItem("-- Please Select--", "0"))
+        .Prepend(new SelectListItem("--Please Select--", "0"))
         .ToList();
     }
 
